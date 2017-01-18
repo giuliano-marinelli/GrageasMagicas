@@ -100,20 +100,32 @@ public class Juego implements Runnable {
                 //Imprime el juego por consola
                 System.out.println(toStringComb(matrizGrageas));
 
-                //Permite que usuario pueda interactuar con la interfaz
-                System.out.print("Gragea inicial XY: ");
-                String gi = TecladoIn.readLine();
-                System.out.print("Gragea final XY: ");
-                String gf = TecladoIn.readLine();
-                System.out.println();
-                int gix = Integer.parseInt(gi.substring(0, 1));
-                int giy = Integer.parseInt(gi.substring(1, 2));
-                int gfx = Integer.parseInt(gf.substring(0, 1));
-                int gfy = Integer.parseInt(gf.substring(1, 2));
-                grageaIni = new Point(gix, giy);
-                grageaFin = new Point(gfx, gfy);
+                boolean sonAdy = false;
+                int gix;
+                int giy;
+                int gfx;
+                int gfy;
+                do {
+                    //Permite que usuario pueda interactuar con la interfaz
+                    System.out.print("Gragea inicial XY: ");
+                    String gi = TecladoIn.readLine();
+                    System.out.print("Gragea final XY: ");
+                    String gf = TecladoIn.readLine();
+                    System.out.println();
+                    gix = Integer.parseInt(gi.substring(0, 1));
+                    giy = Integer.parseInt(gi.substring(1, 2));
+                    gfx = Integer.parseInt(gf.substring(0, 1));
+                    gfy = Integer.parseInt(gf.substring(1, 2));
 
-                //VERIFICAR QUE SON ADYACENTES
+                    /*grageaIni = new Point(gix, giy);
+                    grageaFin = new Point(gfx, gfy);*/
+                    //verificar si el movimiento de las grageas es válido.
+                    sonAdy = verificarAdyacentes(gix, giy, gfx, gfy);
+                    if (!sonAdy) {
+                        System.out.println("\033[31mMovimiento no válido\033[30m");
+                    }
+
+                } while (!sonAdy);
 
                 //invertimos las grageas de lugar
                 intercambiarGrageas(gix, giy, gfx, gfy);
@@ -435,5 +447,22 @@ public class Juego implements Runnable {
         matrizGr[4][2] = new Gragea(1);
         matrizGr[4][3] = new Gragea(2);
         matrizGr[4][4] = new Gragea(3);
+    }
+
+    /**
+     * Verifica que el intercambio de grageas sea una jugada válida.
+     * @param gix
+     * @param giy
+     * @param gfx
+     * @param gfy
+     * @return
+     */
+    private boolean verificarAdyacentes(int gix, int giy, int gfx, int gfy) {
+        boolean res;
+        res = ((gix + 1 == gfx && giy == gfy) || (gix - 1 == gfx && giy == gfy) || (gix == gfx && giy + 1 == gfy)
+                || (gix == gfx && giy - 1 == gfy));
+        res = (res && (gix >= 0) && (gix <= matrizGrageas.length - 1) && (gfx >= 0) && (gfx <= matrizGrageas.length - 1)
+                && (giy >= 0) && (giy <= matrizGrageas[0].length - 1) && (gfy >= 0) && (gfy <= matrizGrageas.length - 1));
+        return res;
     }
 }
