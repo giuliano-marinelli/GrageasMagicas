@@ -28,6 +28,7 @@ public class Juego implements Runnable {
     private CyclicBarrier barrierCompAlto;
     private CyclicBarrier barrierCompAncho;
     private CyclicBarrier barrierElim;
+    private float puntaje = 0;
 
     public Juego(int ancho, int alto, int velocidad, int cantGragea) {
         this.velocidad = velocidad;
@@ -82,21 +83,15 @@ public class Juego implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("\033[34mPrimer matriz\033[30m \n");
-            //Imprime el juego por consola
-            System.out.println(toStringComb(matrizGrageas));
-
-            System.out.println("Presione enter...");
-            TecladoIn.read();
-
             //incialmente se realizan las combinaciones que hallan salido de forma aleatoria
-            realizarCombinaciones();
+            combinacionInicial();
 
             Point grageaIni;
             Point grageaFin;
             while (!fin) {
 
-                System.out.println("\033[32mJuega\033[30m \n");
+                System.out.println("\033[32mJuega\033[30m");
+                System.out.println("\033[32mPuntaje: \033[30m"+puntaje+"\n");
                 //Imprime el juego por consola
                 System.out.println(toStringComb(matrizGrageas));
 
@@ -161,6 +156,9 @@ public class Juego implements Runnable {
                         //queda en espera de que los eliminadores terminen
                         barrierElim.await();
 
+                        //calcula y agrega las combinaciones logradas al puntaje antes de vaciar el buffer
+                        calcularPuntaje();
+
                         //limpia el buffer con las combinaciones de grageas que ya fueron
                         //eliminadas por los eliminadores
                         grageasCombinadas.clear();
@@ -193,7 +191,11 @@ public class Juego implements Runnable {
         }
     }
 
-    public void realizarCombinaciones() {
+    public void calcularPuntaje() {
+        puntaje += grageasCombinadas.size() * 10;
+    }
+
+    public void combinacionInicial() {
         try {
             //despierta a los comprobadores
             barrierCompAncho.await();
@@ -201,6 +203,13 @@ public class Juego implements Runnable {
             //queda a la espera de que los comprobadores terminen
             barrierCompAncho.await();
             barrierCompAlto.await();
+
+            System.out.println("\033[34mPrimer matriz\033[30m \n");
+            //Imprime el juego por consola
+            System.out.println(toStringComb(matrizGrageas));
+
+            System.out.println("Presione enter...");
+            TecladoIn.read();
 
             while (!grageasCombinadas.isEmpty()) {
 
@@ -211,6 +220,9 @@ public class Juego implements Runnable {
                 barrierElim.await();
                 //queda en espera de que los eliminadores terminen
                 barrierElim.await();
+
+                //calcula y agrega las combinaciones logradas al puntaje antes de vaciar el buffer
+                calcularPuntaje();
 
                 //limpia el buffer con las combinaciones de grageas que ya fueron
                 //eliminadas por los eliminadores
