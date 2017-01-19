@@ -13,9 +13,14 @@ public class TableroVisual extends ScreenAdapter {
     private static final float ancho = Gdx.graphics.getWidth();
     private static final float alto = Gdx.graphics.getHeight();
     private GrageaVisual[][] matrizGrageasVisuales;
+    private int cantSeleccionadas;
+    private int filaDeLaPrimeraSeleccionada;
+    private int columnaDeLaPrimeraSeleccionada;
 
     public TableroVisual(GrageaVisual[][] mgv) {
         matrizGrageasVisuales = mgv;
+        filaDeLaPrimeraSeleccionada=-1;
+        columnaDeLaPrimeraSeleccionada=-1;
 
         escenaTablero = new Stage(new FitViewport(ancho, alto));
         Gdx.input.setInputProcessor(escenaTablero);
@@ -45,4 +50,34 @@ public class TableroVisual extends ScreenAdapter {
         escenaTablero.act(delta);
         escenaTablero.draw();
     }
+
+    public boolean aumentarCantSeleccionadas(int fila, int columna){
+
+        if(cantSeleccionadas==0 ) {
+            cantSeleccionadas++;
+            filaDeLaPrimeraSeleccionada=fila;
+            columnaDeLaPrimeraSeleccionada=columna;
+            return true;
+        }
+        else if(cantSeleccionadas==1){
+            if((fila==filaDeLaPrimeraSeleccionada &&
+                    ((columna==columnaDeLaPrimeraSeleccionada-1) || (columna==columnaDeLaPrimeraSeleccionada+1)))
+                    || (columna==columnaDeLaPrimeraSeleccionada &&
+                    ((fila==filaDeLaPrimeraSeleccionada-1) || (fila==filaDeLaPrimeraSeleccionada+1)))) {
+                cantSeleccionadas++;
+                return true;
+            }
+            else
+                return false;
+
+        }
+        else
+            return false;
+
+    }
+
+    public void disminuirCantSeleccionadas(){
+        cantSeleccionadas--;
+    }
+
 }

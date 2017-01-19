@@ -82,7 +82,7 @@ public class PrincipalVisual extends ScreenAdapter {
 
                 for (int i = 0; i < 5; i++) {
                     for (int j = 0; j < 5; j++) {
-                        matrizgrageasvisuales[i][j] = new GrageaVisual(matrizGrageas[i][j].getTipo());
+                        matrizgrageasvisuales[i][j] = new GrageaVisual(matrizGrageas[i][j].getTipo(), i, j);
                     }
                 }
 

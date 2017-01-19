@@ -17,11 +17,15 @@ public class GrageaVisual {
     private ImageButton.ImageButtonStyle gragea2Style;
     private ImageButton.ImageButtonStyle gragea3Style;
     private ImageButton.ImageButtonStyle gragea4Style;
+    int fila;
+    int columna;
 
-    public GrageaVisual(int nuevoTipo) {
+    public GrageaVisual(int nuevoTipo, int nuevaFila, int nuevaColumna) {
         tipo = nuevoTipo;
         cargarImageButtonStyle();
         cambiarEstiloBoton();
+        fila=nuevaFila;
+        columna=nuevaColumna;
     }
 
     public void cambiarEstiloBoton() {
@@ -108,5 +112,13 @@ public class GrageaVisual {
     public void cambiarTipo(int nuevoTipo) {
         tipo = nuevoTipo;
         cambiarEstiloBoton();
+    }
+
+    public int getFila(){
+        return fila;
+    }
+
+    public int getColumna(){
+        return columna;
     }
 }
