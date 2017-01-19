@@ -149,9 +149,7 @@ public class Juego implements Runnable {
                     System.out.println();
                     intercambiarGrageas(gix, giy, gfx, gfy);
                 } else {
-                    //System.out.println("grageasCombinadas NO IsEmpty()");
                     while (!grageasCombinadas.isEmpty()) {
-
                         System.out.println("\033[34mCombinacion y eliminacion de grageas: \033[30m");
                         System.out.println("\033[31mEliminadores: \033[30m");
 
@@ -203,11 +201,12 @@ public class Juego implements Runnable {
      * Se realiza despues de cada comprobacion.
      */
     public void calcularCombos() {
+        boolean encontro;
         List<Point> grageasDuplicadas = new ArrayList();
         for (int i = 0; i < grageasCombinadas.size(); i++) {
             Point grageaAct = grageasCombinadas.get(i);
             if (!grageasDuplicadas.contains(grageaAct)) {
-                boolean encontro = false;
+                encontro = false;
                 int j = 0;
                 do {
                     if (j!=i && grageaAct.equals(grageasCombinadas.get(j))) {
@@ -218,6 +217,7 @@ public class Juego implements Runnable {
                 } while (!encontro && j < grageasCombinadas.size());
             }
         }
+
         for (int i = 0; i < grageasDuplicadas.size(); i++) {
             for (int j = 0; j < matrizGrageas.length; j++) {
                 Point puntoAct = new Point(grageasDuplicadas.get(i).x,j);
@@ -522,8 +522,10 @@ public class Juego implements Runnable {
      */
     private boolean verificarAdyacentes(int gix, int giy, int gfx, int gfy) {
         boolean res;
+        //logica del juego
         res = ((gix + 1 == gfx && giy == gfy) || (gix - 1 == gfx && giy == gfy) || (gix == gfx && giy + 1 == gfy)
                 || (gix == gfx && giy - 1 == gfy));
+        //limites de la matriz
         res = (res && (gix >= 0) && (gix <= matrizGrageas.length - 1) && (gfx >= 0) && (gfx <= matrizGrageas.length - 1)
                 && (giy >= 0) && (giy <= matrizGrageas[0].length - 1) && (gfy >= 0) && (gfy <= matrizGrageas.length - 1));
         return res;
