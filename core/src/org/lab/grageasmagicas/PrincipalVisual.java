@@ -15,8 +15,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class PrincipalVisual extends ScreenAdapter {
 
-    private static final float ancho= Gdx.graphics.getWidth();
-    private static final float alto= Gdx.graphics.getHeight();
+    private static final float ancho = Gdx.graphics.getWidth();
+    private static final float alto = Gdx.graphics.getHeight();
 
     private Stage escena;
     private Texture texturaFondo;
@@ -29,113 +29,104 @@ public class PrincipalVisual extends ScreenAdapter {
 
     private final GrageasMagicasGame juego;
 
-    public PrincipalVisual(GrageasMagicasGame grageasmagicasjuego){
-        juego=grageasmagicasjuego;
+    public PrincipalVisual(GrageasMagicasGame grageasmagicasjuego) {
+        juego = grageasmagicasjuego;
     }
 
     @Override
-    public void show(){
+    public void show() {
         cargarTexturas();
-        escena= new Stage(new FitViewport(ancho, alto));
+        escena = new Stage(new FitViewport(ancho, alto));
         Gdx.input.setInputProcessor(escena);
 
         Image imgFondo = new Image(texturaFondo);
         float escalaX = ancho / imgFondo.getWidth();
         float escalaY = alto / imgFondo.getHeight();
-        imgFondo.setScale(escalaX,escalaY);
+        imgFondo.setScale(escalaX, escalaY);
 
         escena.addActor(imgFondo);
 
         TextureRegionDrawable trBtnJugar = new TextureRegionDrawable(new TextureRegion(texturaBtnJugar));
         ImageButton btnJugar = new ImageButton(trBtnJugar);
-        btnJugar.setPosition(ancho/2, alto*0.6f);
+        btnJugar.setPosition(ancho / 2, alto * 0.6f);
         escena.addActor(btnJugar);
 
         TextureRegionDrawable trBtnOpciones = new TextureRegionDrawable(new TextureRegion(texturaBtnOpciones));
         ImageButton btnOpciones = new ImageButton(trBtnOpciones);
-        btnOpciones.setPosition(ancho/2, alto*0.4f);
+        btnOpciones.setPosition(ancho / 2, alto * 0.4f);
         escena.addActor(btnOpciones);
 
         TextureRegionDrawable trBtnAcercaDe = new TextureRegionDrawable(new TextureRegion(texturaBtnAcercaDe));
         ImageButton btnAcercaDe = new ImageButton(trBtnAcercaDe);
-        btnAcercaDe.setPosition(ancho/2, alto*0.2f);
+        btnAcercaDe.setPosition(ancho / 2, alto * 0.2f);
         escena.addActor(btnAcercaDe);
 
         Image imgTitulo = new Image(texturaTitulo);
-        imgTitulo.setPosition(ancho/2 - imgTitulo.getWidth()/2, alto*0.8f);
+        imgTitulo.setPosition(ancho / 2 - imgTitulo.getWidth() / 2, alto * 0.8f);
 
         btnJugar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Click","Presiono jugar");
-                int ancho=5;
-                int alto=5;
-                int cantGragea=5;
-                int velocidad=10;
+                Gdx.app.log("Click", "Presiono jugar");
+                int ancho = 5;
+                int alto = 5;
+                int cantGragea = 5;
+                int velocidad = 10;
 
-                GrageaVisual[][] matrizgrageasvisuales= new GrageaVisual[5][5];
+                GrageaVisual[][] matrizgrageasvisuales = new GrageaVisual[5][5];
                 juegoLogico = new Juego(ancho, alto, velocidad, cantGragea);
                 Thread juegoThread = new Thread(juegoLogico);
                 juegoThread.start();
 
+                Gragea[][] matrizGrageas = juegoLogico.getMatrizGrageas();
 
-
-                Gragea[][] matrizGrageas= juegoLogico.getMatrizGrageas();
-
-
-
-
-                for(int i=0; i<5; i++) {
+                for (int i = 0; i < 5; i++) {
                     for (int j = 0; j < 5; j++) {
                         matrizgrageasvisuales[i][j] = new GrageaVisual(matrizGrageas[i][j].getTipo());
                     }
                 }
 
-                TableroVisual tablero= new TableroVisual(matrizgrageasvisuales);
-                for(int i=0; i<5; i++) {
+                TableroVisual tablero = new TableroVisual(matrizgrageasvisuales);
+                for (int i = 0; i < 5; i++) {
                     for (int j = 0; j < 5; j++) {
-
                         matrizgrageasvisuales[i][j].getBoton().addListener(
                                 new GrageaVisualListener(matrizgrageasvisuales[i][j], matrizGrageas[i][j], tablero));
-
                     }
                 }
-
 
                 dispose();
                 juego.borrarPantalla();
                 juego.setScreen(new TableroVisual(matrizgrageasvisuales));
-
             }
         });
 
         btnOpciones.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Click","Presiono opciones");
+                Gdx.app.log("Click", "Presiono opciones");
             }
         });
 
         btnAcercaDe.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Click","Presiono acerca de");
+                Gdx.app.log("Click", "Presiono acerca de");
             }
         });
 
         escena.addActor(imgTitulo);
     }
 
-    public void resize(int width, int height){
+    public void resize(int width, int height) {
         escena.getViewport().update(width, height, true);
     }
 
-    public void render(float delta){
+    public void render(float delta) {
         escena.act(delta);
         escena.draw();
     }
 
-    public void dispose(){
+    public void dispose() {
         escena.dispose();
 
     }
@@ -156,7 +147,4 @@ public class PrincipalVisual extends ScreenAdapter {
         texturaBtnAcercaDe = assetManager.get("acerca_de.png");
         texturaTitulo = assetManager.get("titulo.png");
     }
-
-
-
 }

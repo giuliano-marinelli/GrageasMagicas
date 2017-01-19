@@ -10,14 +10,10 @@ public class GrageaVisualListener extends InputListener {
     public Gragea grageaLogica;
     public TableroVisual tablero;
 
-    public GrageaVisualListener(GrageaVisual gv, Gragea gl, TableroVisual tv){
-
-       grageavisual=gv;
-        grageaLogica=gl;
-        tablero=tv;
-
-
-
+    public GrageaVisualListener(GrageaVisual gv, Gragea gl, TableroVisual tv) {
+        grageavisual = gv;
+        grageaLogica = gl;
+        tablero = tv;
     }
 
     //Called when a mouse button or a finger touch goes down on the actor.
@@ -25,8 +21,6 @@ public class GrageaVisualListener extends InputListener {
     @Override
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         super.touchDown(event, x, y, pointer, button);
-
-
         return true;
     }
 

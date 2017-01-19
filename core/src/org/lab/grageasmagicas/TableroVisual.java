@@ -10,14 +10,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class TableroVisual extends ScreenAdapter {
 
     private Stage escenaTablero;
-    private static final float ancho= Gdx.graphics.getWidth();
-    private static final float alto= Gdx.graphics.getHeight();
+    private static final float ancho = Gdx.graphics.getWidth();
+    private static final float alto = Gdx.graphics.getHeight();
     private GrageaVisual[][] matrizGrageasVisuales;
 
-
-    public TableroVisual(GrageaVisual[][] mgv){
-
-        matrizGrageasVisuales=mgv;
+    public TableroVisual(GrageaVisual[][] mgv) {
+        matrizGrageasVisuales = mgv;
 
         escenaTablero = new Stage(new FitViewport(ancho, alto));
         Gdx.input.setInputProcessor(escenaTablero);
@@ -25,8 +23,8 @@ public class TableroVisual extends ScreenAdapter {
         Table table = new Table();
         table.row();
 
-        for(int i=0; i<5; i++){
-            for(int j=0; j<5; j++){
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
                 table.add(matrizGrageasVisuales[i][j].getBoton());
             }
             table.row();
@@ -37,18 +35,14 @@ public class TableroVisual extends ScreenAdapter {
         table.pack();
 
         escenaTablero.addActor(table);
-
     }
 
-    public void resize(int width, int height){
+    public void resize(int width, int height) {
         escenaTablero.getViewport().update(width, height, true);
     }
 
-    public void render(float delta){
+    public void render(float delta) {
         escenaTablero.act(delta);
         escenaTablero.draw();
     }
-
-
-
 }

@@ -57,7 +57,7 @@ public class Eliminador implements Runnable {
     }
 
     public void eliminarCombinaciones() {
-        System.out.print(" <"+columna+"> ");
+        System.out.print(" <" + columna + "> ");
         List<Integer> combinacionTemp = new ArrayList();
         for (int i = 0; i < grageasCombinadas.size(); i++) {
             if (grageasCombinadas.get(i).y == columna) {

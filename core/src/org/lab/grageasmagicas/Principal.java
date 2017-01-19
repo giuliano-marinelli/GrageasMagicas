@@ -22,7 +22,6 @@ public class Principal {
         Juego juego = new Juego(ancho, alto, velocidad, cantGragea);
         Thread juegoThread = new Thread(juego);
         juegoThread.start();
-
     }
 
 }

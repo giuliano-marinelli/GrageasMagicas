@@ -119,7 +119,7 @@ public class Juego implements Runnable {
                     //verificar si el movimiento de las grageas es válido.
                     sonAdy = verificarAdyacentes(gix, giy, gfx, gfy);
                     if (!sonAdy) {
-                        System.out.println("\033[31mMovimiento no válido\033[30m");
+                        System.out.println("\033[31mMovimiento no válido\033[30m \n");
                     }
 
                 } while (!sonAdy);
@@ -209,7 +209,7 @@ public class Juego implements Runnable {
                 encontro = false;
                 int j = 0;
                 do {
-                    if (j!=i && grageaAct.equals(grageasCombinadas.get(j))) {
+                    if (j != i && grageaAct.equals(grageasCombinadas.get(j))) {
                         grageasDuplicadas.add(grageaAct);
                         encontro = true;
                     }
@@ -220,13 +220,13 @@ public class Juego implements Runnable {
 
         for (int i = 0; i < grageasDuplicadas.size(); i++) {
             for (int j = 0; j < matrizGrageas.length; j++) {
-                Point puntoAct = new Point(grageasDuplicadas.get(i).x,j);
+                Point puntoAct = new Point(grageasDuplicadas.get(i).x, j);
                 if (!grageasCombinadas.contains(puntoAct)) {
                     grageasCombinadas.add(puntoAct);
                 }
             }
             for (int j = 0; j < matrizGrageas[0].length; j++) {
-                Point puntoAct = new Point(j,grageasDuplicadas.get(i).y);
+                Point puntoAct = new Point(j, grageasDuplicadas.get(i).y);
                 if (!grageasCombinadas.contains(puntoAct)) {
                     grageasCombinadas.add(puntoAct);
                 }
