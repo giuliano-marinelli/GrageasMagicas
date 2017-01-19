@@ -3,6 +3,8 @@ package org.lab.grageasmagicas;
 import org.lab.estructuras.Point;
 import org.lab.teclado.TecladoIn;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CyclicBarrier;
 import java.util.Random;
@@ -91,7 +93,7 @@ public class Juego implements Runnable {
             while (!fin) {
 
                 System.out.println("\033[32mJuega\033[30m");
-                System.out.println("\033[32mPuntaje: \033[30m"+puntaje+"\n");
+                System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
                 //Imprime el juego por consola
                 System.out.println(toStringComb(matrizGrageas));
 
@@ -132,6 +134,8 @@ public class Juego implements Runnable {
                 barrierCompAncho.await();
                 barrierCompAlto.await();
 
+                calcularCombos();
+
                 //Imprime el juego por consola
                 System.out.println("\033[34mGrageas intercambiadas\033[30m");
                 System.out.println(toStringComb(matrizGrageas));
@@ -170,6 +174,8 @@ public class Juego implements Runnable {
                         barrierCompAncho.await();
                         barrierCompAlto.await();
 
+                        calcularCombos();
+
                         //Imprime el juego por consola
                         System.out.println();
                         System.out.println(toStringComb(matrizGrageas));
@@ -191,6 +197,46 @@ public class Juego implements Runnable {
         }
     }
 
+    /**
+     * Agrega a grageasCombinadas las grageas correspondientes si existe un combo en la jugada.
+     * Un combo es cuando una gragea esta en medio de dos combinaciones, es decir en una cruz.
+     * Se realiza despues de cada comprobacion.
+     */
+    public void calcularCombos() {
+        List<Point> grageasDuplicadas = new ArrayList();
+        for (int i = 0; i < grageasCombinadas.size(); i++) {
+            Point grageaAct = grageasCombinadas.get(i);
+            if (!grageasDuplicadas.contains(grageaAct)) {
+                boolean encontro = false;
+                int j = 0;
+                do {
+                    if (j!=i && grageaAct.equals(grageasCombinadas.get(j))) {
+                        grageasDuplicadas.add(grageaAct);
+                        encontro = true;
+                    }
+                    j++;
+                } while (!encontro && j < grageasCombinadas.size());
+            }
+        }
+        for (int i = 0; i < grageasDuplicadas.size(); i++) {
+            for (int j = 0; j < matrizGrageas.length; j++) {
+                Point puntoAct = new Point(grageasDuplicadas.get(i).x,j);
+                if (!grageasCombinadas.contains(puntoAct)) {
+                    grageasCombinadas.add(puntoAct);
+                }
+            }
+            for (int j = 0; j < matrizGrageas[0].length; j++) {
+                Point puntoAct = new Point(j,grageasDuplicadas.get(i).y);
+                if (!grageasCombinadas.contains(puntoAct)) {
+                    grageasCombinadas.add(puntoAct);
+                }
+            }
+        }
+    }
+
+    /**
+     * Agrega el puntaje ganado segun las grageas que se combinaron.
+     */
     public void calcularPuntaje() {
         puntaje += grageasCombinadas.size() * 10;
     }
@@ -203,6 +249,8 @@ public class Juego implements Runnable {
             //queda a la espera de que los comprobadores terminen
             barrierCompAncho.await();
             barrierCompAlto.await();
+
+            calcularCombos();
 
             System.out.println("\033[34mPrimer matriz\033[30m \n");
             //Imprime el juego por consola
@@ -234,6 +282,8 @@ public class Juego implements Runnable {
                 //queda a la espera de que los comprobadores terminen
                 barrierCompAncho.await();
                 barrierCompAlto.await();
+
+                calcularCombos();
 
                 //Imprime el juego por consola
                 System.out.println();
@@ -463,6 +513,7 @@ public class Juego implements Runnable {
 
     /**
      * Verifica que el intercambio de grageas sea una jugada válida.
+     *
      * @param gix
      * @param giy
      * @param gfx
