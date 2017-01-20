@@ -19,6 +19,8 @@ public class GrageaVisual {
     private ImageButton.ImageButtonStyle gragea4Style;
     int fila;
     int columna;
+    private boolean seIntercambio;
+    private int cantClicks;
 
     public GrageaVisual(int nuevoTipo, int nuevaFila, int nuevaColumna) {
         tipo = nuevoTipo;
@@ -26,6 +28,8 @@ public class GrageaVisual {
         cambiarEstiloBoton();
         fila=nuevaFila;
         columna=nuevaColumna;
+        cantClicks=0;
+        seIntercambio=false;
     }
 
     public void cambiarEstiloBoton() {
@@ -121,4 +125,41 @@ public class GrageaVisual {
     public int getColumna(){
         return columna;
     }
+
+    public void setSeIntercambio(boolean nuevoValor){
+        seIntercambio=nuevoValor;
+    }
+
+    public boolean getSeIntercambio(){
+        return seIntercambio;
+    }
+
+    public void setCantClicks(int nuevoValor){
+        cantClicks=nuevoValor;
+    }
+
+    public int getCantClicks(){
+        return cantClicks;
+    }
+
+    public void aumentarCantClicks(){
+        cantClicks++;
+    }
+
+    public void disminuirCantClicks(){
+        cantClicks--;
+    }
+
+    public void setCantClicksToZero(){
+        cantClicks=0;
+    }
+
+    public void setFila(int nuevaFila){
+        fila=nuevaFila;
+    }
+
+    public void setColumna(int nuevaColumna){
+        columna=nuevaColumna;
+    }
+
 }

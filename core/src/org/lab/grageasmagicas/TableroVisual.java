@@ -5,6 +5,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -19,11 +20,14 @@ public class TableroVisual extends ScreenAdapter {
     private int cantSeleccionadas;
     private int filaDeLaPrimeraSeleccionada;
     private int columnaDeLaPrimeraSeleccionada;
+    private int filaDeLaSegundaSeleccionada;
+    private int columnaDeLaSegundaSeleccionada;
+    private Table table;
 
     public TableroVisual(GrageaVisual[][] mgv) {
         matrizGrageasVisuales = mgv;
-        filaDeLaPrimeraSeleccionada=-1;
-        columnaDeLaPrimeraSeleccionada=-1;
+        filaDeLaPrimeraSeleccionada = -1;
+        columnaDeLaPrimeraSeleccionada = -1;
 
         escenaTablero = new Stage(new FitViewport(ancho, alto));
         Gdx.input.setInputProcessor(escenaTablero);
@@ -60,33 +64,71 @@ public class TableroVisual extends ScreenAdapter {
         escenaTablero.draw();
     }
 
-    public boolean aumentarCantSeleccionadas(int fila, int columna){
+    public boolean aumentarCantSeleccionadas(int fila, int columna) {
 
-        if(cantSeleccionadas==0 ) {
+        if (cantSeleccionadas == 0) {
             cantSeleccionadas++;
-            filaDeLaPrimeraSeleccionada=fila;
-            columnaDeLaPrimeraSeleccionada=columna;
+            filaDeLaPrimeraSeleccionada = fila;
+            columnaDeLaPrimeraSeleccionada = columna;
             return true;
-        }
-        else if(cantSeleccionadas==1){
-            if((fila==filaDeLaPrimeraSeleccionada &&
-                    ((columna==columnaDeLaPrimeraSeleccionada-1) || (columna==columnaDeLaPrimeraSeleccionada+1)))
-                    || (columna==columnaDeLaPrimeraSeleccionada &&
-                    ((fila==filaDeLaPrimeraSeleccionada-1) || (fila==filaDeLaPrimeraSeleccionada+1)))) {
+        } else if (cantSeleccionadas == 1) {
+            if ((fila == filaDeLaPrimeraSeleccionada &&
+                    ((columna == columnaDeLaPrimeraSeleccionada - 1) || (columna == columnaDeLaPrimeraSeleccionada + 1)))
+                    || (columna == columnaDeLaPrimeraSeleccionada &&
+                    ((fila == filaDeLaPrimeraSeleccionada - 1) || (fila == filaDeLaPrimeraSeleccionada + 1)))) {
                 cantSeleccionadas++;
+                filaDeLaSegundaSeleccionada = fila;
+                columnaDeLaSegundaSeleccionada = columna;
                 return true;
-            }
-            else
+            } else
                 return false;
 
-        }
-        else
+        } else
             return false;
 
     }
 
-    public void disminuirCantSeleccionadas(){
+    public void disminuirCantSeleccionadas() {
         cantSeleccionadas--;
     }
 
+    public void intercambiarGrageas() {
+
+        if (cantSeleccionadas == 2) {
+
+            ImageButton primeraSeleccionada = matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada].getBoton();
+            ImageButton segundaSeleccionada = matrizGrageasVisuales[filaDeLaSegundaSeleccionada][columnaDeLaSegundaSeleccionada].getBoton();
+
+            float primeraPosicionX = primeraSeleccionada.getX();
+            float primeraPosicionY = primeraSeleccionada.getY();
+            primeraSeleccionada.setPosition(segundaSeleccionada.getX(), segundaSeleccionada.getY());
+            segundaSeleccionada.setPosition(primeraPosicionX, primeraPosicionY);
+
+
+            matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada].setSeIntercambio(true);
+            /////////
+            //la primera seleccionada nunca cambia a setCheckedFalse y su listener a cantClick=0
+
+            matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada].setCantClicksToZero();
+            matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada].getBoton().setChecked(false);
+            //////////////////////////////////////
+            matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada].setFila(filaDeLaSegundaSeleccionada);
+            matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada].setColumna(columnaDeLaSegundaSeleccionada);
+
+            matrizGrageasVisuales[filaDeLaSegundaSeleccionada][columnaDeLaSegundaSeleccionada].setSeIntercambio(true);
+            matrizGrageasVisuales[filaDeLaSegundaSeleccionada][columnaDeLaSegundaSeleccionada].setFila(filaDeLaPrimeraSeleccionada);
+            matrizGrageasVisuales[filaDeLaSegundaSeleccionada][columnaDeLaSegundaSeleccionada].setColumna(columnaDeLaPrimeraSeleccionada);
+
+
+            //Intercambiamos las grageas visuales en la matriz
+            GrageaVisual aux = matrizGrageasVisuales[filaDeLaSegundaSeleccionada][columnaDeLaSegundaSeleccionada];
+            matrizGrageasVisuales[filaDeLaSegundaSeleccionada][columnaDeLaSegundaSeleccionada] = matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada];
+            matrizGrageasVisuales[filaDeLaPrimeraSeleccionada][columnaDeLaPrimeraSeleccionada] = aux;
+
+            cantSeleccionadas = 0;
+
+
+        }
+
+    }
 }
