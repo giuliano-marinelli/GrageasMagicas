@@ -2,8 +2,11 @@ package org.lab.grageasmagicas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
@@ -26,6 +29,12 @@ public class TableroVisual extends ScreenAdapter {
         Gdx.input.setInputProcessor(escenaTablero);
 
         Table table = new Table();
+
+        Texture fondogolosinasTexture = new Texture(Gdx.files.internal("fondogolosinas.png"));
+        TextureRegionDrawable fondogolosinasTextureRegionDrawable = new TextureRegionDrawable(new TextureRegion(fondogolosinasTexture));
+        table.background(fondogolosinasTextureRegionDrawable);
+
+
         table.row();
 
         for (int i = 0; i < 5; i++) {
