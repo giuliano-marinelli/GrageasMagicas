@@ -73,11 +73,8 @@ public class Eliminador implements Runnable {
         while (!combinacionTemp.isEmpty()) {
             for (int i = combinacionTemp.get(0); i > 0; i--) {
                 matrizGrageas[i][columna] = matrizGrageas[i - 1][columna];
-                //matrizGrageas[i][columna].setTipo(matrizGrageas[i - 1][columna].getTipo());
             }
             matrizGrageas[0][columna] = new Gragea(random.nextInt(cantGragea));
-            //int aux = random.nextInt(cantGragea + 1);
-            //matrizGrageas[0][columna].setTipo(aux);
             combinacionTemp.remove(0);
         }
     }

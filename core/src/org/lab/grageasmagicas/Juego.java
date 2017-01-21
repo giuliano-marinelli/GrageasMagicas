@@ -40,6 +40,10 @@ public class Juego extends Observable implements Runnable {
     public Juego(int ancho, int alto, int velocidad, int cantGragea) {
         this.velocidad = velocidad;
         this.cantGragea = cantGragea;
+        this.primerGrageaX = -1;
+        this.primerGrageaY = -1;
+        this.segundaGrageaX = -1;
+        this.segundaGrageaY = -1;
 
         matrizGrageas = new Gragea[alto][ancho];
         comprobadorAlto = new Comprobador[alto];
@@ -156,6 +160,7 @@ public class Juego extends Observable implements Runnable {
                     System.out.println();
                     intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
                 } else {
+                    limpiarPosGrageas();
                     while (!grageasCombinadas.isEmpty()) {
                         System.out.println("\033[34mCombinacion y eliminacion de grageas: \033[30m");
                         System.out.println("\033[31mEliminadores: \033[30m");
@@ -202,6 +207,13 @@ public class Juego extends Observable implements Runnable {
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
         }
+    }
+
+    private void limpiarPosGrageas() {
+        primerGrageaX = -1;
+        primerGrageaY = -1;
+        segundaGrageaX = -1;
+        segundaGrageaY = -1;
     }
 
     public void sincronizar() {
@@ -595,4 +607,13 @@ public class Juego extends Observable implements Runnable {
     public void setSegundaGrageaY(int segundaGrageaY) {
         this.segundaGrageaY = segundaGrageaY;
     }
+
+    public CopyOnWriteArrayList<Point> getGrageasCombinadas() {
+        return grageasCombinadas;
+    }
+
+    public void setGrageasCombinadas(CopyOnWriteArrayList<Point> grageasCombinadas) {
+        this.grageasCombinadas = grageasCombinadas;
+    }
+
 }

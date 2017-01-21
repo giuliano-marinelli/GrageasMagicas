@@ -95,4 +95,15 @@ public class GrageaVisual extends Actor {
         columna = nuevaColumna;
     }
 
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
+    }
+
+    public void setSeleccionada(boolean seleccionada) {
+        this.seleccionada = seleccionada;
+    }
 }

@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
+import java.util.concurrent.BrokenBarrierException;
+
 public class GrageaVisualListener extends InputListener {
 
     public GrageaVisual grageaVisual;
@@ -26,28 +28,36 @@ public class GrageaVisualListener extends InputListener {
     @Override
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         super.touchUp(event, x, y, pointer, button);
-        if (juegoVisual.isInputHabilitado()) {
-            if (!grageaVisual.isSeleccionada()) {
-                if (!juegoVisual.isHayGrageaSeleccionada()) {
-                    grageaVisual.seleccionar();
-                    juegoVisual.setHayGrageaSeleccionada(true);
-                    juegoVisual.setPrimerGrageaX(grageaVisual.getFila());
-                    juegoVisual.setPrimerGrageaY(grageaVisual.getColumna());
-                } else {
-                    juegoVisual.setInputHabilitado(false);
-                    juegoVisual.setSegundaGrageaX(grageaVisual.getFila());
-                    juegoVisual.setSegundaGrageaY(grageaVisual.getColumna());
-                    if (juegoVisual.verificarAdyacentes()) {
-                        juegoVisual.intercambiarGrageas();
+        try {
+            if (juegoVisual.isInputHabilitado()) {
+                if (!grageaVisual.isSeleccionada()) {
+                    if (!juegoVisual.isHayGrageaSeleccionada()) {
+                        grageaVisual.seleccionar();
+                        juegoVisual.setHayGrageaSeleccionada(true);
+                        juegoVisual.setPrimerGrageaX(grageaVisual.getFila());
+                        juegoVisual.setPrimerGrageaY(grageaVisual.getColumna());
                     } else {
-                        Gdx.app.log("Check", "Movimiento invalido");
-                        juegoVisual.setInputHabilitado(true);
+                        juegoVisual.setInputHabilitado(false);
+                        juegoVisual.setSegundaGrageaX(grageaVisual.getFila());
+                        juegoVisual.setSegundaGrageaY(grageaVisual.getColumna());
+                        if (juegoVisual.verificarAdyacentes()) {
+                            //juegoVisual.intercambiarGrageas();
+                            juegoVisual.setHayGrageaSeleccionada(false);
+                            juegoVisual.getBarrierRespuestaVisual().await();
+                        } else {
+                            Gdx.app.log("Check", "Movimiento invalido");
+                            juegoVisual.setInputHabilitado(true);
+                        }
                     }
+                } else {
+                    grageaVisual.deseleccionar();
+                    juegoVisual.setHayGrageaSeleccionada(false);
                 }
-            } else {
-                grageaVisual.deseleccionar();
-                juegoVisual.setHayGrageaSeleccionada(false);
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
         }
     }
 
