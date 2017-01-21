@@ -8,10 +8,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -25,7 +23,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CyclicBarrier;
 
@@ -112,26 +109,26 @@ public class JuegoVisual implements Screen, Observer {
                 boolean hayNuevas = false;
                 for (int i = 0; i < cantFilas; i++) {
                     for (int j = 0; j < cantColumnas; j++) {
-                        /*boolean fueEliminada = false;
+                        boolean fueEliminada = false;
                         float posXNuevaGrageaVisual = 0;
                         float posYNuevaGrageaVisual = 0;
                         if (matrizGrageasVisuales[i][j] != null) {
                             fueEliminada = !matrizGrageasVisuales[i][j].isVisible();
                             posXNuevaGrageaVisual = matrizGrageasVisuales[i][j].getX();
                             posYNuevaGrageaVisual = matrizGrageasVisuales[i][j].getY();
-                        }*/
+                        }
                         matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), i, j, texturaGragea);
                         matrizGrageasVisuales[i][j].addListener(new GrageaVisualListener(matrizGrageasVisuales[i][j],
                                 matrizGrageasLogica[i][j], this));
                         tblTablero.add(matrizGrageasVisuales[i][j]);
-                        /*if (fueEliminada) {
+                        if (fueEliminada) {
                             hayNuevas = true;
                             System.out.println("fue eliminada = " + i + "," + j + " pos =" + posXNuevaGrageaVisual + "," + posYNuevaGrageaVisual);
                             matrizGrageasVisuales[i][j].setPosition(posXNuevaGrageaVisual, altoCamara);
                             matrizGrageasVisuales[i][j].setVisible(true);
                             matrizGrageasVisuales[i][j].addAction(Actions.moveTo
                                     (posXNuevaGrageaVisual, posYNuevaGrageaVisual, 0.5f, Interpolation.bounceOut));
-                        }*/
+                        }
                     }
                     tblTablero.row();
                 }
@@ -193,18 +190,6 @@ public class JuegoVisual implements Screen, Observer {
                     }
                 }
             }
-            /*while (!combinacionTemp.isEmpty()) {
-                matrizGrageasVisuales[combinacionTemp.get(0)][j].setVisible(false);
-                for (int i = combinacionTemp.get(0); i > min; i--) {
-                    System.out.println("mover gragea: " + (i - 1) + "," + j + " a " + matrizGrageasVisuales[i][j].getX() + "," + matrizGrageasVisuales[i][j].getY());
-                    matrizGrageasVisuales[i - 1][j].addAction(Actions.moveTo
-                            (matrizGrageasVisuales[i][j].getX(), matrizGrageasVisuales[i][j].getY(),
-                                    0.5f, Interpolation.bounceOut));
-                    matrizGrageasVisuales[i][j] = matrizGrageasVisuales[i - 1][j];
-                }
-                min++;
-                combinacionTemp.remove(0);
-            }*/
         }
     }
 
@@ -246,42 +231,6 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.unload("gragea.png");
     }
 
-    /*
-        public void intercambiarGrageas() {
-            try {
-
-                //Intercambiamos las grageas visuales en la matriz
-                GrageaVisual aux = matrizGrageasVisuales[segundaGrageaX][segundaGrageaY];
-                matrizGrageasVisuales[segundaGrageaX][segundaGrageaY] = matrizGrageasVisuales[primerGrageaX][primerGrageaY];
-                matrizGrageasVisuales[primerGrageaX][primerGrageaY] = aux;
-
-                matrizGrageasVisuales[primerGrageaX][primerGrageaY].deseleccionar();
-
-                GrageaVisual primeraSeleccionada = matrizGrageasVisuales[primerGrageaX][primerGrageaY];
-                GrageaVisual segundaSeleccionada = matrizGrageasVisuales[segundaGrageaX][segundaGrageaY];
-
-                //Intercambia la posicion en pantalla de las GrageasVisuales
-                float primeraPosicionX = primeraSeleccionada.getX();
-                float primeraPosicionY = primeraSeleccionada.getY();
-                //primeraSeleccionada.setPosition(segundaSeleccionada.getX(), segundaSeleccionada.getY());
-                //segundaSeleccionada.setPosition(primeraPosicionX, primeraPosicionY);
-
-                //Intercambia las filas y columnas de las GrageasVisuales
-                matrizGrageasVisuales[primerGrageaX][primerGrageaY].setFila(segundaGrageaX);
-                matrizGrageasVisuales[primerGrageaX][primerGrageaY].setColumna(segundaGrageaY);
-                matrizGrageasVisuales[segundaGrageaX][segundaGrageaY].setFila(primerGrageaX);
-                matrizGrageasVisuales[segundaGrageaX][segundaGrageaY].setColumna(primerGrageaY);
-
-                hayGrageaSeleccionada = false;
-                barrierRespuestaVisual.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (BrokenBarrierException e) {
-                e.printStackTrace();
-            }
-
-        }
-    */
     public boolean verificarAdyacentes() {
         return (segundaGrageaX == primerGrageaX && ((segundaGrageaY == primerGrageaY - 1) || (segundaGrageaY == primerGrageaY + 1)))
                 || (segundaGrageaY == primerGrageaY && ((segundaGrageaX == primerGrageaX - 1) || (segundaGrageaX == primerGrageaX + 1)));
