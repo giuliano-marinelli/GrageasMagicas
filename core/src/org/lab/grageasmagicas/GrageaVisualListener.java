@@ -1,22 +1,21 @@
 package org.lab.grageasmagicas;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 public class GrageaVisualListener extends InputListener {
 
-    public GrageaVisual grageavisual;
+    public GrageaVisual grageaVisual;
     public Gragea grageaLogica;
-    public TableroVisual tablero;
+    public JuegoVisual juegoVisual;
 
-    public GrageaVisualListener(GrageaVisual gv, Gragea gl, TableroVisual tv) {
-        grageavisual = gv;
-        grageaLogica = gl;
-        tablero = tv;
+    public GrageaVisualListener(GrageaVisual grageaVisual, Gragea grageaLogica, JuegoVisual juegoVisual) {
+        this.grageaVisual = grageaVisual;
+        this.grageaLogica = grageaLogica;
+        this.juegoVisual = juegoVisual;
     }
-
-    //Called when a mouse button or a finger touch goes down on the actor.
 
     @Override
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -28,23 +27,25 @@ public class GrageaVisualListener extends InputListener {
     @Override
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         super.touchUp(event, x, y, pointer, button);
-        if(grageavisual.getCantClicks()==0) {
+        if(!grageaVisual.isSeleccionada()) {
+            if (!juegoVisual.isHayGrageaSeleccionada()) {
+                grageaVisual.seleccionar();
+                juegoVisual.setHayGrageaSeleccionada(true);
+                juegoVisual.setPrimerGrageaX(grageaVisual.getFila());
+                juegoVisual.setPrimerGrageaY(grageaVisual.getColumna());
+            } else {
+                juegoVisual.setSegundaGrageaX(grageaVisual.getFila());
+                juegoVisual.setSegundaGrageaY(grageaVisual.getColumna());
+                if (juegoVisual.verificarAdyacentes()) {
+                    juegoVisual.intercambiarGrageas();
+                } else {
+                    Gdx.app.log("Check", "Movimiento invalido");
+                }
 
-            if (tablero.aumentarCantSeleccionadas(grageavisual.getFila(), grageavisual.getColumna())) {
-                grageavisual.getBoton().setChecked(true);
-                grageavisual.aumentarCantClicks();
-                tablero.intercambiarGrageas();
-                verificarSiSeIntercambio();
             }
-            else
-                grageavisual.getBoton().setChecked(false);
-        }
-        else if(grageavisual.getCantClicks()==1){
-            grageavisual.setCantClicksToZero();
-            //creo que la siguiente linea no es necesaria
-            grageavisual.getBoton().setChecked(false);
-            //////////////
-            tablero.disminuirCantSeleccionadas();
+        } else {
+            grageaVisual.deseleccionar();
+            juegoVisual.setHayGrageaSeleccionada(false);
         }
     }
 
@@ -53,11 +54,4 @@ public class GrageaVisualListener extends InputListener {
         super.enter(event, x, y, pointer, fromActor);
     }
 
-    public void verificarSiSeIntercambio(){
-        if(grageavisual.getSeIntercambio()) {
-            grageavisual.setCantClicksToZero();
-            grageavisual.getBoton().setChecked(false);
-            grageavisual.setSeIntercambio(false);
-        }
-    }
 }

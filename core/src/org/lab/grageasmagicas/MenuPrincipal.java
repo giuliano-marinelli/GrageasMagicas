@@ -1,8 +1,9 @@
 package org.lab.grageasmagicas;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,12 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class PrincipalVisual extends ScreenAdapter {
+public class MenuPrincipal implements Screen {
 
-    private static final float ancho = Gdx.graphics.getWidth();
-    private static final float alto = Gdx.graphics.getHeight();
+    private int anchoCamara;
+    private int altoCamara;
 
     private Stage escena;
     private Texture texturaFondo;
@@ -24,45 +25,49 @@ public class PrincipalVisual extends ScreenAdapter {
     private Texture texturaBtnOpciones;
     private Texture texturaBtnAcercaDe;
     private Texture texturaTitulo;
-    private final AssetManager assetManager = new AssetManager();
-    private static Juego juegoLogico;
+    private AssetManager assetManager;
+    private AdministradorPantalla adminPantalla;
+    private Viewport vista;
 
-    private final GrageasMagicasGame juego;
-
-    public PrincipalVisual(GrageasMagicasGame grageasmagicasjuego) {
-        juego = grageasmagicasjuego;
+    public MenuPrincipal(AdministradorPantalla adminPantalla) {
+        this.adminPantalla = adminPantalla;
+        this.anchoCamara = adminPantalla.getAnchoCamara();
+        this.altoCamara = adminPantalla.getAltoCamara();
+        this.vista = adminPantalla.getVista();
+        this.assetManager = adminPantalla.getAssetManager();
     }
 
     @Override
     public void show() {
         cargarTexturas();
-        escena = new Stage(new FitViewport(ancho, alto));
+
+        escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
 
         Image imgFondo = new Image(texturaFondo);
-        float escalaX = ancho / imgFondo.getWidth();
-        float escalaY = alto / imgFondo.getHeight();
+        float escalaX = anchoCamara / imgFondo.getWidth();
+        float escalaY = altoCamara / imgFondo.getHeight();
         imgFondo.setScale(escalaX, escalaY);
 
         escena.addActor(imgFondo);
 
         TextureRegionDrawable trBtnJugar = new TextureRegionDrawable(new TextureRegion(texturaBtnJugar));
         ImageButton btnJugar = new ImageButton(trBtnJugar);
-        btnJugar.setPosition(ancho / 2, alto * 0.6f);
+        btnJugar.setPosition(anchoCamara / 2, altoCamara * 0.6f);
         escena.addActor(btnJugar);
 
         TextureRegionDrawable trBtnOpciones = new TextureRegionDrawable(new TextureRegion(texturaBtnOpciones));
         ImageButton btnOpciones = new ImageButton(trBtnOpciones);
-        btnOpciones.setPosition(ancho / 2, alto * 0.4f);
+        btnOpciones.setPosition(anchoCamara / 2, altoCamara * 0.4f);
         escena.addActor(btnOpciones);
 
         TextureRegionDrawable trBtnAcercaDe = new TextureRegionDrawable(new TextureRegion(texturaBtnAcercaDe));
         ImageButton btnAcercaDe = new ImageButton(trBtnAcercaDe);
-        btnAcercaDe.setPosition(ancho / 2, alto * 0.2f);
+        btnAcercaDe.setPosition(anchoCamara / 2, altoCamara * 0.2f);
         escena.addActor(btnAcercaDe);
 
         Image imgTitulo = new Image(texturaTitulo);
-        imgTitulo.setPosition(ancho / 2 - imgTitulo.getWidth() / 2, alto * 0.8f);
+        imgTitulo.setPosition(anchoCamara / 2 - imgTitulo.getWidth() / 2, altoCamara * 0.8f);
 
         btnJugar.addListener(new ClickListener() {
             @Override
@@ -73,30 +78,16 @@ public class PrincipalVisual extends ScreenAdapter {
                 int cantGragea = 5;
                 int velocidad = 10;
 
-                GrageaVisual[][] matrizgrageasvisuales = new GrageaVisual[5][5];
-                juegoLogico = new Juego(ancho, alto, velocidad, cantGragea);
-                Thread juegoThread = new Thread(juegoLogico);
-                juegoThread.start();
+                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea);
 
-                Gragea[][] matrizGrageas = juegoLogico.getMatrizGrageas();
+                JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 
-                for (int i = 0; i < 5; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        matrizgrageasvisuales[i][j] = new GrageaVisual(matrizGrageas[i][j].getTipo(), i, j);
-                    }
-                }
-
-                TableroVisual tablero = new TableroVisual(matrizgrageasvisuales);
-                for (int i = 0; i < 5; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        matrizgrageasvisuales[i][j].getBoton().addListener(
-                                new GrageaVisualListener(matrizgrageasvisuales[i][j], matrizGrageas[i][j], tablero));
-                    }
-                }
+                JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual);
+                Thread juegoControladorThread = new Thread(juegoControlador);
+                juegoControladorThread.start();
 
                 dispose();
-                juego.borrarPantalla();
-                juego.setScreen(new TableroVisual(matrizgrageasvisuales));
+                adminPantalla.setScreen(juegoVisual);
             }
         });
 
@@ -118,19 +109,45 @@ public class PrincipalVisual extends ScreenAdapter {
     }
 
     public void resize(int width, int height) {
-        escena.getViewport().update(width, height, true);
+        vista.update(width, height);
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
     }
 
     public void render(float delta) {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         escena.act(delta);
+        escena.setViewport(vista);
         escena.draw();
     }
 
     public void dispose() {
+        texturaFondo.dispose();
+        texturaBtnJugar.dispose();
+        texturaBtnOpciones.dispose();
+        texturaBtnAcercaDe.dispose();
+        texturaTitulo.dispose();
         escena.dispose();
-
+        assetManager.unload("fondo.jpg");
+        assetManager.unload("jugar.png");
+        assetManager.unload("opciones.png");
+        assetManager.unload("acerca_de.png");
+        assetManager.unload("titulo.png");
     }
-
 
     private void cargarTexturas() {
         assetManager.load("fondo.jpg", Texture.class);

@@ -21,7 +21,7 @@ task dist(type: Jar) {
     from files(project.assetsDir);
  
     manifest {
-        attributes 'PrincipalVisual-Class': project.mainClassName
+        attributes 'MenuPrincipal-Class': project.mainClassName
     }
 }
 

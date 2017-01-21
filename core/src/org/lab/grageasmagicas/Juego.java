@@ -1,14 +1,14 @@
 package org.lab.grageasmagicas;
 
 import org.lab.estructuras.Point;
-import org.lab.teclado.TecladoIn;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CyclicBarrier;
+import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 /**
  * @author Bermudez Martin, Kurchan Ines, Marinelli Giuliano
  */
-public class Juego implements Runnable {
+public class Juego extends Observable implements Runnable {
 
     private final Gragea[][] matrizGrageas;
     private int velocidad;
@@ -30,7 +30,13 @@ public class Juego implements Runnable {
     private CyclicBarrier barrierCompAlto;
     private CyclicBarrier barrierCompAncho;
     private CyclicBarrier barrierElim;
+    private CyclicBarrier barrierEntradaLogico;
+    private CyclicBarrier barrierSincVisual;
     private float puntaje = 0;
+    private int primerGrageaX;
+    private int primerGrageaY;
+    private int segundaGrageaX;
+    private int segundaGrageaY;
 
     public Juego(int ancho, int alto, int velocidad, int cantGragea) {
         this.velocidad = velocidad;
@@ -91,33 +97,30 @@ public class Juego implements Runnable {
             Point grageaIni;
             Point grageaFin;
             while (!fin) {
-
                 System.out.println("\033[32mJuega\033[30m");
                 System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
                 //Imprime el juego por consola
                 System.out.println(toStringComb(matrizGrageas));
 
                 boolean sonAdy = false;
-                int gix;
-                int giy;
-                int gfx;
-                int gfy;
                 do {
                     //Permite que usuario pueda interactuar con la interfaz
-                    System.out.print("Gragea inicial XY: ");
+                    barrierEntradaLogico.await();
+                    barrierEntradaLogico.await();
+                    /*System.out.print("Gragea inicial XY: ");
                     String gi = TecladoIn.readLine();
                     System.out.print("Gragea final XY: ");
                     String gf = TecladoIn.readLine();
                     System.out.println();
-                    gix = Integer.parseInt(gi.substring(0, 1));
-                    giy = Integer.parseInt(gi.substring(1, 2));
-                    gfx = Integer.parseInt(gf.substring(0, 1));
-                    gfy = Integer.parseInt(gf.substring(1, 2));
+                    primerGrageaX = Integer.parseInt(gi.substring(0, 1));
+                    primerGrageaY = Integer.parseInt(gi.substring(1, 2));
+                    segundaGrageaX = Integer.parseInt(gf.substring(0, 1));
+                    segundaGrageaY = Integer.parseInt(gf.substring(1, 2));*/
 
-                    /*grageaIni = new Point(gix, giy);
-                    grageaFin = new Point(gfx, gfy);*/
+                    /*grageaIni = new Point(primerGrageaX, primerGrageaY);
+                    grageaFin = new Point(segundaGrageaX, segundaGrageaY);*/
                     //verificar si el movimiento de las grageas es válido.
-                    sonAdy = verificarAdyacentes(gix, giy, gfx, gfy);
+                    sonAdy = verificarAdyacentes(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
                     if (!sonAdy) {
                         System.out.println("\033[31mMovimiento no válido\033[30m \n");
                     }
@@ -125,7 +128,7 @@ public class Juego implements Runnable {
                 } while (!sonAdy);
 
                 //invertimos las grageas de lugar
-                intercambiarGrageas(gix, giy, gfx, gfy);
+                intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
 
                 //despierta a los comprobadores
                 barrierCompAncho.await();
@@ -140,14 +143,17 @@ public class Juego implements Runnable {
                 System.out.println("\033[34mGrageas intercambiadas\033[30m");
                 System.out.println(toStringComb(matrizGrageas));
 
-                System.out.println("Presione enter...");
-                TecladoIn.read();
+                setChanged();
+                notifyObservers();
+                //barrierSincVisual.await();
+                /*System.out.println("Presione enter...");
+                TecladoIn.read();*/
 
                 //si las combinaciones de grageas esta vacia significa que el intercambio esta mal hecho
                 if (grageasCombinadas.isEmpty()) {
                     System.out.println("\033[31mIntercambio de grageas incorrecto\033[30m");
                     System.out.println();
-                    intercambiarGrageas(gix, giy, gfx, gfy);
+                    intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
                 } else {
                     while (!grageasCombinadas.isEmpty()) {
                         System.out.println("\033[34mCombinacion y eliminacion de grageas: \033[30m");
@@ -178,8 +184,11 @@ public class Juego implements Runnable {
                         System.out.println();
                         System.out.println(toStringComb(matrizGrageas));
 
-                        System.out.println("Presione enter...");
-                        TecladoIn.read();
+                        setChanged();
+                        notifyObservers();
+                        //barrierSincVisual.await();
+                        /*System.out.println("Presione enter...");
+                        TecladoIn.read();*/
                     }
                 }
 
@@ -193,6 +202,11 @@ public class Juego implements Runnable {
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sincronizar() {
+        setChanged();
+        notifyObservers();
     }
 
     /**
@@ -256,8 +270,11 @@ public class Juego implements Runnable {
             //Imprime el juego por consola
             System.out.println(toStringComb(matrizGrageas));
 
-            System.out.println("Presione enter...");
-            TecladoIn.read();
+            setChanged();
+            notifyObservers();
+            //barrierSincVisual.await();
+            /*System.out.println("Presione enter...");
+            TecladoIn.read();*/
 
             while (!grageasCombinadas.isEmpty()) {
 
@@ -289,8 +306,11 @@ public class Juego implements Runnable {
                 System.out.println();
                 System.out.println(toStringComb(matrizGrageas));
 
-                System.out.println("Presione enter...");
-                TecladoIn.read();
+                setChanged();
+                notifyObservers();
+                //barrierSincVisual.await();
+                /*System.out.println("Presione enter...");
+                TecladoIn.read();*/
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Juego.class.getName()).log(Level.SEVERE, null, ex);
@@ -529,5 +549,60 @@ public class Juego implements Runnable {
         res = (res && (gix >= 0) && (gix <= matrizGrageas.length - 1) && (gfx >= 0) && (gfx <= matrizGrageas.length - 1)
                 && (giy >= 0) && (giy <= matrizGrageas[0].length - 1) && (gfy >= 0) && (gfy <= matrizGrageas.length - 1));
         return res;
+    }
+
+    public CyclicBarrier getBarrierEntradaLogico() {
+        return barrierEntradaLogico;
+    }
+
+    public void setBarrierEntradaLogico(CyclicBarrier barrierEntradaLogico) {
+        this.barrierEntradaLogico = barrierEntradaLogico;
+    }
+
+    public CyclicBarrier getBarrierSincVisual() {
+        return barrierSincVisual;
+    }
+
+    public void setBarrierSincVisual(CyclicBarrier barrierSincVisual) {
+        this.barrierSincVisual = barrierSincVisual;
+    }
+
+    public void setIntercambioGrageas(int gix, int giy, int gfx, int gfy) {
+        this.primerGrageaX = gix;
+        this.primerGrageaY = giy;
+        this.segundaGrageaX = gfx;
+        this.segundaGrageaY = gfy;
+    }
+
+    public int getPrimerGrageaX() {
+        return primerGrageaX;
+    }
+
+    public void setPrimerGrageaX(int primerGrageaX) {
+        this.primerGrageaX = primerGrageaX;
+    }
+
+    public int getPrimerGrageaY() {
+        return primerGrageaY;
+    }
+
+    public void setPrimerGrageaY(int primerGrageaY) {
+        this.primerGrageaY = primerGrageaY;
+    }
+
+    public int getSegundaGrageaX() {
+        return segundaGrageaX;
+    }
+
+    public void setSegundaGrageaX(int segundaGrageaX) {
+        this.segundaGrageaX = segundaGrageaX;
+    }
+
+    public int getSegundaGrageaY() {
+        return segundaGrageaY;
+    }
+
+    public void setSegundaGrageaY(int segundaGrageaY) {
+        this.segundaGrageaY = segundaGrageaY;
     }
 }
