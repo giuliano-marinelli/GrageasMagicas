@@ -23,29 +23,31 @@ public class GrageaVisualListener extends InputListener {
         return true;
     }
 
-    // Este es el metodo que llama cuando se aprieta el boton con el dedo(equivalente a un click)
     @Override
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         super.touchUp(event, x, y, pointer, button);
-        if(!grageaVisual.isSeleccionada()) {
-            if (!juegoVisual.isHayGrageaSeleccionada()) {
-                grageaVisual.seleccionar();
-                juegoVisual.setHayGrageaSeleccionada(true);
-                juegoVisual.setPrimerGrageaX(grageaVisual.getFila());
-                juegoVisual.setPrimerGrageaY(grageaVisual.getColumna());
-            } else {
-                juegoVisual.setSegundaGrageaX(grageaVisual.getFila());
-                juegoVisual.setSegundaGrageaY(grageaVisual.getColumna());
-                if (juegoVisual.verificarAdyacentes()) {
-                    juegoVisual.intercambiarGrageas();
+        if (juegoVisual.isInputHabilitado()) {
+            if (!grageaVisual.isSeleccionada()) {
+                if (!juegoVisual.isHayGrageaSeleccionada()) {
+                    grageaVisual.seleccionar();
+                    juegoVisual.setHayGrageaSeleccionada(true);
+                    juegoVisual.setPrimerGrageaX(grageaVisual.getFila());
+                    juegoVisual.setPrimerGrageaY(grageaVisual.getColumna());
                 } else {
-                    Gdx.app.log("Check", "Movimiento invalido");
+                    juegoVisual.setInputHabilitado(false);
+                    juegoVisual.setSegundaGrageaX(grageaVisual.getFila());
+                    juegoVisual.setSegundaGrageaY(grageaVisual.getColumna());
+                    if (juegoVisual.verificarAdyacentes()) {
+                        juegoVisual.intercambiarGrageas();
+                    } else {
+                        Gdx.app.log("Check", "Movimiento invalido");
+                        juegoVisual.setInputHabilitado(true);
+                    }
                 }
-
+            } else {
+                grageaVisual.deseleccionar();
+                juegoVisual.setHayGrageaSeleccionada(false);
             }
-        } else {
-            grageaVisual.deseleccionar();
-            juegoVisual.setHayGrageaSeleccionada(false);
         }
     }
 

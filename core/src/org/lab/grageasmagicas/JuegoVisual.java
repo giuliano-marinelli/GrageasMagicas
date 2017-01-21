@@ -3,6 +3,7 @@ package org.lab.grageasmagicas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -29,19 +30,16 @@ public class JuegoVisual implements Screen, Observer {
     private int segundaGrageaY;
     private int anchoCamara;
     private int altoCamara;
-    private CyclicBarrier barrierRespuestaVisual;
-    private CyclicBarrier barrierSincVisual;
-    private Table tblTablero;
+    private boolean inputHabilitado;
+    private GrageaVisual[][] matrizGrageasVisuales;
     private AdministradorPantalla adminPantalla;
+    private AssetManager assetManager;
     private Viewport vista;
     private Stage escena;
-    private GrageaVisual[][] matrizGrageasVisuales;
-    private AssetManager assetManager;
-
+    private CyclicBarrier barrierRespuestaVisual;
+    private Table tblTablero;
     private Texture texturaFondo;
     private Texture texturaGragea;
-    private Texture texturaGrageaSeleccionada;
-    private TextureRegionDrawable trFondo;
     private Juego juegoLogico;
 
     public JuegoVisual(AdministradorPantalla adminPantalla) {
@@ -50,25 +48,80 @@ public class JuegoVisual implements Screen, Observer {
         this.altoCamara = adminPantalla.getAltoCamara();
         this.vista = adminPantalla.getVista();
         this.assetManager = adminPantalla.getAssetManager();
+        this.inputHabilitado = false;
 
         cargarTexturas();
-        trFondo = new TextureRegionDrawable(new TextureRegion(texturaFondo));
+
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
     }
 
     public void cargarTexturas() {
         assetManager.load("fondogolosinas.png", Texture.class);
-        assetManager.load("caramelo.png", Texture.class);
-        assetManager.load("carameloSeleccionado.png", Texture.class);
+        assetManager.load("gragea.png", Texture.class);
         assetManager.finishLoading();
         texturaFondo = assetManager.get("fondogolosinas.png");
-        texturaGragea = assetManager.get("caramelo.png");
-        texturaGrageaSeleccionada = assetManager.get("carameloSeleccionado.png");
+        texturaGragea = assetManager.get("gragea.png");
     }
 
+    @Override
     public void resize(int width, int height) {
         vista.update(width, height);
+    }
+
+    @Override
+    public void show() {
+        if (juegoLogico != null) {
+            Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
+            int cantColumnas = matrizGrageasLogica[0].length;
+            int cantFilas = matrizGrageasLogica.length;
+            if (matrizGrageasVisuales == null) {
+                matrizGrageasVisuales = new GrageaVisual[cantFilas][cantColumnas];
+                tblTablero = new Table();
+                tblTablero.background(new TextureRegionDrawable(new TextureRegion(texturaFondo)));
+                tblTablero.setColor(Color.GOLD);
+            }
+            for (int i = 0; i < cantFilas; i++) {
+                for (int j = 0; j < cantColumnas; j++) {
+                    matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), i, j, texturaGragea);
+                    matrizGrageasVisuales[i][j].addListener(new GrageaVisualListener(matrizGrageasVisuales[i][j],
+                            matrizGrageasLogica[i][j], this));
+                }
+            }
+            tblTablero.clear();
+            tblTablero.row();
+            for (int i = 0; i < cantFilas; i++) {
+                for (int j = 0; j < cantColumnas; j++) {
+                    tblTablero.add(matrizGrageasVisuales[i][j]);
+                }
+                tblTablero.row();
+            }
+
+            tblTablero.padBottom(5f);
+            tblTablero.setFillParent(true);
+            //tblTablero.pack();
+            escena.addActor(tblTablero);
+            //barrierSincVisual.await();
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void render(float delta) {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        escena.act(delta);
+        escena.setViewport(vista);
+        escena.draw();
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        juegoLogico = (Juego) observable;
+        show();
     }
 
     @Override
@@ -90,69 +143,14 @@ public class JuegoVisual implements Screen, Observer {
     public void dispose() {
         texturaFondo.dispose();
         texturaGragea.dispose();
-        texturaGrageaSeleccionada.dispose();
         escena.dispose();
         assetManager.unload("fondogolosinas.png");
-        assetManager.unload("caramelo.png");
-        assetManager.unload("carameloSeleccionado.png");
-    }
-
-    @Override
-    public void show() {
-        if (juegoLogico != null) {
-            Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
-            int cantColumnas = matrizGrageasLogica[0].length;
-            int cantFilas = matrizGrageasLogica.length;
-            if (matrizGrageasVisuales == null) {
-                matrizGrageasVisuales = new GrageaVisual[cantFilas][cantColumnas];
-                tblTablero = new Table();
-                tblTablero.background(trFondo);
-            }
-            for (int i = 0; i < cantFilas; i++) {
-                for (int j = 0; j < cantColumnas; j++) {
-                    matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), i, j, texturaGragea, texturaGrageaSeleccionada);
-                    matrizGrageasVisuales[i][j].getBtnGragea().addListener(new GrageaVisualListener(matrizGrageasVisuales[i][j],
-                            matrizGrageasLogica[i][j], this));
-                }
-            }
-            tblTablero.clear();
-            tblTablero.row();
-            for (int i = 0; i < cantFilas; i++) {
-                for (int j = 0; j < cantColumnas; j++) {
-                    tblTablero.add(matrizGrageasVisuales[i][j].getBtnGragea());
-                }
-                tblTablero.row();
-            }
-
-            tblTablero.padBottom(5f);
-            tblTablero.setFillParent(true);
-            //tblTablero.pack();
-            escena.addActor(tblTablero);
-            //barrierSincVisual.await();
-            try {
-                sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        escena.act(delta);
-        escena.setViewport(vista);
-        escena.draw();
-    }
-
-    @Override
-    public void update(Observable observable, Object o) {
-        juegoLogico = (Juego) observable;
-        show();
+        assetManager.unload("gragea.png");
     }
 
     public void intercambiarGrageas() {
         try {
+
             //Intercambiamos las grageas visuales en la matriz
             GrageaVisual aux = matrizGrageasVisuales[segundaGrageaX][segundaGrageaY];
             matrizGrageasVisuales[segundaGrageaX][segundaGrageaY] = matrizGrageasVisuales[primerGrageaX][primerGrageaY];
@@ -161,10 +159,10 @@ public class JuegoVisual implements Screen, Observer {
             matrizGrageasVisuales[primerGrageaX][primerGrageaY].deseleccionar();
 
             //Botones de las GrageasVisuales
-            ImageButton primeraSeleccionada = matrizGrageasVisuales[primerGrageaX][primerGrageaY].getBtnGragea();
-            ImageButton segundaSeleccionada = matrizGrageasVisuales[segundaGrageaX][segundaGrageaY].getBtnGragea();
+            GrageaVisual primeraSeleccionada = matrizGrageasVisuales[primerGrageaX][primerGrageaY];
+            GrageaVisual segundaSeleccionada = matrizGrageasVisuales[segundaGrageaX][segundaGrageaY];
 
-            //Intercambia la posicion de los botones correspondientes a las GrageasVisuales
+            //Intercambia la posicion en pantalla de las GrageasVisuales
             float primeraPosicionX = primeraSeleccionada.getX();
             float primeraPosicionY = primeraSeleccionada.getY();
             primeraSeleccionada.setPosition(segundaSeleccionada.getX(), segundaSeleccionada.getY());
@@ -207,14 +205,6 @@ public class JuegoVisual implements Screen, Observer {
         this.barrierRespuestaVisual = barrierRespuestaVisual;
     }
 
-    public CyclicBarrier getBarrierSincVisual() {
-        return barrierSincVisual;
-    }
-
-    public void setBarrierSincVisual(CyclicBarrier barrierSincVisual) {
-        this.barrierSincVisual = barrierSincVisual;
-    }
-
     public int getPrimerGrageaX() {
         return primerGrageaX;
     }
@@ -245,6 +235,14 @@ public class JuegoVisual implements Screen, Observer {
 
     public void setSegundaGrageaY(int segundaGrageaY) {
         this.segundaGrageaY = segundaGrageaY;
+    }
+
+    public boolean isInputHabilitado() {
+        return inputHabilitado;
+    }
+
+    public void setInputHabilitado(boolean inputHabilitado) {
+        this.inputHabilitado = inputHabilitado;
     }
 
 }

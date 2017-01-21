@@ -30,8 +30,7 @@ public class Juego extends Observable implements Runnable {
     private CyclicBarrier barrierCompAlto;
     private CyclicBarrier barrierCompAncho;
     private CyclicBarrier barrierElim;
-    private CyclicBarrier barrierEntradaLogico;
-    private CyclicBarrier barrierSincVisual;
+    private CyclicBarrier barrierEntrada;
     private float puntaje = 0;
     private int primerGrageaX;
     private int primerGrageaY;
@@ -102,11 +101,14 @@ public class Juego extends Observable implements Runnable {
                 //Imprime el juego por consola
                 System.out.println(toStringComb(matrizGrageas));
 
+                setChanged();
+                notifyObservers();
+
                 boolean sonAdy = false;
                 do {
                     //Permite que usuario pueda interactuar con la interfaz
-                    barrierEntradaLogico.await();
-                    barrierEntradaLogico.await();
+                    barrierEntrada.await();
+                    barrierEntrada.await();
                     /*System.out.print("Gragea inicial XY: ");
                     String gi = TecladoIn.readLine();
                     System.out.print("Gragea final XY: ");
@@ -145,7 +147,6 @@ public class Juego extends Observable implements Runnable {
 
                 setChanged();
                 notifyObservers();
-                //barrierSincVisual.await();
                 /*System.out.println("Presione enter...");
                 TecladoIn.read();*/
 
@@ -186,7 +187,6 @@ public class Juego extends Observable implements Runnable {
 
                         setChanged();
                         notifyObservers();
-                        //barrierSincVisual.await();
                         /*System.out.println("Presione enter...");
                         TecladoIn.read();*/
                     }
@@ -272,7 +272,6 @@ public class Juego extends Observable implements Runnable {
 
             setChanged();
             notifyObservers();
-            //barrierSincVisual.await();
             /*System.out.println("Presione enter...");
             TecladoIn.read();*/
 
@@ -308,7 +307,6 @@ public class Juego extends Observable implements Runnable {
 
                 setChanged();
                 notifyObservers();
-                //barrierSincVisual.await();
                 /*System.out.println("Presione enter...");
                 TecladoIn.read();*/
             }
@@ -551,20 +549,12 @@ public class Juego extends Observable implements Runnable {
         return res;
     }
 
-    public CyclicBarrier getBarrierEntradaLogico() {
-        return barrierEntradaLogico;
+    public CyclicBarrier getBarrierEntrada() {
+        return barrierEntrada;
     }
 
-    public void setBarrierEntradaLogico(CyclicBarrier barrierEntradaLogico) {
-        this.barrierEntradaLogico = barrierEntradaLogico;
-    }
-
-    public CyclicBarrier getBarrierSincVisual() {
-        return barrierSincVisual;
-    }
-
-    public void setBarrierSincVisual(CyclicBarrier barrierSincVisual) {
-        this.barrierSincVisual = barrierSincVisual;
+    public void setBarrierEntrada(CyclicBarrier barrierEntrada) {
+        this.barrierEntrada = barrierEntrada;
     }
 
     public void setIntercambioGrageas(int gix, int giy, int gfx, int gfy) {

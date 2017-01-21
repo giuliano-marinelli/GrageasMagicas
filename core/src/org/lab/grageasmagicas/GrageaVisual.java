@@ -2,44 +2,63 @@ package org.lab.grageasmagicas;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 
-public class GrageaVisual {
+public class GrageaVisual extends Actor {
 
     private int tipo;
-    private ImageButton btnGragea;
     private int fila;
     private int columna;
     private boolean seleccionada;
-    private Texture texturaBtnGrageaSeleccionada;
-    private Texture texturaBtnGragea;
-    private Button.ButtonStyle grageaStyle;
 
-    public GrageaVisual(int tipo, int fila, int columna, Texture texturaBtnGragea, Texture texturaBtnGrageaSeleccionada) {
+    private TextureRegion grafico;
+
+    public GrageaVisual(int tipo, int fila, int columna, Texture texturaBtnGragea) {
         this.tipo = tipo;
         this.fila = fila;
         this.columna = columna;
-        this.texturaBtnGrageaSeleccionada = texturaBtnGrageaSeleccionada;
-        this.texturaBtnGragea = texturaBtnGragea;
+        this.grafico = new TextureRegion(texturaBtnGragea);
         seleccionada = false;
-        TextureRegionDrawable trBtnGragea = new TextureRegionDrawable(new TextureRegion(texturaBtnGragea));
-
-
-        Button.ButtonStyle grageaStyle = new Button.ButtonStyle();
-        grageaStyle.up = new TextureRegionDrawable(new TextureRegion(texturaBtnGragea));
-        grageaStyle.down = new TextureRegionDrawable(new TextureRegion(texturaBtnGrageaSeleccionada));
-        grageaStyle.checked = new TextureRegionDrawable(new TextureRegion(texturaBtnGrageaSeleccionada));
-        ImageButton.ImageButtonStyle btnStyle = new ImageButton.ImageButtonStyle(grageaStyle);
-
-        btnGragea = new ImageButton(btnStyle);
+        setSize(128, 96);
+        setTouchable(Touchable.enabled);
+        switch (tipo) {
+            case 0:
+                setColor(Color.RED);
+                break;
+            case 1:
+                setColor(Color.GREEN);
+                break;
+            case 2:
+                setColor(Color.YELLOW);
+                break;
+            case 3:
+                setColor(Color.BLUE);
+                break;
+            case 4:
+                setColor(Color.PURPLE);
+                break;
+            default:
+                setColor(Color.LIGHT_GRAY);
+                break;
+        }
+        setColor(getColor().r, getColor().g, getColor().b, 0.8f);
     }
 
-    public ImageButton getBtnGragea() {
-        return btnGragea;
+    @Override
+    public void draw(Batch batch, float alpha) {
+        Color color = getColor();
+        batch.setColor(color.r, color.g, color.b, color.a * alpha);
+        batch.draw(grafico, getX(), getY(), getOriginX(), getOriginY(),
+                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
     }
 
     public int getFila() {
@@ -56,14 +75,16 @@ public class GrageaVisual {
 
     public void seleccionar() {
         this.seleccionada = true;
-        btnGragea.setChecked(true);
-        btnGragea.setColor(Color.BLUE);
+        setPosition(getX() - 10, getY() - 10);
+        setColor(getColor().r, getColor().g, getColor().b, 1);
+        setSize(138, 106);
     }
 
     public void deseleccionar() {
         this.seleccionada = false;
-        btnGragea.setChecked(false);
-        btnGragea.setColor(Color.RED);
+        setPosition(getX() + 10, getY() + 10);
+        setColor(getColor().r, getColor().g, getColor().b, 0.8f);
+        setSize(128, 96);
     }
 
     public void setFila(int nuevaFila) {

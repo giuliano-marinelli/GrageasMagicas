@@ -9,16 +9,13 @@ public class JuegoControlador implements Runnable {
     private JuegoVisual juegoVisual;
     private CyclicBarrier barrierEntradaLogico = new CyclicBarrier(2);
     private CyclicBarrier barrierRespuestaVisual = new CyclicBarrier(2);
-    private CyclicBarrier barrierSincVisual = new CyclicBarrier(2);
 
     public JuegoControlador(Juego juegoLogico, JuegoVisual juegoVisual) {
         this.juegoLogico = juegoLogico;
         this.juegoVisual = juegoVisual;
 
-        juegoLogico.setBarrierEntradaLogico(barrierEntradaLogico);
-        juegoLogico.setBarrierSincVisual(barrierSincVisual);
+        juegoLogico.setBarrierEntrada(barrierEntradaLogico);
         juegoVisual.setBarrierRespuestaVisual(barrierRespuestaVisual);
-        juegoVisual.setBarrierSincVisual(barrierSincVisual);
 
 
         Thread juegoLogicoThread = new Thread(juegoLogico);
@@ -35,7 +32,9 @@ public class JuegoControlador implements Runnable {
         while (true) {
             try {
                 barrierEntradaLogico.await();
+                juegoVisual.setInputHabilitado(true);
                 barrierRespuestaVisual.await();
+                juegoVisual.setInputHabilitado(false);
                 juegoLogico.setIntercambioGrageas(juegoVisual.getPrimerGrageaX(), juegoVisual.getPrimerGrageaY(),
                         juegoVisual.getSegundaGrageaX(), juegoVisual.getSegundaGrageaY());
                 barrierEntradaLogico.await();
