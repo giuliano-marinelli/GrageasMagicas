@@ -1,6 +1,7 @@
 package org.lab.grageasmagicas;
 
 import org.lab.estructuras.Point;
+import org.lab.teclado.TecladoIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class Juego extends Observable implements Runnable {
     private int velocidad;
     private int cantGragea;
     private boolean pausa = false;
-    private boolean fin = false;
+    private boolean finJuego = false;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
     private Comprobador[] comprobadorAlto;
     private Comprobador[] comprobadorAncho;
@@ -36,6 +37,8 @@ public class Juego extends Observable implements Runnable {
     private int primerGrageaY;
     private int segundaGrageaX;
     private int segundaGrageaY;
+    private PatronControlador controladorJugada;
+    private CyclicBarrier barrierVerificarJugada;
 
     public Juego(int ancho, int alto, int velocidad, int cantGragea) {
         this.velocidad = velocidad;
@@ -44,7 +47,6 @@ public class Juego extends Observable implements Runnable {
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
-
         matrizGrageas = new Gragea[alto][ancho];
         comprobadorAlto = new Comprobador[alto];
         comprobadorAncho = new Comprobador[ancho];
@@ -61,7 +63,10 @@ public class Juego extends Observable implements Runnable {
         }
 
         //cargarMatrizDefault(matrizGrageas);
-
+        barrierVerificarJugada = new CyclicBarrier(2);
+        controladorJugada = new PatronControlador(matrizGrageas, barrierVerificarJugada);
+        Thread tControlador = new Thread(controladorJugada);
+        tControlador.start();
         barrierCompAlto = new CyclicBarrier(alto + 1);
 
         //crea y lanza los comprobadores
@@ -99,7 +104,21 @@ public class Juego extends Observable implements Runnable {
 
             Point grageaIni;
             Point grageaFin;
-            while (!fin) {
+            //habilita a controladorJugada a verificar si existe jugada posible
+            barrierVerificarJugada.await();
+            //espera que el verificador termine
+            barrierVerificarJugada.await();
+            //cuando el verificador termina revisa si existe jugada
+            if (!controladorJugada.existeJugada()) {
+                finJuego = true;
+                System.out.println("No queda ningún movimiento posible!");
+                //avisa al controlador que el juego termina
+                controladorJugada.setFinJuego(true);
+            }
+            //habilita al controladorJugada para que termine de ejecutarse.
+            barrierVerificarJugada.await();
+
+            while (!finJuego) {
                 System.out.println("\033[32mJuega\033[30m");
                 System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
                 //Imprime el juego por consola
@@ -111,9 +130,9 @@ public class Juego extends Observable implements Runnable {
                 boolean sonAdy = false;
                 do {
                     //Permite que usuario pueda interactuar con la interfaz
-                    barrierEntrada.await();
-                    barrierEntrada.await();
-                    /*System.out.print("Gragea inicial XY: ");
+                    // barrierEntrada.await();
+                    // barrierEntrada.await();
+                    System.out.print("Gragea inicial XY: ");
                     String gi = TecladoIn.readLine();
                     System.out.print("Gragea final XY: ");
                     String gf = TecladoIn.readLine();
@@ -121,7 +140,7 @@ public class Juego extends Observable implements Runnable {
                     primerGrageaX = Integer.parseInt(gi.substring(0, 1));
                     primerGrageaY = Integer.parseInt(gi.substring(1, 2));
                     segundaGrageaX = Integer.parseInt(gf.substring(0, 1));
-                    segundaGrageaY = Integer.parseInt(gf.substring(1, 2));*/
+                    segundaGrageaY = Integer.parseInt(gf.substring(1, 2));
 
                     /*grageaIni = new Point(primerGrageaX, primerGrageaY);
                     grageaFin = new Point(segundaGrageaX, segundaGrageaY);*/
@@ -130,7 +149,7 @@ public class Juego extends Observable implements Runnable {
                     if (!sonAdy) {
                         System.out.println("\033[31mMovimiento no válido\033[30m \n");
                     }
-
+                    //mientras que la jugada no involucre posiciones adyacentes seguirá pidiendo los valores.
                 } while (!sonAdy);
 
                 //invertimos las grageas de lugar
@@ -201,6 +220,22 @@ public class Juego extends Observable implements Runnable {
                 if (pausa) {
                     dormir();
                 }
+                //habilita a controladorJugada a verificar si existe jugada posible
+                barrierVerificarJugada.await();
+                //espera que el verificador termine
+                barrierVerificarJugada.await();
+                //cuando el verificador termina revisa si existe jugada
+                if (!controladorJugada.existeJugada()) {
+                    finJuego = true;
+                    System.out.println("No queda ningún movimiento posible!");
+                    //avisa al controlador que el juego termina
+                    controladorJugada.setFinJuego(true);
+                }
+                //habilita al controladorJugada para que termine de ejecutarse.
+                barrierVerificarJugada.await();
+            }
+            if (finJuego) {
+                System.out.println("terminó el juego!");
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Juego.class.getName()).log(Level.SEVERE, null, ex);
@@ -416,10 +451,10 @@ public class Juego extends Observable implements Runnable {
     }
 
     /**
-     * Termina el hilo, seteando fin en true.
+     * Termina el hilo, seteando finJuego en true.
      */
     public void terminar() {
-        this.fin = true;
+        this.finJuego = true;
         System.out.println("\033[34mFIN\033[30m \n");
     }
 
