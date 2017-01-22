@@ -5,12 +5,12 @@ import java.util.concurrent.CyclicBarrier;
 
 public class JuegoControlador implements Runnable {
 
-    private Juego juegoLogico;
-    private JuegoVisual juegoVisual;
+    private org.lab.grageasmagicas.parte_logica.Juego juegoLogico;
+    private org.lab.grageasmagicas.parte_visual.JuegoVisual juegoVisual;
     private CyclicBarrier barrierEntradaLogico = new CyclicBarrier(2);
     private CyclicBarrier barrierRespuestaVisual = new CyclicBarrier(2);
 
-    public JuegoControlador(Juego juegoLogico, JuegoVisual juegoVisual) {
+    public JuegoControlador(org.lab.grageasmagicas.parte_logica.Juego juegoLogico, org.lab.grageasmagicas.parte_visual.JuegoVisual juegoVisual) {
         this.juegoLogico = juegoLogico;
         this.juegoVisual = juegoVisual;
 

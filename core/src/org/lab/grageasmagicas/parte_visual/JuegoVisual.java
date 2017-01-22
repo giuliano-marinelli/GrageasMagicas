@@ -1,4 +1,4 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -39,7 +39,7 @@ public class JuegoVisual implements Screen, Observer {
     private int anchoCamara;
     private int altoCamara;
     private boolean inputHabilitado;
-    private GrageaVisual[][] matrizGrageasVisuales;
+    private org.lab.grageasmagicas.parte_visual.GrageaVisual[][] matrizGrageasVisuales;
     private AdministradorPantalla adminPantalla;
     private AssetManager assetManager;
     private Viewport vista;
@@ -48,7 +48,7 @@ public class JuegoVisual implements Screen, Observer {
     private Table tblTablero;
     private Texture texturaFondo;
     private Texture texturaGragea;
-    private Juego juegoLogico;
+    private org.lab.grageasmagicas.parte_logica.Juego juegoLogico;
 
     public JuegoVisual(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
@@ -86,15 +86,15 @@ public class JuegoVisual implements Screen, Observer {
     public void show() {
         try {
             if (juegoLogico != null) {
-                Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
+                org.lab.grageasmagicas.parte_logica.Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
                 int cantColumnas = matrizGrageasLogica[0].length;
                 int cantFilas = matrizGrageasLogica.length;
                 if (matrizGrageasVisuales == null) {
-                    matrizGrageasVisuales = new GrageaVisual[cantFilas][cantColumnas];
+                    matrizGrageasVisuales = new org.lab.grageasmagicas.parte_visual.GrageaVisual[cantFilas][cantColumnas];
                 }
                 if (juegoLogico.getPrimerGrageaX() != -1) {
-                    GrageaVisual priGragea = matrizGrageasVisuales[juegoLogico.getPrimerGrageaX()][juegoLogico.getPrimerGrageaY()];
-                    GrageaVisual segGragea = matrizGrageasVisuales[juegoLogico.getSegundaGrageaX()][juegoLogico.getSegundaGrageaY()];
+                    org.lab.grageasmagicas.parte_visual.GrageaVisual priGragea = matrizGrageasVisuales[juegoLogico.getPrimerGrageaX()][juegoLogico.getPrimerGrageaY()];
+                    org.lab.grageasmagicas.parte_visual.GrageaVisual segGragea = matrizGrageasVisuales[juegoLogico.getSegundaGrageaX()][juegoLogico.getSegundaGrageaY()];
                     //System.out.println(priGragea.getX() + "," + priGragea.getY());
                     //System.out.println(segGragea.getX() + "," + segGragea.getY());
                     priGragea.addAction(Actions.moveTo
@@ -117,8 +117,8 @@ public class JuegoVisual implements Screen, Observer {
                             posXNuevaGrageaVisual = matrizGrageasVisuales[i][j].getX();
                             posYNuevaGrageaVisual = matrizGrageasVisuales[i][j].getY();
                         }
-                        matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), i, j, texturaGragea);
-                        matrizGrageasVisuales[i][j].addListener(new GrageaVisualListener(matrizGrageasVisuales[i][j],
+                        matrizGrageasVisuales[i][j] = new org.lab.grageasmagicas.parte_visual.GrageaVisual(matrizGrageasLogica[i][j].getTipo(), i, j, texturaGragea);
+                        matrizGrageasVisuales[i][j].addListener(new org.lab.grageasmagicas.parte_visual.GrageaVisualListener(matrizGrageasVisuales[i][j],
                                 matrizGrageasLogica[i][j], this));
                         tblTablero.add(matrizGrageasVisuales[i][j]);
                         if (fueEliminada) {
@@ -152,8 +152,8 @@ public class JuegoVisual implements Screen, Observer {
         }
     }
 
-    public void eliminadorVisual(Juego juegoLogico) {
-        Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
+    public void eliminadorVisual(org.lab.grageasmagicas.parte_logica.Juego juegoLogico) {
+        org.lab.grageasmagicas.parte_logica.Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
         CopyOnWriteArrayList<Point> grageasCombinadas = juegoLogico.getGrageasCombinadas();
         int cantColumnas = matrizGrageasLogica[0].length;
         int cantFilas = matrizGrageasLogica.length;
@@ -184,7 +184,7 @@ public class JuegoVisual implements Screen, Observer {
                                 (matrizGrageasVisuales[i + bajar][j].getX(), matrizGrageasVisuales[i + bajar][j].getY(),
                                         0.5f, Interpolation.bounceOut));
                         matrizGrageasVisuales[i + bajar][j].setPosition(posXAnt, posYAnt);
-                        GrageaVisual aux = matrizGrageasVisuales[i][j];
+                        org.lab.grageasmagicas.parte_visual.GrageaVisual aux = matrizGrageasVisuales[i][j];
                         matrizGrageasVisuales[i][j] = matrizGrageasVisuales[i + bajar][j];
                         matrizGrageasVisuales[i + bajar][j] = aux;
                     }
@@ -203,7 +203,7 @@ public class JuegoVisual implements Screen, Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        juegoLogico = (Juego) observable;
+        juegoLogico = (org.lab.grageasmagicas.parte_logica.Juego) observable;
         show();
     }
 
@@ -292,11 +292,11 @@ public class JuegoVisual implements Screen, Observer {
         this.inputHabilitado = inputHabilitado;
     }
 
-    public GrageaVisual[][] getMatrizGrageasVisuales() {
+    public org.lab.grageasmagicas.parte_visual.GrageaVisual[][] getMatrizGrageasVisuales() {
         return matrizGrageasVisuales;
     }
 
-    public void setMatrizGrageasVisuales(GrageaVisual[][] matrizGrageasVisuales) {
+    public void setMatrizGrageasVisuales(org.lab.grageasmagicas.parte_visual.GrageaVisual[][] matrizGrageasVisuales) {
         this.matrizGrageasVisuales = matrizGrageasVisuales;
     }
 }

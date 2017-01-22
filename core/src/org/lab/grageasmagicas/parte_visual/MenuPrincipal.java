@@ -1,4 +1,4 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import org.lab.grageasmagicas.*;
 
 public class MenuPrincipal implements Screen {
 
@@ -78,9 +80,9 @@ public class MenuPrincipal implements Screen {
                 int cantGragea = 5;
                 int velocidad = 10;
 
-                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea);
+                org.lab.grageasmagicas.parte_logica.Juego juegoLogico = new org.lab.grageasmagicas.parte_logica.Juego(ancho, alto, velocidad, cantGragea);
 
-                JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
+                org.lab.grageasmagicas.parte_visual.JuegoVisual juegoVisual = new org.lab.grageasmagicas.parte_visual.JuegoVisual(adminPantalla);
 
                 JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual);
                 Thread juegoControladorThread = new Thread(juegoControlador);

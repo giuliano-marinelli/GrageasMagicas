@@ -1,4 +1,4 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_logica;
 
 import org.lab.estructuras.Point;
 
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * @author Bermudez Martin, Kurchan Ines, Marinelli Giuliano
  */
-public class ComprobadorAncho extends Comprobador {
+public class ComprobadorAncho extends org.lab.grageasmagicas.parte_logica.Comprobador {
 
     public ComprobadorAncho(Gragea[][] matrizGrageas, int seccion, CopyOnWriteArrayList grageasCombinadas, CyclicBarrier finComp) {
         super(matrizGrageas, seccion, grageasCombinadas, finComp);

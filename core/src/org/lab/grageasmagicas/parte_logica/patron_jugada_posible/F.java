@@ -1,23 +1,20 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_logica.patron_jugada_posible;
 
 import org.lab.estructuras.Point;
+import org.lab.grageasmagicas.parte_logica.Gragea;
 
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created by Bermu on 22/01/2017.
- */
-
-/**
- * Forma del patron: 0 es el elemento buscado.
- * |0x|
+ * Forma del patron: 0 es el elemento buscado
  * |x0|
  * |0x|
+ * |x0|
  */
-public class G extends Patron {
+public class F extends Patron {
 
-    public G(AtomicBoolean hayJugada, Gragea[][] matrizGragea, int alto, int ancho, CyclicBarrier barrierFinPatrones) {
+    public F(AtomicBoolean hayJugada, Gragea[][] matrizGragea, int alto, int ancho, CyclicBarrier barrierFinPatrones) {
         super(hayJugada, matrizGragea, barrierFinPatrones);
         Point pos;
         //cada Patron calcula que posiciones debe verificar
@@ -33,11 +30,11 @@ public class G extends Patron {
 
     @Override
     protected boolean verificarPatron(int x, int y) {
-        boolean res;
-        res = ((matrizGragea[x][y].getTipo() == matrizGragea[x + 1][y + 1].getTipo()) &&
-                (matrizGragea[x][y].getTipo() == matrizGragea[x + 2][y].getTipo()));
-       /* if (res) {
-            System.out.println("G detecto movimiento en " + x + "," + y);
+        boolean res = false;
+        res = ((matrizGragea[x][y + 1].getTipo() == matrizGragea[x + 1][y].getTipo()) &&
+                (matrizGragea[x][y + 1].getTipo() == matrizGragea[x + 2][y + 1].getTipo()));
+        /*if (res) {
+            System.out.println("F detecto movimiento en " + x + "," + y);
         }*/
         return res;
     }

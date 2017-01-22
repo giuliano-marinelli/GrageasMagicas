@@ -1,6 +1,4 @@
-package org.lab.grageasmagicas;
-
-import org.lab.teclado.TecladoIn;
+package org.lab.grageasmagicas.parte_logica;
 
 /**
  * @author Bermudez Martin, Kurchan Ines, Marinelli Giuliano

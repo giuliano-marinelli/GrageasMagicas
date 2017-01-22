@@ -1,4 +1,4 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_logica;
 
 import org.lab.estructuras.Point;
 

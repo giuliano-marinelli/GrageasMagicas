@@ -1,6 +1,7 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_logica.patron_jugada_posible;
 
 import org.lab.estructuras.Point;
+import org.lab.grageasmagicas.parte_logica.Gragea;
 
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;

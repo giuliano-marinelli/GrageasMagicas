@@ -1,4 +1,4 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,10 +10,10 @@ import java.util.concurrent.BrokenBarrierException;
 public class GrageaVisualListener extends InputListener {
 
     public GrageaVisual grageaVisual;
-    public Gragea grageaLogica;
+    public org.lab.grageasmagicas.parte_logica.Gragea grageaLogica;
     public JuegoVisual juegoVisual;
 
-    public GrageaVisualListener(GrageaVisual grageaVisual, Gragea grageaLogica, JuegoVisual juegoVisual) {
+    public GrageaVisualListener(GrageaVisual grageaVisual, org.lab.grageasmagicas.parte_logica.Gragea grageaLogica, JuegoVisual juegoVisual) {
         this.grageaVisual = grageaVisual;
         this.grageaLogica = grageaLogica;
         this.juegoVisual = juegoVisual;

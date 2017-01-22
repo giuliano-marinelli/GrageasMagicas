@@ -1,4 +1,4 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
