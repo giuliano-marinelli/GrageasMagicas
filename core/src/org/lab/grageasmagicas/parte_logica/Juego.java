@@ -13,6 +13,8 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Thread.sleep;
+
 
 /**
  * @author Bermudez Martin, Kurchan Ines, Marinelli Giuliano

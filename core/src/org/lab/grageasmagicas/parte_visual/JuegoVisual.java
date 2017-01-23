@@ -70,7 +70,8 @@ public class JuegoVisual implements Screen, Observer {
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
-
+        //musica de fondo
+        //Sound sMusicaAmbiente = Gdx.audio.newSound(Gdx.files.internal("musicaAmbiente.mp3"));
         cargarTexturas();
 
         escena = new Stage(vista);
@@ -110,12 +111,10 @@ public class JuegoVisual implements Screen, Observer {
                     tblTablero.background(new TextureRegionDrawable(new TextureRegion(texturaFondo)));
                     //tblTablero.setColor(Color.GOLD);
                     escena.addActor(tblTablero);
-
                     puntaje = new Text(fuenteBase, juegoLogico.getPuntaje() + "");
                     puntaje.setPosition(50, altoCamara-50);
                     puntaje.setColor(Color.WHITE);
                     escena.addActor(puntaje);
-
                     tblTablero.row();
                     for (int i = 0; i < cantFilas; i++) {
                         for (int j = 0; j < cantColumnas; j++) {
@@ -173,6 +172,7 @@ public class JuegoVisual implements Screen, Observer {
                                 matrizGrageasVisuales[i][j].setVisible(true);
                                 matrizGrageasVisuales[i][j].addAction(Actions.moveTo
                                         (posXNuevaGrageaVisual, posYNuevaGrageaVisual, 0.5f, Interpolation.bounceOut));
+                                //Sound sGrageasNuevas = Gdx.audio.newSound(Gdx.files.internal("grageasNuevas.mp3"));
                             }
                         }
                     }
@@ -223,6 +223,9 @@ public class JuegoVisual implements Screen, Observer {
                                 matrizGrageasVisuales[i][j] = matrizGrageasVisuales[i + bajar][j];
                                 matrizGrageasVisuales[i + bajar][j] = aux;
                             }
+                        }
+                        if(!combinacionTemp.isEmpty()){
+                            //Sound sCombinacion = Gdx.audio.newSound(Gdx.files.internal("combinacion.mp3"));
                         }
                     }
                     sleep(750);

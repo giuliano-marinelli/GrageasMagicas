@@ -1,6 +1,7 @@
 package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -34,6 +35,7 @@ public class GrageaVisualListener extends InputListener {
             if (juegoVisual.isInputHabilitado()) {
                 if (!grageaVisual.isSeleccionada()) {
                     if (!juegoVisual.isHayGrageaSeleccionada()) {
+                        //Sound sGrageaSeleccionada = Gdx.audio.newSound(Gdx.files.internal("grageaSeleccionada.mp3"));
                         grageaVisual.seleccionar();
                         juegoVisual.setHayGrageaSeleccionada(true);
                         juegoVisual.setPrimerGrageaX(filaGragea);
@@ -43,13 +45,17 @@ public class GrageaVisualListener extends InputListener {
                         juegoVisual.setSegundaGrageaX(filaGragea);
                         juegoVisual.setSegundaGrageaY(columnaGragea);
                         if (juegoVisual.verificarAdyacentes()) {
+                            //sGrageaIntercambiada no representa un intercambio exitoso, simplemente acompaña la animacion de intercambio.
+                            //Sound sGrageaIntercambiada = Gdx.audio.newSound(Gdx.files.internal("grageaIntercambiada.mp3"));
                             juegoVisual.getBarrierRespuestaVisual().await();
                         } else {
+                            //Sound sMovimientoInvalido = Gdx.audio.newSound(Gdx.files.internal("movimientoInvalido.mp3"));
                             Gdx.app.log("Check", "Movimiento invalido");
                             juegoVisual.setInputHabilitado(true);
                         }
                     }
                 } else {
+                    //Sound sGrageaDeseleccionada = Gdx.audio.newSound(Gdx.files.internal("grageaDeseleccionada.mp3"));
                     grageaVisual.deseleccionar();
                     juegoVisual.setHayGrageaSeleccionada(false);
                 }
