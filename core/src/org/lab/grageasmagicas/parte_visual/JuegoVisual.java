@@ -81,11 +81,11 @@ public class JuegoVisual implements Screen, Observer {
     public void cargarTexturas() {
         assetManager.load("fondogolosinas.png", Texture.class);
         assetManager.load("gragea.png", Texture.class);
-        assetManager.load("texto_base_fuente.fnt", BitmapFont.class);
+        assetManager.load("texto_bits.fnt", BitmapFont.class);
         assetManager.finishLoading();
         texturaFondo = assetManager.get("fondogolosinas.png");
         texturaGragea = assetManager.get("gragea.png");
-        fuenteBase = assetManager.get("texto_base_fuente.fnt");
+        fuenteBase = assetManager.get("texto_bits.fnt");
     }
 
     @Override
@@ -111,7 +111,7 @@ public class JuegoVisual implements Screen, Observer {
                     tblTablero.background(new TextureRegionDrawable(new TextureRegion(texturaFondo)));
                     //tblTablero.setColor(Color.GOLD);
                     escena.addActor(tblTablero);
-                    puntaje = new Text(fuenteBase, juegoLogico.getPuntaje() + "");
+                    puntaje = new Text(fuenteBase, (int)juegoLogico.getPuntaje() + "");
                     puntaje.setPosition(50, altoCamara-50);
                     puntaje.setColor(Color.WHITE);
                     escena.addActor(puntaje);
@@ -129,7 +129,7 @@ public class JuegoVisual implements Screen, Observer {
                     tblTablero.pack();
                 }
 
-                puntaje.setTexto(juegoLogico.getPuntaje() + "");
+                puntaje.setTexto((int)juegoLogico.getPuntaje() + "");
 
                 //intercambia las grageas cuando se realizo un movimiento
                 if (juegoLogico.getPrimerGrageaX() != -1) {
@@ -272,9 +272,11 @@ public class JuegoVisual implements Screen, Observer {
     public void dispose() {
         texturaFondo.dispose();
         texturaGragea.dispose();
+        fuenteBase.dispose();
         escena.dispose();
         assetManager.unload("fondogolosinas.png");
         assetManager.unload("gragea.png");
+        assetManager.unload("texto_bits.fnt");
     }
 
     public void limpiarPosGrageas() {
