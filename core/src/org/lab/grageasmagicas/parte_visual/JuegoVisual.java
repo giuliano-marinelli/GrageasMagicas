@@ -112,7 +112,8 @@ public class JuegoVisual implements Screen, Observer {
                     escena.addActor(tblTablero);
 
                     puntaje = new Text(fuenteBase, juegoLogico.getPuntaje() + "");
-                    puntaje.setPosition(0, 0);
+                    puntaje.setPosition(50, altoCamara-50);
+                    puntaje.setColor(Color.WHITE);
                     escena.addActor(puntaje);
 
                     tblTablero.row();
@@ -129,7 +130,7 @@ public class JuegoVisual implements Screen, Observer {
                     tblTablero.pack();
                 }
 
-                //puntaje.setTexto(juegoLogico.getPuntaje() + "");
+                puntaje.setTexto(juegoLogico.getPuntaje() + "");
 
                 //intercambia las grageas cuando se realizo un movimiento
                 if (juegoLogico.getPrimerGrageaX() != -1) {

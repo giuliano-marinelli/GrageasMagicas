@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class Text extends Actor {
 
-    BitmapFont fuente;
-    String texto;
+    private BitmapFont fuente;
+    private String texto;
 
     public Text(BitmapFont fuente) {
         this.fuente = fuente;
@@ -23,7 +23,7 @@ public class Text extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        fuente.draw(batch, texto, 250, 250);
+        fuente.draw(batch, texto, getX(), getY());
     }
 
     @Override
@@ -54,4 +54,5 @@ public class Text extends Actor {
     public Color getColor() {
         return fuente.getColor();
     }
+
 }
