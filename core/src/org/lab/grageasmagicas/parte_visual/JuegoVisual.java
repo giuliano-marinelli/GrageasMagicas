@@ -111,9 +111,10 @@ public class JuegoVisual implements Screen, Observer {
                     tblTablero.background(new TextureRegionDrawable(new TextureRegion(texturaFondo)));
                     //tblTablero.setColor(Color.GOLD);
                     escena.addActor(tblTablero);
-                    puntaje = new Text(fuenteBase, (int)juegoLogico.getPuntaje() + "");
-                    puntaje.setPosition(50, altoCamara-50);
+                    puntaje = new Text(fuenteBase, (int) juegoLogico.getPuntaje() + "");
+                    puntaje.setPosition(50, altoCamara - 50);
                     puntaje.setColor(Color.WHITE);
+                    puntaje.setEscala(2, 2);
                     escena.addActor(puntaje);
                     tblTablero.row();
                     for (int i = 0; i < cantFilas; i++) {
@@ -129,7 +130,7 @@ public class JuegoVisual implements Screen, Observer {
                     tblTablero.pack();
                 }
 
-                puntaje.setTexto((int)juegoLogico.getPuntaje() + "");
+                puntaje.setTexto((int) juegoLogico.getPuntaje() + "");
 
                 //intercambia las grageas cuando se realizo un movimiento
                 if (juegoLogico.getPrimerGrageaX() != -1) {
@@ -224,7 +225,7 @@ public class JuegoVisual implements Screen, Observer {
                                 matrizGrageasVisuales[i + bajar][j] = aux;
                             }
                         }
-                        if(!combinacionTemp.isEmpty()){
+                        if (!combinacionTemp.isEmpty()) {
                             //Sound sCombinacion = Gdx.audio.newSound(Gdx.files.internal("combinacion.mp3"));
                         }
                     }

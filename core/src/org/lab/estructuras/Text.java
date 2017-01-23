@@ -55,4 +55,15 @@ public class Text extends Actor {
         return fuente.getColor();
     }
 
+    public void setEscala(float escalaX, float escalaY) {
+        fuente.getData().setScale(escalaX, escalaY);
+    }
+
+    public float getEscalaX() {
+        return fuente.getData().scaleX;
+    }
+
+    public float getEscalaY() {
+        return fuente.getData().scaleY;
+    }
 }
