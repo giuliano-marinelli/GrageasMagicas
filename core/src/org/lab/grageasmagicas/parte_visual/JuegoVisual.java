@@ -3,11 +3,11 @@ package org.lab.grageasmagicas.parte_visual;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -58,6 +58,7 @@ public class JuegoVisual implements Screen, Observer {
     private Texture texturaFondo;
     private Texture texturaGragea;
     private BitmapFont fuenteBase;
+    private Music sndMusicaFondo;
 
     public JuegoVisual(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
@@ -70,22 +71,14 @@ public class JuegoVisual implements Screen, Observer {
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
-        //musica de fondo
-        //Sound sMusicaAmbiente = Gdx.audio.newSound(Gdx.files.internal("musicaAmbiente.mp3"));
-        cargarTexturas();
+
+        cargarAssets();
+
+        sndMusicaFondo.setLooping(true);
+        sndMusicaFondo.play();
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
-    }
-
-    public void cargarTexturas() {
-        assetManager.load("fondogolosinas.png", Texture.class);
-        assetManager.load("gragea.png", Texture.class);
-        assetManager.load("texto_bits.fnt", BitmapFont.class);
-        assetManager.finishLoading();
-        texturaFondo = assetManager.get("fondogolosinas.png");
-        texturaGragea = assetManager.get("gragea.png");
-        fuenteBase = assetManager.get("texto_bits.fnt");
     }
 
     @Override
@@ -274,10 +267,24 @@ public class JuegoVisual implements Screen, Observer {
         texturaFondo.dispose();
         texturaGragea.dispose();
         fuenteBase.dispose();
+        sndMusicaFondo.dispose();
         escena.dispose();
-        assetManager.unload("fondogolosinas.png");
-        assetManager.unload("gragea.png");
-        assetManager.unload("texto_bits.fnt");
+        assetManager.unload("imagenes/fondogolosinas.png");
+        assetManager.unload("imagenes/gragea.png");
+        assetManager.unload("fuentes/texto_bits.fnt");
+        assetManager.unload("sonidos/musica_fondo.mp3");
+    }
+
+    public void cargarAssets() {
+        assetManager.load("imagenes/fondogolosinas.png", Texture.class);
+        assetManager.load("imagenes/gragea.png", Texture.class);
+        assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
+        assetManager.load("sonidos/musica_fondo.mp3", Music.class);
+        assetManager.finishLoading();
+        texturaFondo = assetManager.get("imagenes/fondogolosinas.png");
+        texturaGragea = assetManager.get("imagenes/gragea.png");
+        fuenteBase = assetManager.get("fuentes/texto_bits.fnt");
+        sndMusicaFondo = assetManager.get("sonidos/musica_fondo.mp3");
     }
 
     public void limpiarPosGrageas() {

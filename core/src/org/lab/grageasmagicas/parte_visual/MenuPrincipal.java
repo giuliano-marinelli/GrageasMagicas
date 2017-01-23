@@ -38,7 +38,7 @@ public class MenuPrincipal implements Screen {
         this.vista = adminPantalla.getVista();
         this.assetManager = adminPantalla.getAssetManager();
 
-        cargarTexturas();
+        cargarAssets();
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
@@ -144,26 +144,26 @@ public class MenuPrincipal implements Screen {
         texturaBtnAcercaDe.dispose();
         texturaTitulo.dispose();
         escena.dispose();
-        assetManager.unload("fondo.jpg");
-        assetManager.unload("jugar.png");
-        assetManager.unload("opciones.png");
-        assetManager.unload("acerca_de.png");
-        assetManager.unload("titulo.png");
+        assetManager.unload("imagenes/fondo.jpg");
+        assetManager.unload("imagenes/jugar.png");
+        assetManager.unload("imagenes/opciones.png");
+        assetManager.unload("imagenes/acerca_de.png");
+        assetManager.unload("imagenes/titulo.png");
     }
 
-    private void cargarTexturas() {
-        assetManager.load("fondo.jpg", Texture.class);
-        assetManager.load("jugar.png", Texture.class);
-        assetManager.load("opciones.png", Texture.class);
-        assetManager.load("acerca_de.png", Texture.class);
-        assetManager.load("titulo.png", Texture.class);
+    private void cargarAssets() {
+        assetManager.load("imagenes/fondo.jpg", Texture.class);
+        assetManager.load("imagenes/jugar.png", Texture.class);
+        assetManager.load("imagenes/opciones.png", Texture.class);
+        assetManager.load("imagenes/acerca_de.png", Texture.class);
+        assetManager.load("imagenes/titulo.png", Texture.class);
 
         assetManager.finishLoading();
 
-        texturaFondo = assetManager.get("fondo.jpg");
-        texturaBtnJugar = assetManager.get("jugar.png");
-        texturaBtnOpciones = assetManager.get("opciones.png");
-        texturaBtnAcercaDe = assetManager.get("acerca_de.png");
-        texturaTitulo = assetManager.get("titulo.png");
+        texturaFondo = assetManager.get("imagenes/fondo.jpg");
+        texturaBtnJugar = assetManager.get("imagenes/jugar.png");
+        texturaBtnOpciones = assetManager.get("imagenes/opciones.png");
+        texturaBtnAcercaDe = assetManager.get("imagenes/acerca_de.png");
+        texturaTitulo = assetManager.get("imagenes/titulo.png");
     }
 }
