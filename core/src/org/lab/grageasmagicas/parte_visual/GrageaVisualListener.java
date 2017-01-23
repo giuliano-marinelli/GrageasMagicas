@@ -9,14 +9,16 @@ import java.util.concurrent.BrokenBarrierException;
 
 public class GrageaVisualListener extends InputListener {
 
-    public GrageaVisual grageaVisual;
-    public org.lab.grageasmagicas.parte_logica.Gragea grageaLogica;
-    public JuegoVisual juegoVisual;
+    private GrageaVisual grageaVisual;
+    private JuegoVisual juegoVisual;
+    private int filaGragea;
+    private int columnaGragea;
 
-    public GrageaVisualListener(GrageaVisual grageaVisual, org.lab.grageasmagicas.parte_logica.Gragea grageaLogica, JuegoVisual juegoVisual) {
+    public GrageaVisualListener(GrageaVisual grageaVisual, JuegoVisual juegoVisual, int filaGragea, int columnaGragea) {
         this.grageaVisual = grageaVisual;
-        this.grageaLogica = grageaLogica;
         this.juegoVisual = juegoVisual;
+        this.filaGragea = filaGragea;
+        this.columnaGragea = columnaGragea;
     }
 
     @Override
@@ -34,15 +36,13 @@ public class GrageaVisualListener extends InputListener {
                     if (!juegoVisual.isHayGrageaSeleccionada()) {
                         grageaVisual.seleccionar();
                         juegoVisual.setHayGrageaSeleccionada(true);
-                        juegoVisual.setPrimerGrageaX(grageaVisual.getFila());
-                        juegoVisual.setPrimerGrageaY(grageaVisual.getColumna());
+                        juegoVisual.setPrimerGrageaX(filaGragea);
+                        juegoVisual.setPrimerGrageaY(columnaGragea);
                     } else {
                         juegoVisual.setInputHabilitado(false);
-                        juegoVisual.setSegundaGrageaX(grageaVisual.getFila());
-                        juegoVisual.setSegundaGrageaY(grageaVisual.getColumna());
+                        juegoVisual.setSegundaGrageaX(filaGragea);
+                        juegoVisual.setSegundaGrageaY(columnaGragea);
                         if (juegoVisual.verificarAdyacentes()) {
-                            //juegoVisual.intercambiarGrageas();
-                            juegoVisual.setHayGrageaSeleccionada(false);
                             juegoVisual.getBarrierRespuestaVisual().await();
                         } else {
                             Gdx.app.log("Check", "Movimiento invalido");
@@ -66,4 +66,24 @@ public class GrageaVisualListener extends InputListener {
         super.enter(event, x, y, pointer, fromActor);
     }
 
+    public int getFilaGragea() {
+        return filaGragea;
+    }
+
+    public void setFilaGragea(int filaGragea) {
+        this.filaGragea = filaGragea;
+    }
+
+    public int getColumnaGragea() {
+        return columnaGragea;
+    }
+
+    public void setColumnaGragea(int columnaGragea) {
+        this.columnaGragea = columnaGragea;
+    }
+
+    public void setFilaColumnaGragea(int filaGragea, int columnaGragea) {
+        this.filaGragea = filaGragea;
+        this.columnaGragea = columnaGragea;
+    }
 }

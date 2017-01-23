@@ -19,15 +19,15 @@ import java.util.logging.Logger;
  */
 public class Juego extends Observable implements Runnable {
 
-    private final org.lab.grageasmagicas.parte_logica.Gragea[][] matrizGrageas;
+    private final Gragea[][] matrizGrageas;
     private int velocidad;
     private int cantGragea;
     private boolean pausa = false;
     private boolean finJuego = false;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
-    private org.lab.grageasmagicas.parte_logica.Comprobador[] comprobadorAlto;
-    private org.lab.grageasmagicas.parte_logica.Comprobador[] comprobadorAncho;
-    private org.lab.grageasmagicas.parte_logica.Eliminador[] eliminadores;
+    private Comprobador[] comprobadorAlto;
+    private Comprobador[] comprobadorAncho;
+    private Eliminador[] eliminadores;
     private CyclicBarrier barrierCompAlto;
     private CyclicBarrier barrierCompAncho;
     private CyclicBarrier barrierElim;
@@ -47,10 +47,10 @@ public class Juego extends Observable implements Runnable {
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
-        matrizGrageas = new org.lab.grageasmagicas.parte_logica.Gragea[alto][ancho];
-        comprobadorAlto = new org.lab.grageasmagicas.parte_logica.Comprobador[alto];
-        comprobadorAncho = new org.lab.grageasmagicas.parte_logica.Comprobador[ancho];
-        eliminadores = new org.lab.grageasmagicas.parte_logica.Eliminador[ancho];
+        matrizGrageas = new Gragea[alto][ancho];
+        comprobadorAlto = new Comprobador[alto];
+        comprobadorAncho = new Comprobador[ancho];
+        eliminadores = new Eliminador[ancho];
         grageasCombinadas = new CopyOnWriteArrayList();
 
         Random random = new Random();
@@ -58,7 +58,7 @@ public class Juego extends Observable implements Runnable {
         //crea las grageas con un tipo aleatorio y las agrega a la matriz
         for (int i = 0; i < alto; i++) {
             for (int j = 0; j < ancho; j++) {
-                matrizGrageas[i][j] = new org.lab.grageasmagicas.parte_logica.Gragea(random.nextInt(cantGragea));
+                matrizGrageas[i][j] = new Gragea(random.nextInt(cantGragea));
             }
         }
 
@@ -80,7 +80,7 @@ public class Juego extends Observable implements Runnable {
         barrierCompAncho = new CyclicBarrier(ancho + 1);
 
         for (int i = 0; i < ancho; i++) {
-            comprobadorAncho[i] = new org.lab.grageasmagicas.parte_logica.ComprobadorAncho(matrizGrageas, i, grageasCombinadas, barrierCompAncho);
+            comprobadorAncho[i] = new ComprobadorAncho(matrizGrageas, i, grageasCombinadas, barrierCompAncho);
             comprobadorThread = new Thread(comprobadorAncho[i]);
             comprobadorThread.start();
         }
@@ -90,7 +90,7 @@ public class Juego extends Observable implements Runnable {
         //crea y lanza los eliminadores
         Thread eliminadorThread;
         for (int i = 0; i < ancho; i++) {
-            eliminadores[i] = new org.lab.grageasmagicas.parte_logica.Eliminador(matrizGrageas, i, grageasCombinadas, barrierElim, cantGragea);
+            eliminadores[i] = new Eliminador(matrizGrageas, i, grageasCombinadas, barrierElim, cantGragea);
             eliminadorThread = new Thread(eliminadores[i]);
             eliminadorThread.start();
         }
@@ -104,6 +104,7 @@ public class Juego extends Observable implements Runnable {
 
             Point grageaIni;
             Point grageaFin;
+            /*
             //habilita a controladorJugada a verificar si existe jugada posible
             barrierVerificarJugada.await();
             //espera que el verificador termine
@@ -117,7 +118,7 @@ public class Juego extends Observable implements Runnable {
             }
             //habilita al controladorJugada para que termine de ejecutarse.
             barrierVerificarJugada.await();
-
+            */
             while (!finJuego) {
                 System.out.println("\033[32mJuega\033[30m");
                 System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
@@ -130,9 +131,9 @@ public class Juego extends Observable implements Runnable {
                 boolean sonAdy = false;
                 do {
                     //Permite que usuario pueda interactuar con la interfaz
-                    // barrierEntrada.await();
-                    // barrierEntrada.await();
-                    System.out.print("Gragea inicial XY: ");
+                    barrierEntrada.await();
+                    barrierEntrada.await();
+                    /*System.out.print("Gragea inicial XY: ");
                     String gi = TecladoIn.readLine();
                     System.out.print("Gragea final XY: ");
                     String gf = TecladoIn.readLine();
@@ -140,10 +141,11 @@ public class Juego extends Observable implements Runnable {
                     primerGrageaX = Integer.parseInt(gi.substring(0, 1));
                     primerGrageaY = Integer.parseInt(gi.substring(1, 2));
                     segundaGrageaX = Integer.parseInt(gf.substring(0, 1));
-                    segundaGrageaY = Integer.parseInt(gf.substring(1, 2));
+                    segundaGrageaY = Integer.parseInt(gf.substring(1, 2));*/
 
                     /*grageaIni = new Point(primerGrageaX, primerGrageaY);
                     grageaFin = new Point(segundaGrageaX, segundaGrageaY);*/
+
                     //verificar si el movimiento de las grageas es válido.
                     sonAdy = verificarAdyacentes(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
                     if (!sonAdy) {
@@ -220,6 +222,7 @@ public class Juego extends Observable implements Runnable {
                 if (pausa) {
                     dormir();
                 }
+                /*
                 //habilita a controladorJugada a verificar si existe jugada posible
                 barrierVerificarJugada.await();
                 //espera que el verificador termine
@@ -233,6 +236,7 @@ public class Juego extends Observable implements Runnable {
                 }
                 //habilita al controladorJugada para que termine de ejecutarse.
                 barrierVerificarJugada.await();
+                */
             }
             if (finJuego) {
                 System.out.println("terminó el juego!");
@@ -370,7 +374,7 @@ public class Juego extends Observable implements Runnable {
      * @param juego
      * @return String de la matriz.
      */
-    public String toString(org.lab.grageasmagicas.parte_logica.Gragea[][] juego) {
+    public String toString(Gragea[][] juego) {
         int alto = juego.length;
         int ancho = juego[0].length;
         String res = "    ";
@@ -401,7 +405,7 @@ public class Juego extends Observable implements Runnable {
      * @param juego
      * @return String de la matriz.
      */
-    public String toStringComb(org.lab.grageasmagicas.parte_logica.Gragea[][] juego) {
+    public String toStringComb(Gragea[][] juego) {
         int alto = juego.length;
         int ancho = juego[0].length;
         String res = "    ";
@@ -520,7 +524,7 @@ public class Juego extends Observable implements Runnable {
         this.pausa = !pausa;
     }
 
-    public org.lab.grageasmagicas.parte_logica.Gragea[][] getMatrizGrageas() {
+    public Gragea[][] getMatrizGrageas() {
         return matrizGrageas;
     }
 
@@ -531,7 +535,7 @@ public class Juego extends Observable implements Runnable {
      * @param gfy
      */
     public void intercambiarGrageas(int gix, int giy, int gfx, int gfy) {
-        org.lab.grageasmagicas.parte_logica.Gragea grageaAux = matrizGrageas[gix][giy];
+        Gragea grageaAux = matrizGrageas[gix][giy];
         matrizGrageas[gix][giy] = matrizGrageas[gfx][gfy];
         matrizGrageas[gfx][gfy] = grageaAux;
     }
@@ -548,32 +552,32 @@ public class Juego extends Observable implements Runnable {
         matrizGrageas[gfx][gfy].setTipo(tipoAux);
     }
 
-    private void cargarMatrizDefault(org.lab.grageasmagicas.parte_logica.Gragea[][] matrizGr) {
-        matrizGr[0][0] = new org.lab.grageasmagicas.parte_logica.Gragea(1);
-        matrizGr[0][1] = new org.lab.grageasmagicas.parte_logica.Gragea(0);
-        matrizGr[0][2] = new org.lab.grageasmagicas.parte_logica.Gragea(1);
-        matrizGr[0][3] = new org.lab.grageasmagicas.parte_logica.Gragea(1);
-        matrizGr[0][4] = new org.lab.grageasmagicas.parte_logica.Gragea(0);
-        matrizGr[1][0] = new org.lab.grageasmagicas.parte_logica.Gragea(3);
-        matrizGr[1][1] = new org.lab.grageasmagicas.parte_logica.Gragea(2);
-        matrizGr[1][2] = new org.lab.grageasmagicas.parte_logica.Gragea(0);
-        matrizGr[1][3] = new org.lab.grageasmagicas.parte_logica.Gragea(1);
-        matrizGr[1][4] = new org.lab.grageasmagicas.parte_logica.Gragea(0);
-        matrizGr[2][0] = new org.lab.grageasmagicas.parte_logica.Gragea(2);
-        matrizGr[2][1] = new org.lab.grageasmagicas.parte_logica.Gragea(3);
-        matrizGr[2][2] = new org.lab.grageasmagicas.parte_logica.Gragea(0);
-        matrizGr[2][3] = new org.lab.grageasmagicas.parte_logica.Gragea(0);
-        matrizGr[2][4] = new org.lab.grageasmagicas.parte_logica.Gragea(2);
-        matrizGr[3][0] = new org.lab.grageasmagicas.parte_logica.Gragea(2);
-        matrizGr[3][1] = new org.lab.grageasmagicas.parte_logica.Gragea(3);
-        matrizGr[3][2] = new org.lab.grageasmagicas.parte_logica.Gragea(3);
-        matrizGr[3][3] = new org.lab.grageasmagicas.parte_logica.Gragea(2);
-        matrizGr[3][4] = new org.lab.grageasmagicas.parte_logica.Gragea(1);
-        matrizGr[4][0] = new org.lab.grageasmagicas.parte_logica.Gragea(0);
-        matrizGr[4][1] = new org.lab.grageasmagicas.parte_logica.Gragea(1);
-        matrizGr[4][2] = new org.lab.grageasmagicas.parte_logica.Gragea(1);
-        matrizGr[4][3] = new org.lab.grageasmagicas.parte_logica.Gragea(2);
-        matrizGr[4][4] = new org.lab.grageasmagicas.parte_logica.Gragea(3);
+    private void cargarMatrizDefault(Gragea[][] matrizGr) {
+        matrizGr[0][0] = new Gragea(1);
+        matrizGr[0][1] = new Gragea(0);
+        matrizGr[0][2] = new Gragea(1);
+        matrizGr[0][3] = new Gragea(1);
+        matrizGr[0][4] = new Gragea(0);
+        matrizGr[1][0] = new Gragea(3);
+        matrizGr[1][1] = new Gragea(2);
+        matrizGr[1][2] = new Gragea(0);
+        matrizGr[1][3] = new Gragea(1);
+        matrizGr[1][4] = new Gragea(0);
+        matrizGr[2][0] = new Gragea(2);
+        matrizGr[2][1] = new Gragea(3);
+        matrizGr[2][2] = new Gragea(0);
+        matrizGr[2][3] = new Gragea(0);
+        matrizGr[2][4] = new Gragea(2);
+        matrizGr[3][0] = new Gragea(2);
+        matrizGr[3][1] = new Gragea(3);
+        matrizGr[3][2] = new Gragea(3);
+        matrizGr[3][3] = new Gragea(2);
+        matrizGr[3][4] = new Gragea(1);
+        matrizGr[4][0] = new Gragea(0);
+        matrizGr[4][1] = new Gragea(1);
+        matrizGr[4][2] = new Gragea(1);
+        matrizGr[4][3] = new Gragea(2);
+        matrizGr[4][4] = new Gragea(3);
     }
 
     /**
@@ -649,6 +653,14 @@ public class Juego extends Observable implements Runnable {
 
     public void setGrageasCombinadas(CopyOnWriteArrayList<Point> grageasCombinadas) {
         this.grageasCombinadas = grageasCombinadas;
+    }
+
+    public float getPuntaje() {
+        return puntaje;
+    }
+
+    public void setPuntaje(float puntaje) {
+        this.puntaje = puntaje;
     }
 
 }

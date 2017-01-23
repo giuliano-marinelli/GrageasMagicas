@@ -3,7 +3,7 @@ package org.lab.grageasmagicas.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import org.lab.grageasmagicas.AdministradorPantalla;
+import org.lab.grageasmagicas.parte_visual.AdministradorPantalla;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {

@@ -1,16 +1,18 @@
-package org.lab.grageasmagicas;
+package org.lab.grageasmagicas.parte_visual;
+
+import org.lab.grageasmagicas.parte_logica.*;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public class JuegoControlador implements Runnable {
 
-    private org.lab.grageasmagicas.parte_logica.Juego juegoLogico;
-    private org.lab.grageasmagicas.parte_visual.JuegoVisual juegoVisual;
+    private Juego juegoLogico;
+    private JuegoVisual juegoVisual;
     private CyclicBarrier barrierEntradaLogico = new CyclicBarrier(2);
     private CyclicBarrier barrierRespuestaVisual = new CyclicBarrier(2);
 
-    public JuegoControlador(org.lab.grageasmagicas.parte_logica.Juego juegoLogico, org.lab.grageasmagicas.parte_visual.JuegoVisual juegoVisual) {
+    public JuegoControlador(Juego juegoLogico, JuegoVisual juegoVisual) {
         this.juegoLogico = juegoLogico;
         this.juegoVisual = juegoVisual;
 
@@ -37,6 +39,9 @@ public class JuegoControlador implements Runnable {
                 juegoVisual.setInputHabilitado(false);
                 juegoLogico.setIntercambioGrageas(juegoVisual.getPrimerGrageaX(), juegoVisual.getPrimerGrageaY(),
                         juegoVisual.getSegundaGrageaX(), juegoVisual.getSegundaGrageaY());
+                juegoVisual.getMatrizGrageasVisuales()[juegoVisual.getPrimerGrageaX()][juegoVisual.getPrimerGrageaY()].deseleccionar();
+                juegoVisual.limpiarPosGrageas();
+                juegoVisual.setHayGrageaSeleccionada(false);
                 barrierEntradaLogico.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();

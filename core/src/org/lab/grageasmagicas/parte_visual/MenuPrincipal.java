@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import org.lab.grageasmagicas.*;
+import org.lab.grageasmagicas.parte_logica.Juego;
 
 public class MenuPrincipal implements Screen {
 
@@ -37,15 +37,15 @@ public class MenuPrincipal implements Screen {
         this.altoCamara = adminPantalla.getAltoCamara();
         this.vista = adminPantalla.getVista();
         this.assetManager = adminPantalla.getAssetManager();
-    }
 
-    @Override
-    public void show() {
         cargarTexturas();
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
+    }
 
+    @Override
+    public void show() {
         Image imgFondo = new Image(texturaFondo);
         float escalaX = anchoCamara / imgFondo.getWidth();
         float escalaY = altoCamara / imgFondo.getHeight();
@@ -80,9 +80,9 @@ public class MenuPrincipal implements Screen {
                 int cantGragea = 5;
                 int velocidad = 10;
 
-                org.lab.grageasmagicas.parte_logica.Juego juegoLogico = new org.lab.grageasmagicas.parte_logica.Juego(ancho, alto, velocidad, cantGragea);
+                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea);
 
-                org.lab.grageasmagicas.parte_visual.JuegoVisual juegoVisual = new org.lab.grageasmagicas.parte_visual.JuegoVisual(adminPantalla);
+                JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 
                 JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual);
                 Thread juegoControladorThread = new Thread(juegoControlador);
@@ -126,7 +126,7 @@ public class MenuPrincipal implements Screen {
 
     @Override
     public void hide() {
-
+        //dispose();
     }
 
     public void render(float delta) {

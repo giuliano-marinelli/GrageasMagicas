@@ -6,6 +6,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.lab.estructuras.Point;
+import org.lab.estructuras.Text;
+import org.lab.grageasmagicas.parte_logica.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +34,7 @@ import static java.lang.Thread.sleep;
 
 
 public class JuegoVisual implements Screen, Observer {
-
+    //logica
     private boolean hayGrageaSeleccionada;
     private int primerGrageaX;
     private int primerGrageaY;
@@ -39,16 +43,21 @@ public class JuegoVisual implements Screen, Observer {
     private int anchoCamara;
     private int altoCamara;
     private boolean inputHabilitado;
-    private org.lab.grageasmagicas.parte_visual.GrageaVisual[][] matrizGrageasVisuales;
+    private GrageaVisual[][] matrizGrageasVisuales;
+    private Juego juegoLogico;
+    private CyclicBarrier barrierRespuestaVisual;
+    //administradores
     private AdministradorPantalla adminPantalla;
     private AssetManager assetManager;
     private Viewport vista;
     private Stage escena;
-    private CyclicBarrier barrierRespuestaVisual;
+    //actors
     private Table tblTablero;
+    private Text puntaje;
+    //assets
     private Texture texturaFondo;
     private Texture texturaGragea;
-    private org.lab.grageasmagicas.parte_logica.Juego juegoLogico;
+    private BitmapFont fuenteBase;
 
     public JuegoVisual(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
@@ -57,24 +66,25 @@ public class JuegoVisual implements Screen, Observer {
         this.vista = adminPantalla.getVista();
         this.assetManager = adminPantalla.getAssetManager();
         this.inputHabilitado = false;
+        this.primerGrageaX = -1;
+        this.primerGrageaY = -1;
+        this.segundaGrageaX = -1;
+        this.segundaGrageaY = -1;
 
         cargarTexturas();
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
-
-        tblTablero = new Table();
-        tblTablero.background(new TextureRegionDrawable(new TextureRegion(texturaFondo)));
-        tblTablero.setColor(Color.GOLD);
-        escena.addActor(tblTablero);
     }
 
     public void cargarTexturas() {
         assetManager.load("fondogolosinas.png", Texture.class);
         assetManager.load("gragea.png", Texture.class);
+        assetManager.load("texto_base_fuente.fnt", BitmapFont.class);
         assetManager.finishLoading();
         texturaFondo = assetManager.get("fondogolosinas.png");
         texturaGragea = assetManager.get("gragea.png");
+        fuenteBase = assetManager.get("texto_base_fuente.fnt");
     }
 
     @Override
@@ -86,124 +96,156 @@ public class JuegoVisual implements Screen, Observer {
     public void show() {
         try {
             if (juegoLogico != null) {
-                org.lab.grageasmagicas.parte_logica.Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
+                Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
+                CopyOnWriteArrayList<Point> grageasCombinadas = juegoLogico.getGrageasCombinadas();
                 int cantColumnas = matrizGrageasLogica[0].length;
                 int cantFilas = matrizGrageasLogica.length;
+
+                //crea la matriz visual y la estrutura de tabla si no fue creada aun
                 if (matrizGrageasVisuales == null) {
-                    matrizGrageasVisuales = new org.lab.grageasmagicas.parte_visual.GrageaVisual[cantFilas][cantColumnas];
+
+                    matrizGrageasVisuales = new GrageaVisual[cantFilas][cantColumnas];
+
+                    tblTablero = new Table();
+                    tblTablero.background(new TextureRegionDrawable(new TextureRegion(texturaFondo)));
+                    //tblTablero.setColor(Color.GOLD);
+                    escena.addActor(tblTablero);
+
+                    puntaje = new Text(fuenteBase, juegoLogico.getPuntaje() + "");
+                    puntaje.setPosition(0, 0);
+                    escena.addActor(puntaje);
+
+                    tblTablero.row();
+                    for (int i = 0; i < cantFilas; i++) {
+                        for (int j = 0; j < cantColumnas; j++) {
+                            matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), texturaGragea);
+                            matrizGrageasVisuales[i][j].addListener(new GrageaVisualListener(matrizGrageasVisuales[i][j], this, i, j));
+                            tblTablero.add(matrizGrageasVisuales[i][j]);
+                        }
+                        tblTablero.row();
+                    }
+                    tblTablero.padBottom(5f);
+                    tblTablero.setFillParent(true);
+                    tblTablero.pack();
                 }
+
+                //puntaje.setTexto(juegoLogico.getPuntaje() + "");
+
+                //intercambia las grageas cuando se realizo un movimiento
                 if (juegoLogico.getPrimerGrageaX() != -1) {
-                    org.lab.grageasmagicas.parte_visual.GrageaVisual priGragea = matrizGrageasVisuales[juegoLogico.getPrimerGrageaX()][juegoLogico.getPrimerGrageaY()];
-                    org.lab.grageasmagicas.parte_visual.GrageaVisual segGragea = matrizGrageasVisuales[juegoLogico.getSegundaGrageaX()][juegoLogico.getSegundaGrageaY()];
+                    GrageaVisual priGragea = matrizGrageasVisuales[juegoLogico.getPrimerGrageaX()][juegoLogico.getPrimerGrageaY()];
+                    GrageaVisual segGragea = matrizGrageasVisuales[juegoLogico.getSegundaGrageaX()][juegoLogico.getSegundaGrageaY()];
+                    GrageaVisualListener priGrageaListener = (GrageaVisualListener) (priGragea.getListeners().get(0));
+                    GrageaVisualListener segGrageaListener = (GrageaVisualListener) (segGragea.getListeners().get(0));
                     //System.out.println(priGragea.getX() + "," + priGragea.getY());
                     //System.out.println(segGragea.getX() + "," + segGragea.getY());
                     priGragea.addAction(Actions.moveTo
                             (segGragea.getX(), segGragea.getY(), 0.5f, Interpolation.bounceOut));
                     segGragea.addAction(Actions.moveTo
                             (priGragea.getX(), priGragea.getY(), 0.5f, Interpolation.bounceOut));
+                    priGrageaListener.setFilaColumnaGragea(juegoLogico.getSegundaGrageaX(), juegoLogico.getSegundaGrageaY());
+                    segGrageaListener.setFilaColumnaGragea(juegoLogico.getPrimerGrageaX(), juegoLogico.getPrimerGrageaY());
+                    matrizGrageasVisuales[juegoLogico.getPrimerGrageaX()][juegoLogico.getPrimerGrageaY()] = segGragea;
+                    matrizGrageasVisuales[juegoLogico.getSegundaGrageaX()][juegoLogico.getSegundaGrageaY()] = priGragea;
                     sleep(750);
                 }
 
-                tblTablero.clear();
-                tblTablero.row();
+                //verifica que grageas fueron eliminadas y las reemplaza por las nuevas grageas
+                //aleatorias que se generaron
                 boolean hayNuevas = false;
+                float posXNuevaGrageaVisual;
+                float posYNuevaGrageaVisual;
+                boolean fueEliminada;
                 for (int i = 0; i < cantFilas; i++) {
                     for (int j = 0; j < cantColumnas; j++) {
-                        boolean fueEliminada = false;
-                        float posXNuevaGrageaVisual = 0;
-                        float posYNuevaGrageaVisual = 0;
                         if (matrizGrageasVisuales[i][j] != null) {
                             fueEliminada = !matrizGrageasVisuales[i][j].isVisible();
-                            posXNuevaGrageaVisual = matrizGrageasVisuales[i][j].getX();
-                            posYNuevaGrageaVisual = matrizGrageasVisuales[i][j].getY();
-                        }
-                        matrizGrageasVisuales[i][j] = new org.lab.grageasmagicas.parte_visual.GrageaVisual(matrizGrageasLogica[i][j].getTipo(), i, j, texturaGragea);
-                        matrizGrageasVisuales[i][j].addListener(new org.lab.grageasmagicas.parte_visual.GrageaVisualListener(matrizGrageasVisuales[i][j],
-                                matrizGrageasLogica[i][j], this));
-                        tblTablero.add(matrizGrageasVisuales[i][j]);
-                        if (fueEliminada) {
-                            hayNuevas = true;
-                            System.out.println("fue eliminada = " + i + "," + j + " pos =" + posXNuevaGrageaVisual + "," + posYNuevaGrageaVisual);
-                            matrizGrageasVisuales[i][j].setPosition(posXNuevaGrageaVisual, altoCamara);
-                            matrizGrageasVisuales[i][j].setVisible(true);
-                            matrizGrageasVisuales[i][j].addAction(Actions.moveTo
-                                    (posXNuevaGrageaVisual, posYNuevaGrageaVisual, 0.5f, Interpolation.bounceOut));
+                            if (fueEliminada) {
+                                hayNuevas = true;
+                                posXNuevaGrageaVisual = matrizGrageasVisuales[i][j].getX();
+                                posYNuevaGrageaVisual = matrizGrageasVisuales[i][j].getY();
+                                matrizGrageasVisuales[i][j].setTipo(matrizGrageasLogica[i][j].getTipo());
+                                GrageaVisualListener grageaListener = (GrageaVisualListener) (matrizGrageasVisuales[i][j].getListeners().get(0));
+                                grageaListener.setFilaColumnaGragea(i, j);
+                                //System.out.println("fue eliminada = " + i + "," + j + " pos =" + posXNuevaGrageaVisual + "," + posYNuevaGrageaVisual);
+                                matrizGrageasVisuales[i][j].setPosition(posXNuevaGrageaVisual, altoCamara);
+                                matrizGrageasVisuales[i][j].setVisible(true);
+                                matrizGrageasVisuales[i][j].addAction(Actions.moveTo
+                                        (posXNuevaGrageaVisual, posYNuevaGrageaVisual, 0.5f, Interpolation.bounceOut));
+                            }
                         }
                     }
-                    tblTablero.row();
                 }
+
                 if (hayNuevas) {
                     sleep(1000);
                 }
 
-                tblTablero.padBottom(5f);
-                tblTablero.setFillParent(true);
-                tblTablero.pack();
-
-                if (matrizGrageasVisuales[0][0] != null) {
-                    eliminadorVisual(juegoLogico);
-                    if (!juegoLogico.getGrageasCombinadas().isEmpty()) {
-                        sleep(750);
+                //verifica si ocurrieron combinaciones e intercambia aquellas grageas que se van a
+                //eliminar con sus superiores y luego las oculta para que puedan ser reemplazadas por
+                //las nuevas grageas aleatorias
+                if (!juegoLogico.getGrageasCombinadas().isEmpty()) {
+                    GrageaVisualListener priGrageaListener;
+                    GrageaVisualListener segGrageaListener;
+                    float posXAnt;
+                    float posYAnt;
+                    for (int j = 0; j < cantColumnas; j++) {
+                        List<Integer> combinacionTemp = new ArrayList();
+                        for (int i = 0; i < grageasCombinadas.size(); i++) {
+                            if (grageasCombinadas.get(i).y == j) {
+                                combinacionTemp.add(grageasCombinadas.get(i).x);
+                            }
+                        }
+                        Collections.sort(combinacionTemp);
+                        HashSet hs = new HashSet();
+                        hs.addAll(combinacionTemp);
+                        combinacionTemp.clear();
+                        combinacionTemp.addAll(hs);
+                        Random random = new Random();
+                        int bajar = 0;
+                        for (int i = cantFilas - 1; i >= 0; i--) {
+                            if (combinacionTemp.contains(i)) {
+                                matrizGrageasVisuales[i][j].setVisible(false);
+                                bajar++;
+                            } else {
+                                posXAnt = matrizGrageasVisuales[i][j].getX();
+                                posYAnt = matrizGrageasVisuales[i][j].getY();
+                                matrizGrageasVisuales[i][j].addAction(Actions.moveTo
+                                        (matrizGrageasVisuales[i + bajar][j].getX(), matrizGrageasVisuales[i + bajar][j].getY(),
+                                                0.5f, Interpolation.bounceOut));
+                                matrizGrageasVisuales[i + bajar][j].setPosition(posXAnt, posYAnt);
+                                priGrageaListener = (GrageaVisualListener) (matrizGrageasVisuales[i][j].getListeners().get(0));
+                                segGrageaListener = (GrageaVisualListener) (matrizGrageasVisuales[i + bajar][j].getListeners().get(0));
+                                priGrageaListener.setFilaColumnaGragea(i + bajar, j);
+                                segGrageaListener.setFilaColumnaGragea(i, j);
+                                GrageaVisual aux = matrizGrageasVisuales[i][j];
+                                matrizGrageasVisuales[i][j] = matrizGrageasVisuales[i + bajar][j];
+                                matrizGrageasVisuales[i + bajar][j] = aux;
+                            }
+                        }
                     }
+                    sleep(750);
                 }
+
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void eliminadorVisual(org.lab.grageasmagicas.parte_logica.Juego juegoLogico) {
-        org.lab.grageasmagicas.parte_logica.Gragea[][] matrizGrageasLogica = juegoLogico.getMatrizGrageas();
-        CopyOnWriteArrayList<Point> grageasCombinadas = juegoLogico.getGrageasCombinadas();
-        int cantColumnas = matrizGrageasLogica[0].length;
-        int cantFilas = matrizGrageasLogica.length;
-
-        for (int j = 0; j < cantColumnas; j++) {
-            List<Integer> combinacionTemp = new ArrayList();
-            for (int i = 0; i < grageasCombinadas.size(); i++) {
-                if (grageasCombinadas.get(i).y == j) {
-                    combinacionTemp.add(grageasCombinadas.get(i).x);
-                }
-            }
-            Collections.sort(combinacionTemp);
-            HashSet hs = new HashSet();
-            hs.addAll(combinacionTemp);
-            combinacionTemp.clear();
-            combinacionTemp.addAll(hs);
-            Random random = new Random();
-            int bajar = 0;
-            for (int i = cantFilas - 1; i >= 0; i--) {
-                if (combinacionTemp.contains(i)) {
-                    matrizGrageasVisuales[i][j].setVisible(false);
-                    bajar++;
-                } else {
-                    if (bajar != 0) {
-                        float posXAnt = matrizGrageasVisuales[i][j].getX();
-                        float posYAnt = matrizGrageasVisuales[i][j].getY();
-                        matrizGrageasVisuales[i][j].addAction(Actions.moveTo
-                                (matrizGrageasVisuales[i + bajar][j].getX(), matrizGrageasVisuales[i + bajar][j].getY(),
-                                        0.5f, Interpolation.bounceOut));
-                        matrizGrageasVisuales[i + bajar][j].setPosition(posXAnt, posYAnt);
-                        org.lab.grageasmagicas.parte_visual.GrageaVisual aux = matrizGrageasVisuales[i][j];
-                        matrizGrageasVisuales[i][j] = matrizGrageasVisuales[i + bajar][j];
-                        matrizGrageasVisuales[i + bajar][j] = aux;
-                    }
-                }
-            }
-        }
-    }
-
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        escena.act(delta);
-        escena.setViewport(vista);
-        escena.draw();
+        if (juegoLogico != null) {
+            escena.act(delta);
+            escena.setViewport(vista);
+            escena.draw();
+        }
     }
 
     @Override
     public void update(Observable observable, Object o) {
-        juegoLogico = (org.lab.grageasmagicas.parte_logica.Juego) observable;
+        juegoLogico = (Juego) observable;
         show();
     }
 
@@ -219,7 +261,7 @@ public class JuegoVisual implements Screen, Observer {
 
     @Override
     public void hide() {
-
+        //dispose();
     }
 
     @Override
@@ -229,6 +271,13 @@ public class JuegoVisual implements Screen, Observer {
         escena.dispose();
         assetManager.unload("fondogolosinas.png");
         assetManager.unload("gragea.png");
+    }
+
+    public void limpiarPosGrageas() {
+        primerGrageaX = -1;
+        primerGrageaY = -1;
+        segundaGrageaX = -1;
+        segundaGrageaY = -1;
     }
 
     public boolean verificarAdyacentes() {
@@ -292,11 +341,8 @@ public class JuegoVisual implements Screen, Observer {
         this.inputHabilitado = inputHabilitado;
     }
 
-    public org.lab.grageasmagicas.parte_visual.GrageaVisual[][] getMatrizGrageasVisuales() {
+    public GrageaVisual[][] getMatrizGrageasVisuales() {
         return matrizGrageasVisuales;
     }
 
-    public void setMatrizGrageasVisuales(org.lab.grageasmagicas.parte_visual.GrageaVisual[][] matrizGrageasVisuales) {
-        this.matrizGrageasVisuales = matrizGrageasVisuales;
-    }
 }

@@ -1,17 +1,6 @@
 package org.lab.grageasmagicas.parte_logica;
 
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.B;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.C;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.D;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.E;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.F;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.G;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.H;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.I;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.J;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.K;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.L;
-import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron;
+import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.*;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -24,17 +13,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PatronControlador implements Runnable {
 
     private CyclicBarrier barrierVerificarJugada;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron a;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron b;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron c;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron d;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron e;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron f;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron g;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron h;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron i;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron j;
-    private org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Patron k;
+    private Patron a;
+    private Patron b;
+    private Patron c;
+    private Patron d;
+    private Patron e;
+    private Patron f;
+    private Patron g;
+    private Patron h;
+    private Patron i;
+    private Patron j;
+    private Patron k;
     private Patron l;
     private boolean finJuego;
     private CyclicBarrier barrierFinPatrones;
@@ -47,7 +36,7 @@ public class PatronControlador implements Runnable {
         int limAncho = (matrizGrageas[0].length - 1);
         barrierFinPatrones = new CyclicBarrier(13);
         hayJugada = new AtomicBoolean(false);
-        a = new org.lab.grageasmagicas.parte_logica.patron_jugada_posible.A(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
+        a = new A(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         b = new B(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         c = new C(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         d = new D(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
