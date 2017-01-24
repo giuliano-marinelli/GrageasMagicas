@@ -10,9 +10,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -54,6 +58,8 @@ public class JuegoVisual implements Screen, Observer {
     //actors
     private Table tblTablero;
     private Text puntaje;
+    private TextButton volver;
+    private TextButton.TextButtonStyle volverStyle;
     //assets
     private Texture texturaFondo;
     private Texture texturaGragea;
@@ -104,11 +110,28 @@ public class JuegoVisual implements Screen, Observer {
                     tblTablero.background(new TextureRegionDrawable(new TextureRegion(texturaFondo)));
                     //tblTablero.setColor(Color.GOLD);
                     escena.addActor(tblTablero);
+
                     puntaje = new Text(fuenteBase, (int) juegoLogico.getPuntaje() + "");
                     puntaje.setPosition(50, altoCamara - 50);
                     puntaje.setColor(Color.WHITE);
                     puntaje.setEscala(2, 2);
                     escena.addActor(puntaje);
+
+                    volverStyle = new TextButton.TextButtonStyle();
+                    volverStyle.font = fuenteBase;
+                    volver = new TextButton("VOLVER", volverStyle);
+                    volver.setPosition(anchoCamara - volver.getWidth() - 50, altoCamara - volver.getHeight() - 50);
+                    volver.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);
+
+                            dispose();
+                            adminPantalla.setScreen(menuPrincipal);
+                        }
+                    });
+                    escena.addActor(volver);
+
                     tblTablero.row();
                     for (int i = 0; i < cantFilas; i++) {
                         for (int j = 0; j < cantColumnas; j++) {
