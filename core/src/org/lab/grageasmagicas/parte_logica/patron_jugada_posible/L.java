@@ -31,7 +31,7 @@ public class L extends Patron {
     protected boolean verificarPatron(int x, int y) {
         boolean res = false;
         res = ((matrizGragea[x][y + 1].getTipo() == matrizGragea[x + 1][y].getTipo()) &&
-                (matrizGragea[x][y + 1].getTipo() == matrizGragea[x + 2][y].getTipo()));
+                (matrizGragea[x][y + 1].getTipo() == matrizGragea[x][y + 2].getTipo()));
         /*if (res) {
             System.out.println("L detecto movimiento en " + x + "," + y);
         }*/

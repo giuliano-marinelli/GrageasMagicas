@@ -25,7 +25,7 @@ public class G extends Patron {
         for (int i = 0; i < alto; i++) {
             for (int j = 0; j < ancho; j++) {
                 pos = new Point(i, j);
-                if ((ancho - j > 2) && (alto - i > 1)) {
+                if ((ancho - j > 1) && (alto - i > 2)) {
                     setPosicion(pos);
                 }
             }

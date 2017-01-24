@@ -35,7 +35,7 @@ public class D extends Patron {
         res = (((matrizGragea[x][y].getTipo() == matrizGragea[x + 1][y].getTipo()) &&
                 (matrizGragea[x][y].getTipo() == matrizGragea[x + 3][y].getTipo())));
         if (res) {
-            System.out.println("D detecto movimiento en " + x + "," + y);
+            //System.out.println("D detecto movimiento en " + x + "," + y);
         }
         return res;
     }

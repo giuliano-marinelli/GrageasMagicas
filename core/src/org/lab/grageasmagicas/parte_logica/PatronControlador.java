@@ -32,8 +32,8 @@ public class PatronControlador implements Runnable {
     public PatronControlador(Gragea[][] matrizGrageas, CyclicBarrier verificarJugada) {
         this.barrierVerificarJugada = verificarJugada;
         this.finJuego = false;
-        int limAlto = (matrizGrageas.length - 1);
-        int limAncho = (matrizGrageas[0].length - 1);
+        int limAlto = (matrizGrageas.length);
+        int limAncho = (matrizGrageas[0].length);
         barrierFinPatrones = new CyclicBarrier(13);
         hayJugada = new AtomicBoolean(false);
         a = new A(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);

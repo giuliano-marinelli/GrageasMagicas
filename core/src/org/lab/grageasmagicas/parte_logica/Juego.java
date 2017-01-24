@@ -13,8 +13,6 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.lang.Thread.sleep;
-
 
 /**
  * @author Bermudez Martin, Kurchan Ines, Marinelli Giuliano
@@ -106,7 +104,7 @@ public class Juego extends Observable implements Runnable {
 
             Point grageaIni;
             Point grageaFin;
-            /*
+
             //habilita a controladorJugada a verificar si existe jugada posible
             barrierVerificarJugada.await();
             //espera que el verificador termine
@@ -120,7 +118,7 @@ public class Juego extends Observable implements Runnable {
             }
             //habilita al controladorJugada para que termine de ejecutarse.
             barrierVerificarJugada.await();
-            */
+
             while (!finJuego) {
                 System.out.println("\033[32mJuega\033[30m");
                 System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
@@ -224,7 +222,7 @@ public class Juego extends Observable implements Runnable {
                 if (pausa) {
                     dormir();
                 }
-                /*
+
                 //habilita a controladorJugada a verificar si existe jugada posible
                 barrierVerificarJugada.await();
                 //espera que el verificador termine
@@ -238,7 +236,7 @@ public class Juego extends Observable implements Runnable {
                 }
                 //habilita al controladorJugada para que termine de ejecutarse.
                 barrierVerificarJugada.await();
-                */
+
             }
             if (finJuego) {
                 System.out.println("terminó el juego!");
