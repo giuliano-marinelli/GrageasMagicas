@@ -116,6 +116,8 @@ public class Juego extends Observable implements Runnable {
                 setChanged();
                 notifyObservers();
 
+                limpiarPosGrageas();
+
                 boolean sonAdy = false;
                 do {
                     //Permite que usuario pueda interactuar con la interfaz
@@ -147,7 +149,7 @@ public class Juego extends Observable implements Runnable {
                     //queda a la espera de que los comprobadores terminen
                     barrierComp.await();
 
-                    calcularCombos();
+                    //calcularCombos();
 
                     //Imprime el juego por consola
                     System.out.println("\033[34mGrageas intercambiadas\033[30m");
@@ -249,7 +251,7 @@ public class Juego extends Observable implements Runnable {
             //queda a la espera de que los comprobadores terminen
             barrierComp.await();
 
-            calcularCombos();
+            //calcularCombos();
 
             System.out.println("\033[34mPrimer matriz\033[30m \n");
             //Imprime el juego por consola
@@ -294,7 +296,7 @@ public class Juego extends Observable implements Runnable {
                 //queda a la espera de que los comprobadores terminen
                 barrierComp.await();
 
-                calcularCombos();
+                //calcularCombos();
 
                 //Imprime el juego por consola
                 System.out.println();
@@ -405,7 +407,7 @@ public class Juego extends Observable implements Runnable {
      * @param juego
      * @return String de la matriz.
      */
-    public String toStringComb(Gragea[][] juego) {
+    public String toStringComb2(Gragea[][] juego) {
         int alto = juego.length;
         int ancho = juego[0].length;
         String res = "    ";
@@ -433,6 +435,42 @@ public class Juego extends Observable implements Runnable {
             } else {
                 res += "\033[3" + (juego[i][ancho - 1].getTipo() + 1) + "m" + juego[i][ancho - 1].getTipo() + "\033[30m";
             }
+            res += "\n";
+        }
+        return res;
+    }
+
+    /**
+     * Devuelve un string con la matriz del juego indicando las combinaciones que se encontraron
+     * para imprimirla por pantalla.
+     *
+     * @param juego
+     * @return String de la matriz.
+     */
+    public String toStringComb(Gragea[][] juego) {
+        int alto = juego.length;
+        int ancho = juego[0].length;
+        String res = "    ";
+        for (int i = 0; i < alto; i++) {
+            res += " " + i;
+        }
+        res += "\n    ";
+        for (int i = 0; i < alto; i++) {
+            res += "__";
+        }
+        res += "\n";
+        for (int i = 0; i < alto; i++) {
+            res += i + "  | ";
+            for (int j = 0; j < ancho - 1; j++) {
+                if (grageasCombinadas.contains(new Point(i, j))) {
+                    res += juego[i][j].getTipo();
+                    res += ",";
+                } else {
+                    res += juego[i][j].getTipo();
+                    res += ",";
+                }
+            }
+            res += juego[i][ancho - 1].getTipo();
             res += "\n";
         }
         return res;

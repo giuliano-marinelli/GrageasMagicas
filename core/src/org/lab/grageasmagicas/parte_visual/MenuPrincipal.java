@@ -77,9 +77,9 @@ public class MenuPrincipal implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Click", "Presiono jugar");
-                int ancho = 6;
-                int alto = 6;
-                int cantGragea = 5;
+                int ancho = 5;
+                int alto = 5;
+                int cantGragea = 8;
                 int velocidad = 10;
                 AtomicBoolean finJuego = new AtomicBoolean(false);
 
