@@ -32,9 +32,9 @@ public class L2 extends Patron {
         boolean res = false;
         res = ((matrizGragea[x][y].getTipo() == matrizGragea[x + 1][y + 1].getTipo()) &&
                 (matrizGragea[x][y].getTipo() == matrizGragea[x + 2][y + 1].getTipo()));
-        /*if (res) {
+        if (res) {
             System.out.println("L2 detecto movimiento en " + x + "," + y);
-        }*/
+        }
         return res;
     }
 }

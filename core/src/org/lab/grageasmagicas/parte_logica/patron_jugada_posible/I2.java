@@ -32,10 +32,10 @@ public class I2 extends Patron {
     protected boolean verificarPatron(int x, int y) {
         boolean res = false;
         res = ((matrizGragea[x][y + 1].getTipo() == matrizGragea[x + 1][y + 1].getTipo()) &&
-                (matrizGragea[x][y].getTipo() == matrizGragea[x + 2][y].getTipo()));
-        /*if (res) {
+                (matrizGragea[x][y+1].getTipo() == matrizGragea[x + 2][y].getTipo()));
+        if (res) {
             System.out.println("I2 detecto movimiento en " + x + "," + y);
-        }*/
+        }
         return res;
     }
 }

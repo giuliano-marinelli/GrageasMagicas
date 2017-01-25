@@ -1,7 +1,6 @@
 package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -32,7 +31,7 @@ public class GrageaVisualListener extends InputListener {
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         super.touchUp(event, x, y, pointer, button);
         try {
-            if (juegoVisual.isInputHabilitado()) {
+            if (juegoVisual.isInputGrageas()) {
                 if (!grageaVisual.isSeleccionada()) {
                     if (!juegoVisual.isHayGrageaSeleccionada()) {
                         //Sound sGrageaSeleccionada = Gdx.audio.newSound(Gdx.files.internal("grageaSeleccionada.mp3"));
@@ -41,7 +40,8 @@ public class GrageaVisualListener extends InputListener {
                         juegoVisual.setPrimerGrageaX(filaGragea);
                         juegoVisual.setPrimerGrageaY(columnaGragea);
                     } else {
-                        juegoVisual.setInputHabilitado(false);
+                        juegoVisual.setInputGrageas(false);
+                        juegoVisual.setInputMenus(false);
                         juegoVisual.setSegundaGrageaX(filaGragea);
                         juegoVisual.setSegundaGrageaY(columnaGragea);
                         if (juegoVisual.verificarAdyacentes()) {
@@ -51,7 +51,8 @@ public class GrageaVisualListener extends InputListener {
                         } else {
                             //Sound sMovimientoInvalido = Gdx.audio.newSound(Gdx.files.internal("movimientoInvalido.mp3"));
                             Gdx.app.log("Check", "Movimiento invalido");
-                            juegoVisual.setInputHabilitado(true);
+                            juegoVisual.setInputGrageas(true);
+                            juegoVisual.setInputMenus(true);
                         }
                     }
                 } else {

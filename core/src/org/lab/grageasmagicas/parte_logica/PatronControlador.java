@@ -6,6 +6,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.xml.soap.AttachmentPart;
+
 /**
  * Verifica si existe alguna jugada posible.
  */
@@ -25,16 +27,20 @@ public class PatronControlador implements Runnable {
     private Patron j;
     private Patron k;
     private Patron l;
-    private boolean finJuego;
+    private Patron i2;
+    private Patron j2;
+    private Patron k2;
+    private Patron l2;
+    private AtomicBoolean finJuego;
     private CyclicBarrier barrierFinPatrones;
     private AtomicBoolean hayJugada;
 
-    public PatronControlador(Gragea[][] matrizGrageas, CyclicBarrier verificarJugada) {
+    public PatronControlador(Gragea[][] matrizGrageas, CyclicBarrier verificarJugada, AtomicBoolean finJuego) {
         this.barrierVerificarJugada = verificarJugada;
-        this.finJuego = false;
+        this.finJuego = finJuego;
         int limAlto = (matrizGrageas.length);
         int limAncho = (matrizGrageas[0].length);
-        barrierFinPatrones = new CyclicBarrier(13);
+        barrierFinPatrones = new CyclicBarrier(17);
         hayJugada = new AtomicBoolean(false);
         a = new A(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         b = new B(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
@@ -48,40 +54,53 @@ public class PatronControlador implements Runnable {
         j = new J(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         k = new K(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         l = new L(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
+        i2 = new I2(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
+        j2 = new J2(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
+        k2 = new K2(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
+        l2 = new L2(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
     }
 
     @Override
     public void run() {
         try {
-            while (!finJuego) {
+            while (!finJuego.get()) {
                 barrierVerificarJugada.await();
-                hayJugada.set(false);
-                Thread tA = new Thread(a);
-                tA.start();
-                Thread tB = new Thread(b);
-                tB.start();
-                Thread tC = new Thread(c);
-                tC.start();
-                Thread tD = new Thread(d);
-                tD.start();
-                Thread tE = new Thread(e);
-                tE.start();
-                Thread tF = new Thread(f);
-                tF.start();
-                Thread tG = new Thread(g);
-                tG.start();
-                Thread tH = new Thread(h);
-                tH.start();
-                Thread tI = new Thread(i);
-                tI.start();
-                Thread tJ = new Thread(j);
-                tJ.start();
-                Thread tK = new Thread(k);
-                tK.start();
-                Thread tL = new Thread(l);
-                tL.start();
-                barrierFinPatrones.await();
-                barrierVerificarJugada.await();
+                if (!finJuego.get()) {
+                    hayJugada.set(false);
+                    Thread tA = new Thread(a);
+                    tA.start();
+                    Thread tB = new Thread(b);
+                    tB.start();
+                    Thread tC = new Thread(c);
+                    tC.start();
+                    Thread tD = new Thread(d);
+                    tD.start();
+                    Thread tE = new Thread(e);
+                    tE.start();
+                    Thread tF = new Thread(f);
+                    tF.start();
+                    Thread tG = new Thread(g);
+                    tG.start();
+                    Thread tH = new Thread(h);
+                    tH.start();
+                    Thread tI = new Thread(i);
+                    tI.start();
+                    Thread tJ = new Thread(j);
+                    tJ.start();
+                    Thread tK = new Thread(k);
+                    tK.start();
+                    Thread tL = new Thread(l);
+                    tL.start();
+                    Thread tI2 = new Thread(i2);
+                    tI2.start();
+                    Thread tJ2 = new Thread(j2);
+                    tJ2.start();
+                    Thread tK2 = new Thread(k2);
+                    tK2.start();
+                    Thread tL2 = new Thread(l2);
+                    tL2.start();
+                    barrierFinPatrones.await();
+                }
                 barrierVerificarJugada.await();
             }
         } catch (InterruptedException e) {
@@ -99,10 +118,6 @@ public class PatronControlador implements Runnable {
     public boolean existeJugada() {
         //cualquier objeto patron va a tener el mismo valor en la variable hayJugada
         return a.hayJugada();
-    }
-
-    public void setFinJuego(boolean fin) {
-        finJuego = fin;
     }
 
 }

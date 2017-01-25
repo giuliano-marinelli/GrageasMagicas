@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,16 +21,17 @@ import java.util.logging.Logger;
 public class Juego extends Observable implements Runnable {
 
     private final Gragea[][] matrizGrageas;
+    private int alto;
+    private int ancho;
     private int velocidad;
     private int cantGragea;
     private boolean pausa = false;
-    private boolean finJuego = false;
+    private AtomicBoolean finJuego;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
     private Comprobador[] comprobadorAlto;
     private Comprobador[] comprobadorAncho;
     private Eliminador[] eliminadores;
-    private CyclicBarrier barrierCompAlto;
-    private CyclicBarrier barrierCompAncho;
+    private CyclicBarrier barrierComp;
     private CyclicBarrier barrierElim;
     private CyclicBarrier barrierEntrada;
     private float puntaje = 0;
@@ -39,14 +41,19 @@ public class Juego extends Observable implements Runnable {
     private int segundaGrageaY;
     private PatronControlador controladorJugada;
     private CyclicBarrier barrierVerificarJugada;
+    private boolean hayJugadas;
 
-    public Juego(int ancho, int alto, int velocidad, int cantGragea) {
+    public Juego(int ancho, int alto, int velocidad, int cantGragea, AtomicBoolean finJuego) {
+        this.ancho = ancho;
+        this.alto = alto;
         this.velocidad = velocidad;
         this.cantGragea = cantGragea;
         this.primerGrageaX = -1;
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
+        this.finJuego = finJuego;
+        this.hayJugadas = true;
         matrizGrageas = new Gragea[alto][ancho];
         comprobadorAlto = new Comprobador[alto];
         comprobadorAncho = new Comprobador[ancho];
@@ -64,23 +71,21 @@ public class Juego extends Observable implements Runnable {
 
         //cargarMatrizDefault(matrizGrageas);
         barrierVerificarJugada = new CyclicBarrier(2);
-        controladorJugada = new PatronControlador(matrizGrageas, barrierVerificarJugada);
+        controladorJugada = new PatronControlador(matrizGrageas, barrierVerificarJugada, finJuego);
         Thread tControlador = new Thread(controladorJugada);
         tControlador.start();
-        barrierCompAlto = new CyclicBarrier(alto + 1);
+        barrierComp = new CyclicBarrier(alto + ancho + 1);
 
         //crea y lanza los comprobadores
         Thread comprobadorThread;
         for (int i = 0; i < alto; i++) {
-            comprobadorAlto[i] = new ComprobadorAlto(matrizGrageas, i, grageasCombinadas, barrierCompAlto);
+            comprobadorAlto[i] = new ComprobadorAlto(matrizGrageas, i, grageasCombinadas, barrierComp, finJuego);
             comprobadorThread = new Thread(comprobadorAlto[i]);
             comprobadorThread.start();
         }
 
-        barrierCompAncho = new CyclicBarrier(ancho + 1);
-
         for (int i = 0; i < ancho; i++) {
-            comprobadorAncho[i] = new ComprobadorAncho(matrizGrageas, i, grageasCombinadas, barrierCompAncho);
+            comprobadorAncho[i] = new ComprobadorAncho(matrizGrageas, i, grageasCombinadas, barrierComp, finJuego);
             comprobadorThread = new Thread(comprobadorAncho[i]);
             comprobadorThread.start();
         }
@@ -90,7 +95,7 @@ public class Juego extends Observable implements Runnable {
         //crea y lanza los eliminadores
         Thread eliminadorThread;
         for (int i = 0; i < ancho; i++) {
-            eliminadores[i] = new Eliminador(matrizGrageas, i, grageasCombinadas, barrierElim, cantGragea);
+            eliminadores[i] = new Eliminador(matrizGrageas, i, grageasCombinadas, barrierElim, cantGragea, finJuego);
             eliminadorThread = new Thread(eliminadores[i]);
             eliminadorThread.start();
         }
@@ -102,24 +107,7 @@ public class Juego extends Observable implements Runnable {
             //incialmente se realizan las combinaciones que hallan salido de forma aleatoria
             combinacionInicial();
 
-            Point grageaIni;
-            Point grageaFin;
-
-            //habilita a controladorJugada a verificar si existe jugada posible
-            barrierVerificarJugada.await();
-            //espera que el verificador termine
-            barrierVerificarJugada.await();
-            //cuando el verificador termina revisa si existe jugada
-            if (!controladorJugada.existeJugada()) {
-                finJuego = true;
-                System.out.println("No queda ningún movimiento posible!");
-                //avisa al controlador que el juego termina
-                controladorJugada.setFinJuego(true);
-            }
-            //habilita al controladorJugada para que termine de ejecutarse.
-            barrierVerificarJugada.await();
-
-            while (!finJuego) {
+            while (!finJuego.get()) {
                 System.out.println("\033[32mJuega\033[30m");
                 System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
                 //Imprime el juego por consola
@@ -143,103 +131,51 @@ public class Juego extends Observable implements Runnable {
                     segundaGrageaX = Integer.parseInt(gf.substring(0, 1));
                     segundaGrageaY = Integer.parseInt(gf.substring(1, 2));*/
 
-                    /*grageaIni = new Point(primerGrageaX, primerGrageaY);
-                    grageaFin = new Point(segundaGrageaX, segundaGrageaY);*/
-
                     //verificar si el movimiento de las grageas es válido.
                     sonAdy = verificarAdyacentes(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
-                    if (!sonAdy) {
+                    if (!sonAdy && !finJuego.get()) {
                         System.out.println("\033[31mMovimiento no válido\033[30m \n");
                     }
                     //mientras que la jugada no involucre posiciones adyacentes seguirá pidiendo los valores.
-                } while (!sonAdy);
-
-                //invertimos las grageas de lugar
-                intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
-
-                //despierta a los comprobadores
-                barrierCompAncho.await();
-                barrierCompAlto.await();
-                //queda a la espera de que los comprobadores terminen
-                barrierCompAncho.await();
-                barrierCompAlto.await();
-
-                calcularCombos();
-
-                //Imprime el juego por consola
-                System.out.println("\033[34mGrageas intercambiadas\033[30m");
-                System.out.println(toStringComb(matrizGrageas));
-
-                setChanged();
-                notifyObservers();
-                /*System.out.println("Presione enter...");
-                TecladoIn.read();*/
-
-                //si las combinaciones de grageas esta vacia significa que el intercambio esta mal hecho
-                if (grageasCombinadas.isEmpty()) {
-                    System.out.println("\033[31mIntercambio de grageas incorrecto\033[30m");
-                    System.out.println();
+                } while (!sonAdy && !finJuego.get());
+                if (!finJuego.get()) {
+                    //invertimos las grageas de lugar
                     intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
-                } else {
-                    limpiarPosGrageas();
-                    while (!grageasCombinadas.isEmpty()) {
-                        System.out.println("\033[34mCombinacion y eliminacion de grageas: \033[30m");
-                        System.out.println("\033[31mEliminadores: \033[30m");
 
-                        //despierta a los eliminadores
-                        barrierElim.await();
-                        //queda en espera de que los eliminadores terminen
-                        barrierElim.await();
+                    //despierta a los comprobadores
+                    barrierComp.await();
+                    //queda a la espera de que los comprobadores terminen
+                    barrierComp.await();
 
-                        //calcula y agrega las combinaciones logradas al puntaje antes de vaciar el buffer
-                        calcularPuntaje();
+                    calcularCombos();
 
-                        //limpia el buffer con las combinaciones de grageas que ya fueron
-                        //eliminadas por los eliminadores
-                        grageasCombinadas.clear();
+                    //Imprime el juego por consola
+                    System.out.println("\033[34mGrageas intercambiadas\033[30m");
+                    System.out.println(toStringComb(matrizGrageas));
 
-                        //despierta a los comprobadores
-                        barrierCompAncho.await();
-                        barrierCompAlto.await();
-                        //queda a la espera de que los comprobadores terminen
-                        barrierCompAncho.await();
-                        barrierCompAlto.await();
+                    setChanged();
+                    notifyObservers();
+                    /*System.out.println("Presione enter...");
+                    TecladoIn.read();*/
 
-                        calcularCombos();
-
-                        //Imprime el juego por consola
+                    //si las combinaciones de grageas esta vacia significa que el intercambio esta mal hecho
+                    if (grageasCombinadas.isEmpty()) {
+                        System.out.println("\033[31mIntercambio de grageas incorrecto\033[30m");
                         System.out.println();
-                        System.out.println(toStringComb(matrizGrageas));
+                        intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
+                    } else {
+                        limpiarPosGrageas();
+                        //elimina las combinaciones hasta que no quede ninguna
+                        eliminarCombinaciones();
+                        //si no hay moviento posible se resetean todas las grageas
+                        verificarSiExisteMovimiento();
+                    }
 
-                        setChanged();
-                        notifyObservers();
-                        /*System.out.println("Presione enter...");
-                        TecladoIn.read();*/
+                    //si el juego es pausado se detendra aqui
+                    if (pausa) {
+                        dormir();
                     }
                 }
-
-                //si el juego es pausado se detendra aqui
-                if (pausa) {
-                    dormir();
-                }
-
-                //habilita a controladorJugada a verificar si existe jugada posible
-                barrierVerificarJugada.await();
-                //espera que el verificador termine
-                barrierVerificarJugada.await();
-                //cuando el verificador termina revisa si existe jugada
-                if (!controladorJugada.existeJugada()) {
-                    finJuego = true;
-                    System.out.println("No queda ningún movimiento posible!");
-                    //avisa al controlador que el juego termina
-                    controladorJugada.setFinJuego(true);
-                }
-                //habilita al controladorJugada para que termine de ejecutarse.
-                barrierVerificarJugada.await();
-
-            }
-            if (finJuego) {
-                System.out.println("terminó el juego!");
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Juego.class.getName()).log(Level.SEVERE, null, ex);
@@ -309,11 +245,9 @@ public class Juego extends Observable implements Runnable {
     public void combinacionInicial() {
         try {
             //despierta a los comprobadores
-            barrierCompAncho.await();
-            barrierCompAlto.await();
+            barrierComp.await();
             //queda a la espera de que los comprobadores terminen
-            barrierCompAncho.await();
-            barrierCompAlto.await();
+            barrierComp.await();
 
             calcularCombos();
 
@@ -326,8 +260,20 @@ public class Juego extends Observable implements Runnable {
             /*System.out.println("Presione enter...");
             TecladoIn.read();*/
 
-            while (!grageasCombinadas.isEmpty()) {
+            eliminarCombinaciones();
 
+            verificarSiExisteMovimiento();
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Juego.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void eliminarCombinaciones() {
+        try {
+            while (!grageasCombinadas.isEmpty()) {
                 System.out.println("\033[34mCombinacion y eliminacion de grageas: \033[30m");
                 System.out.println("\033[31mEliminadores: \033[30m");
 
@@ -344,11 +290,9 @@ public class Juego extends Observable implements Runnable {
                 grageasCombinadas.clear();
 
                 //despierta a los comprobadores
-                barrierCompAncho.await();
-                barrierCompAlto.await();
+                barrierComp.await();
                 //queda a la espera de que los comprobadores terminen
-                barrierCompAncho.await();
-                barrierCompAlto.await();
+                barrierComp.await();
 
                 calcularCombos();
 
@@ -358,11 +302,67 @@ public class Juego extends Observable implements Runnable {
 
                 setChanged();
                 notifyObservers();
-                /*System.out.println("Presione enter...");
-                TecladoIn.read();*/
+                        /*System.out.println("Presione enter...");
+                        TecladoIn.read();*/
             }
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Juego.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void verificarSiExisteMovimiento() {
+        try {
+            //habilita a controladorJugada a verificar si existe jugada posible
+            barrierVerificarJugada.await();
+            //espera que el verificador termine
+            barrierVerificarJugada.await();
+            while (!controladorJugada.existeJugada()) {
+                //cuando el verificador termina revisa si existe jugada
+                System.out.println("No queda ningún movimiento posible!");
+                hayJugadas = false;
+
+                setChanged();
+                notifyObservers();
+
+                barrierEntrada.await();
+                barrierEntrada.await();
+
+                hayJugadas = true;
+
+                //llenar grageas combinadas con todas las grageas
+                for (int i = 0; i < ancho; i++) {
+                    for (int j = 0; j < alto; j++) {
+                        grageasCombinadas.add(new Point(i, j));
+                    }
+                }
+                //despierta a los eliminadores
+                barrierElim.await();
+                //queda en espera de que los eliminadores terminen
+                barrierElim.await();
+
+                setChanged();
+                notifyObservers();
+
+                //limpia el buffer con las combinaciones de grageas que ya fueron
+                //eliminadas por los eliminadores
+                grageasCombinadas.clear();
+
+                //despierta a los comprobadores
+                barrierComp.await();
+                //queda a la espera de que los comprobadores terminen
+                barrierComp.await();
+
+                eliminarCombinaciones();
+
+                //habilita a controladorJugada a verificar si existe jugada posible
+                barrierVerificarJugada.await();
+                //espera que el verificador termine
+                barrierVerificarJugada.await();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
         }
@@ -458,8 +458,17 @@ public class Juego extends Observable implements Runnable {
      * Termina el hilo, seteando finJuego en true.
      */
     public void terminar() {
-        this.finJuego = true;
-        System.out.println("\033[34mFIN\033[30m \n");
+        try {
+            finJuego.set(true);
+            barrierComp.await();
+            barrierElim.await();
+            barrierVerificarJugada.await();
+            System.out.println("\033[34mFIN\033[30m \n");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -663,4 +672,31 @@ public class Juego extends Observable implements Runnable {
         this.puntaje = puntaje;
     }
 
+    public boolean isFinJuego() {
+        return finJuego.get();
+    }
+
+    public void setFinJuego(boolean finJuego) {
+        this.finJuego.set(finJuego);
+    }
+
+    public CyclicBarrier getBarrierComp() {
+        return barrierComp;
+    }
+
+    public CyclicBarrier getBarrierElim() {
+        return barrierElim;
+    }
+
+    public PatronControlador getControladorJugada() {
+        return controladorJugada;
+    }
+
+    public boolean isHayJugadas() {
+        return hayJugadas;
+    }
+
+    public void setHayJugadas(boolean hayJugadas) {
+        this.hayJugadas = hayJugadas;
+    }
 }

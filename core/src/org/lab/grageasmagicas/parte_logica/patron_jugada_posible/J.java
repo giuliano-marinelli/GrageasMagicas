@@ -32,9 +32,9 @@ public class J extends Patron {
         boolean res = false;
         res = ((matrizGragea[x + 1][y].getTipo() == matrizGragea[x + 1][y + 1].getTipo()) &&
                 (matrizGragea[x + 1][y].getTipo() == matrizGragea[x][y + 2].getTipo()));
-        /*if (res) {
+        if (res) {
             System.out.println("J detecto movimiento en " + x + "," + y);
-        }*/
+        }
         return res;
     }
 }

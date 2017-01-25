@@ -16,6 +16,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.lab.grageasmagicas.parte_logica.Juego;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class MenuPrincipal implements Screen {
 
     private int anchoCamara;
@@ -75,16 +77,17 @@ public class MenuPrincipal implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Click", "Presiono jugar");
-                int ancho = 5;
-                int alto = 5;
+                int ancho = 6;
+                int alto = 6;
                 int cantGragea = 5;
                 int velocidad = 10;
+                AtomicBoolean finJuego = new AtomicBoolean(false);
 
-                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea);
+                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, finJuego);
 
                 JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 
-                JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual);
+                JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual, finJuego);
                 Thread juegoControladorThread = new Thread(juegoControlador);
                 juegoControladorThread.start();
 

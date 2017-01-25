@@ -1,5 +1,7 @@
 package org.lab.grageasmagicas.parte_logica;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author Bermudez Martin, Kurchan Ines, Marinelli Giuliano
  */
@@ -15,9 +17,10 @@ public class Principal {
         int velocidad = 10;//TecladoIn.readInt();
         //System.out.println("Cantidad de grageas: ");
         int cantGragea = 3;//TecladoIn.readInt();
+        AtomicBoolean finJuego = new AtomicBoolean(false);
 
         //crea y lanza el juego
-        Juego juego = new Juego(ancho, alto, velocidad, cantGragea);
+        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, finJuego);
         Thread juegoThread = new Thread(juego);
         juegoThread.start();
     }

@@ -77,8 +77,17 @@ public class GrageaVisual extends Actor {
             case 4:
                 setColor(Color.PURPLE);
                 break;
-            default:
+            case 5:
+                setColor(Color.CYAN);
+                break;
+            case 6:
                 setColor(Color.LIGHT_GRAY);
+                break;
+            case 7:
+                setColor(Color.BLACK);
+                break;
+            default:
+                setColor(Color.WHITE);
                 break;
         }
     }

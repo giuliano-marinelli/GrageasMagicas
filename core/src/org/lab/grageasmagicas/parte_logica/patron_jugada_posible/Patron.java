@@ -54,6 +54,7 @@ public abstract class Patron implements Runnable {
                 hayJugada.set(verificarPatron(x, y) || hayJugada.get());
                 i++;
             }
+            i = 0;
             //espera a que todos los hilos terminen el while, luego se rompe y PatronControlador puede continuar.
             barrierFinPatron.await();
         } catch (InterruptedException e) {
