@@ -4,13 +4,13 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.badlogic.gdx.utils.Align;
 
-public class Mover extends TemporalAction {
+public class AnimacionMover extends TemporalAction {
     private float startX, startY;
     private float endX, endY;
     private int alignment = Align.bottomLeft;
     private JuegoVisual juegoVisual;
 
-    public Mover(float x, float y, float duration, Interpolation interpolation, JuegoVisual juegoVisual) {
+    public AnimacionMover(float x, float y, float duration, Interpolation interpolation, JuegoVisual juegoVisual) {
         setPosition(x, y);
         setDuration(duration);
         setInterpolation(interpolation);
@@ -25,7 +25,7 @@ public class Mover extends TemporalAction {
     protected void update(float percent) {
         target.setPosition(startX + (endX - startX) * percent, startY + (endY - startY) * percent, alignment);
         if (getTime() >= getDuration()) {
-            juegoVisual.despertar();
+            juegoVisual.animacionTermina();
         }
     }
 

@@ -91,7 +91,7 @@ public class MenuPrincipal implements Screen {
                 Thread juegoControladorThread = new Thread(juegoControlador);
                 juegoControladorThread.start();
 
-                dispose();
+                //dispose();
                 adminPantalla.setScreen(juegoVisual);
             }
         });
@@ -129,7 +129,7 @@ public class MenuPrincipal implements Screen {
 
     @Override
     public void hide() {
-        //dispose();
+        dispose();
     }
 
     public void render(float delta) {
