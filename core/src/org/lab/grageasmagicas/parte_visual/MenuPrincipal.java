@@ -35,6 +35,7 @@ public class MenuPrincipal implements Screen {
     ImageTextButton btnJugar;
     ImageTextButton btnOpciones;
     ImageTextButton btnAcercaDe;
+    ImageTextButton btnTestEffects;
     Image imgFondo;
     Image imgTitulo;
     //assets
@@ -43,7 +44,6 @@ public class MenuPrincipal implements Screen {
     private Texture txtBtnMenuDown;
     private Texture txtTitulo;
     private BitmapFont fntFuenteBase;
-
 
     public MenuPrincipal(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
@@ -77,7 +77,6 @@ public class MenuPrincipal implements Screen {
         btnJugar.getLabel().setFontScale(2.5f, 2.5f);
         escena.addActor(btnJugar);
 
-
         btnOpciones = new ImageTextButton(strings.get("btn_opciones"), btnStlMenu);
         btnOpciones.setPosition(anchoCamara / 2, altoCamara * 0.4f);
         btnOpciones.getLabel().setFontScale(2f, 2f);
@@ -88,8 +87,18 @@ public class MenuPrincipal implements Screen {
         btnAcercaDe.getLabel().setFontScale(2f, 2f);
         escena.addActor(btnAcercaDe);
 
+        btnTestEffects = new ImageTextButton("TestEffects", btnStlMenu);
+        btnTestEffects.getLabel().setFontScale(1.5f, 1.5f);
+        btnTestEffects.setTransform(true);
+        btnTestEffects.setScale(0.5f,0.5f);
+        btnTestEffects.setWidth(btnTestEffects.getPrefWidth());
+        btnTestEffects.setHeight(btnTestEffects.getPrefHeight());
+        btnTestEffects.setPosition(anchoCamara / 2 + btnAcercaDe.getWidth() - btnTestEffects.getWidth(), altoCamara*0.1f);
+        escena.addActor(btnTestEffects);
+
         imgTitulo = new Image(txtTitulo);
         imgTitulo.setPosition(anchoCamara / 2 - imgTitulo.getWidth() / 2, altoCamara * 0.8f);
+        escena.addActor(imgTitulo);
 
         btnJugar.addListener(new ClickListener() {
             @Override
@@ -128,7 +137,12 @@ public class MenuPrincipal implements Screen {
             }
         });
 
-        escena.addActor(imgTitulo);
+        btnTestEffects.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                adminPantalla.setScreen(new TestEffect(adminPantalla));
+            }
+        });
     }
 
     public void resize(int width, int height) {

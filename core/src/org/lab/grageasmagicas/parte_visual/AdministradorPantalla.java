@@ -20,6 +20,7 @@ public class AdministradorPantalla extends Game {
     public void create() {
         camara = new OrthographicCamera(anchoCamara, altoCamara);
         vista = new StretchViewport(anchoCamara, altoCamara, camara);
+        //setScreen(new MenuPrincipal(this));
         setScreen(new MenuPrincipal(this));
     }
 
