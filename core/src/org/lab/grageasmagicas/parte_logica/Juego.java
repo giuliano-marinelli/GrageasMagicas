@@ -149,7 +149,7 @@ public class Juego extends Observable implements Runnable {
                     //queda a la espera de que los comprobadores terminen
                     barrierComp.await();
 
-                    //calcularCombos();
+                    calcularCombos();
 
                     //Imprime el juego por consola
                     System.out.println("\033[34mGrageas intercambiadas\033[30m");
@@ -251,7 +251,7 @@ public class Juego extends Observable implements Runnable {
             //queda a la espera de que los comprobadores terminen
             barrierComp.await();
 
-            //calcularCombos();
+            calcularCombos();
 
             System.out.println("\033[34mPrimer matriz\033[30m \n");
             //Imprime el juego por consola
@@ -296,7 +296,7 @@ public class Juego extends Observable implements Runnable {
                 //queda a la espera de que los comprobadores terminen
                 barrierComp.await();
 
-                //calcularCombos();
+                calcularCombos();
 
                 //Imprime el juego por consola
                 System.out.println();
@@ -407,7 +407,7 @@ public class Juego extends Observable implements Runnable {
      * @param juego
      * @return String de la matriz.
      */
-    public String toStringComb2(Gragea[][] juego) {
+    public String toStringComb(Gragea[][] juego) {
         int alto = juego.length;
         int ancho = juego[0].length;
         String res = "    ";
@@ -447,7 +447,7 @@ public class Juego extends Observable implements Runnable {
      * @param juego
      * @return String de la matriz.
      */
-    public String toStringComb(Gragea[][] juego) {
+    public String toStringComb2(Gragea[][] juego) {
         int alto = juego.length;
         int ancho = juego[0].length;
         String res = "    ";
