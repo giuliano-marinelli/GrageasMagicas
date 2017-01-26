@@ -49,6 +49,8 @@ public class JuegoVisual implements Screen, Observer {
     private boolean tableroListo;
     private GrageaVisual[][] matrizGrageasVisuales;
     private CyclicBarrier barrierRespuestaVisual;
+    private float[][] matrizPosGrageaX;
+    private float[][] matrizPosGrageaY;
     //juego logico
     private Juego juegoLogico;
     private Gragea[][] matrizGrageasLogica;
@@ -136,6 +138,10 @@ public class JuegoVisual implements Screen, Observer {
             //las nuevas grageas aleatorias
             eliminarGrageas();
 
+            //este metodo se ejecuta luego de realizar todas las animaciones para asegurar que no
+            //se rompa la consistencia grafica del juego
+            corregirPosiciones();
+
             //verificar si quedan movimientos posibles
             verificarMovimientoPosible();
 
@@ -162,7 +168,7 @@ public class JuegoVisual implements Screen, Observer {
         btnStlPuntaje.font = fntFuenteBase;
         btnStlPuntaje.fontColor = Color.GOLD;
         btnPuntaje = new TextButton((int) juegoLogico.getPuntaje() + "", btnStlPuntaje);
-        btnPuntaje.getLabel().setFontScale(2,2);
+        btnPuntaje.getLabel().setFontScale(2, 2);
         btnPuntaje.setWidth(btnPuntaje.getPrefWidth());
         btnPuntaje.setHeight(btnPuntaje.getPrefHeight());
         btnPuntaje.setPosition(50, altoCamara - btnPuntaje.getHeight() - 25);
@@ -171,10 +177,10 @@ public class JuegoVisual implements Screen, Observer {
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;
         btnVolver = new TextButton("MENU", btnStlVolver);
-        btnVolver.getLabel().setFontScale(2,2);
+        btnVolver.getLabel().setFontScale(2, 2);
         btnVolver.setWidth(btnVolver.getPrefWidth());
         btnVolver.setHeight(btnVolver.getPrefHeight());
-        btnVolver.setPosition(anchoCamara - btnVolver.getWidth() - 50, altoCamara - btnVolver.getHeight()- 25);
+        btnVolver.setPosition(anchoCamara - btnVolver.getWidth() - 50, altoCamara - btnVolver.getHeight() - 25);
         btnVolver.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -254,6 +260,16 @@ public class JuegoVisual implements Screen, Observer {
         tblTablero.padBottom(5f);
         tblTablero.setFillParent(true);
         tblTablero.pack();
+
+        matrizPosGrageaX = new float[cantFilas][cantColumnas];
+        matrizPosGrageaY = new float[cantFilas][cantColumnas];
+        for (int i = 0; i < cantFilas; i++) {
+            for (int j = 0; j < cantColumnas; j++) {
+                matrizPosGrageaX[i][j] = matrizGrageasVisuales[i][j].getX();
+                matrizPosGrageaY[i][j] = matrizGrageasVisuales[i][j].getY();
+            }
+        }
+
         tableroListo = true;
     }
 
@@ -389,6 +405,18 @@ public class JuegoVisual implements Screen, Observer {
             if (animacionesEjecutando > 0) {
                 dormir();
                 sleep(500);
+            }
+        }
+    }
+
+
+    /**
+     * Corrige las posiciones de las grageas visuales segun la matriz de posiciones inicial
+     */
+    public void corregirPosiciones() {
+        for (int i = 0; i < cantFilas; i++) {
+            for (int j = 0; j < cantColumnas; j++) {
+                matrizGrageasVisuales[i][j].setPosition(matrizPosGrageaX[i][j], matrizPosGrageaY[i][j]);
             }
         }
     }
