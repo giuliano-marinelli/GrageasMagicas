@@ -3,19 +3,24 @@ package org.lab.grageasmagicas.parte_visual;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.I18NBundleLoader;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.lab.grageasmagicas.parte_logica.Juego;
 
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MenuPrincipal implements Screen {
@@ -28,10 +33,13 @@ public class MenuPrincipal implements Screen {
     private AdministradorPantalla adminPantalla;
     private Viewport vista;
     private Stage escena;
+    private I18NBundle strings;
+    private Locale esAR;
+    private Locale enUS;
     //actors
-    ImageButton btnJugar;
-    ImageButton btnOpciones;
-    ImageButton btnAcercaDe;
+    ImageTextButton btnJugar;
+    ImageTextButton btnOpciones;
+    ImageTextButton btnAcercaDe;
     Image imgFondo;
     Image imgTitulo;
     //assets
@@ -39,7 +47,10 @@ public class MenuPrincipal implements Screen {
     private Texture txtBtnJugar;
     private Texture txtBtnOpciones;
     private Texture txtBtnAcercaDe;
+    private Texture txtBtnMenuUp;
+    private Texture txtBtnMenuDown;
     private Texture txtTitulo;
+    private BitmapFont fntFuenteBase;
 
 
     public MenuPrincipal(AdministradorPantalla adminPantalla) {
@@ -48,8 +59,12 @@ public class MenuPrincipal implements Screen {
         this.altoCamara = adminPantalla.getAltoCamara();
         this.vista = adminPantalla.getVista();
         this.assetManager = adminPantalla.getAssetManager();
+        this.esAR = new Locale("es","AR");
+        this.enUS= new Locale("en","US");
 
         cargarAssets();
+
+        System.out.println(strings.getLocale());
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
@@ -61,19 +76,27 @@ public class MenuPrincipal implements Screen {
         imgFondo.setScale(anchoCamara / imgFondo.getWidth(), altoCamara / imgFondo.getHeight());
         escena.addActor(imgFondo);
 
-        TextureRegionDrawable trBtnJugar = new TextureRegionDrawable(new TextureRegion(txtBtnJugar));
-        btnJugar = new ImageButton(trBtnJugar);
+        TextureRegionDrawable trBtnMenuUp = new TextureRegionDrawable(new TextureRegion(txtBtnMenuUp));
+        TextureRegionDrawable trBtnMenuDown = new TextureRegionDrawable(new TextureRegion(txtBtnMenuDown));
+        ImageTextButton.ImageTextButtonStyle btnStlMenu = new ImageTextButton.ImageTextButtonStyle(
+                trBtnMenuUp, trBtnMenuDown, trBtnMenuUp, fntFuenteBase
+        );
+
+        btnJugar = new ImageTextButton(strings.get("btn_jugar"), btnStlMenu);
         btnJugar.setPosition(anchoCamara / 2, altoCamara * 0.6f);
+        btnJugar.getLabel().setFontScale(2.5f,2.5f);
         escena.addActor(btnJugar);
 
-        TextureRegionDrawable trBtnOpciones = new TextureRegionDrawable(new TextureRegion(txtBtnOpciones));
-        btnOpciones = new ImageButton(trBtnOpciones);
+
+        btnOpciones = new ImageTextButton(strings.get("btn_opciones"), btnStlMenu);
         btnOpciones.setPosition(anchoCamara / 2, altoCamara * 0.4f);
+        btnOpciones.getLabel().setFontScale(2f,2f);
         escena.addActor(btnOpciones);
 
         TextureRegionDrawable trBtnAcercaDe = new TextureRegionDrawable(new TextureRegion(txtBtnAcercaDe));
-        btnAcercaDe = new ImageButton(trBtnAcercaDe);
+        btnAcercaDe = new ImageTextButton(strings.get("btn_acerca_de"), btnStlMenu);
         btnAcercaDe.setPosition(anchoCamara / 2, altoCamara * 0.2f);
+        btnAcercaDe.getLabel().setFontScale(2f,2f);
         escena.addActor(btnAcercaDe);
 
         imgTitulo = new Image(txtTitulo);
@@ -151,13 +174,20 @@ public class MenuPrincipal implements Screen {
         txtBtnJugar.dispose();
         txtBtnOpciones.dispose();
         txtBtnAcercaDe.dispose();
+        txtBtnMenuUp.dispose();
+        txtBtnMenuDown.dispose();
         txtTitulo.dispose();
+        fntFuenteBase.dispose();
         escena.dispose();
         assetManager.unload("imagenes/fondo.jpg");
         assetManager.unload("imagenes/jugar.png");
         assetManager.unload("imagenes/opciones.png");
         assetManager.unload("imagenes/acerca_de.png");
+        assetManager.unload("imagenes/menu_btn_up.png");
+        assetManager.unload("imagenes/menu_btn_down.png");
         assetManager.unload("imagenes/titulo.png");
+        assetManager.unload("fuentes/texto_bits.fnt");
+        assetManager.unload("strings/strings");
     }
 
     private void cargarAssets() {
@@ -165,14 +195,20 @@ public class MenuPrincipal implements Screen {
         assetManager.load("imagenes/jugar.png", Texture.class);
         assetManager.load("imagenes/opciones.png", Texture.class);
         assetManager.load("imagenes/acerca_de.png", Texture.class);
+        assetManager.load("imagenes/menu_btn_up.png", Texture.class);
+        assetManager.load("imagenes/menu_btn_down.png", Texture.class);
         assetManager.load("imagenes/titulo.png", Texture.class);
-
+        assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
+        assetManager.load("strings/strings", I18NBundle.class);
         assetManager.finishLoading();
-
         txtFondo = assetManager.get("imagenes/fondo.jpg");
         txtBtnJugar = assetManager.get("imagenes/jugar.png");
         txtBtnOpciones = assetManager.get("imagenes/opciones.png");
         txtBtnAcercaDe = assetManager.get("imagenes/acerca_de.png");
+        txtBtnMenuUp = assetManager.get("imagenes/menu_btn_up.png");
+        txtBtnMenuDown = assetManager.get("imagenes/menu_btn_down.png");
         txtTitulo = assetManager.get("imagenes/titulo.png");
+        fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
+        strings = assetManager.get("strings/strings");
     }
 }
