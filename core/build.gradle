@@ -9,3 +9,8 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 eclipse.project {
     name = appName + "-core"
 }
+
+dependencies {
+    compile files('C:/Users/Ines/AndroidStudioProjects/GrageasMagicas/android/libs/gdx-sqlite-android.jar')
+    compile files('C:/Users/Ines/AndroidStudioProjects/GrageasMagicas/android/libs/gdx-sqlite.jar')
+}
