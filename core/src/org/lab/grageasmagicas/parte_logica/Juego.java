@@ -1,7 +1,6 @@
 package org.lab.grageasmagicas.parte_logica;
 
 import org.lab.estructuras.Point;
-import org.lab.teclado.TecladoIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,14 @@ public class Juego extends Observable implements Runnable {
     private int cantGragea;
     private int movimientos;
     private int movimientosTotales;
-    private boolean pausa = false;
+    private int puntajeGanar;
+    private int puntaje;
+    private int primerGrageaX;
+    private int primerGrageaY;
+    private int segundaGrageaX;
+    private int segundaGrageaY;
+    private boolean pausa;
+    private boolean hayJugadas;
     private AtomicBoolean finJuego;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
     private Comprobador[] comprobadorAlto;
@@ -36,28 +42,26 @@ public class Juego extends Observable implements Runnable {
     private CyclicBarrier barrierComp;
     private CyclicBarrier barrierElim;
     private CyclicBarrier barrierEntrada;
-    private float puntaje = 0;
-    private int primerGrageaX;
-    private int primerGrageaY;
-    private int segundaGrageaX;
-    private int segundaGrageaY;
     private PatronControlador controladorJugada;
     private CyclicBarrier barrierVerificarJugada;
-    private boolean hayJugadas;
 
-    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, AtomicBoolean finJuego) {
+
+    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, AtomicBoolean finJuego) {
         this.ancho = ancho;
         this.alto = alto;
         this.velocidad = velocidad;
         this.movimientos = 0;
         this.movimientosTotales = movimientos;
         this.cantGragea = cantGragea;
+        this.puntajeGanar = puntajeGanar;
+        this.puntaje = 0;
         this.primerGrageaX = -1;
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
         this.finJuego = finJuego;
         this.hayJugadas = true;
+        this.pausa = false;
         matrizGrageas = new Gragea[alto][ancho];
         comprobadorAlto = new Comprobador[alto];
         comprobadorAncho = new Comprobador[ancho];
@@ -182,12 +186,19 @@ public class Juego extends Observable implements Runnable {
                     }
                 }
             }
-            if (movimientos >= movimientosTotales) {
-                System.out.println("Fin de la partida!");
-                System.out.println("Puntaje logrado: \033[32m"+puntaje+"\033[30m");
+            if (!finJuego.get()) {
+                System.out.println("Ya no te quedan movimientos!");
+                if (puntaje < puntajeGanar) {
+                    System.out.println("Perdiste!");
+                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
+                } else {
+                    System.out.println("Ganaste!");
+                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
+                }
                 finJuego.set(true);
 
                 sincronizar();
+
                 barrierEntrada.await();
                 barrierEntrada.await();
             }
@@ -710,12 +721,20 @@ public class Juego extends Observable implements Runnable {
         this.grageasCombinadas = grageasCombinadas;
     }
 
-    public float getPuntaje() {
+    public int getPuntaje() {
         return puntaje;
     }
 
-    public void setPuntaje(float puntaje) {
+    public void setPuntaje(int puntaje) {
         this.puntaje = puntaje;
+    }
+
+    public int getPuntajeGanar() {
+        return puntajeGanar;
+    }
+
+    public void setPuntajeGanar(int puntajeGanar) {
+        this.puntajeGanar = puntajeGanar;
     }
 
     public boolean isFinJuego() {

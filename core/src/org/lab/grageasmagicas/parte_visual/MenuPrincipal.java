@@ -109,9 +109,10 @@ public class MenuPrincipal implements Screen {
                 int cantGragea = 7;
                 int velocidad = 10;
                 int movimientos = 10;
+                int puntajeGanar = 350;
                 AtomicBoolean finJuego = new AtomicBoolean(false);
 
-                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, finJuego);
+                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, finJuego);
 
                 JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 
