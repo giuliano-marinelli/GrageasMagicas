@@ -51,7 +51,7 @@ public class TestEffect implements Screen {
         Gdx.input.setInputProcessor(escena);
 
         batch = new SpriteBatch();
-        parEfcPoolExplosion = new ParticleEffectPool(parEfcExplosion, 25,100);
+        parEfcPoolExplosion = new ParticleEffectPool(parEfcExplosion, 25, 100);
         actEfcExplosion = new Array<ParticleEffectPool.PooledEffect>();
     }
 
@@ -74,8 +74,8 @@ public class TestEffect implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 poolEfcExplosion = parEfcPoolExplosion.obtain();
+                poolEfcExplosion.setPosition(anchoCamara / 2, altoCamara / 2);
                 actEfcExplosion.add(poolEfcExplosion);
-                poolEfcExplosion.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
             }
         });
 
@@ -104,14 +104,13 @@ public class TestEffect implements Screen {
 
         batch.begin();
         float deltaTime = Gdx.graphics.getDeltaTime();
-        //batch.setProjectionMatrix(adminPantalla.getCamara().combined);
+        batch.setProjectionMatrix(adminPantalla.getCamara().combined);
         for (int i = 0; i < actEfcExplosion.size; ) {
             ParticleEffectPool.PooledEffect effect = actEfcExplosion.get(i);
             if (effect.isComplete()) {
                 parEfcPoolExplosion.free(effect);
                 actEfcExplosion.removeIndex(i);
-            }
-            else {
+            } else {
                 effect.draw(batch, deltaTime);
                 ++i;
             }

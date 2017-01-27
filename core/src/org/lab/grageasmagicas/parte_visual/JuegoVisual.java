@@ -3,11 +3,15 @@ package org.lab.grageasmagicas.parte_visual;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.lab.estructuras.Point;
@@ -62,6 +67,7 @@ public class JuegoVisual implements Screen, Observer {
     private AssetManager assetManager;
     private Viewport vista;
     private Stage escena;
+    private SpriteBatch batch;
     //actors
     private Table tblTablero;
     private TextButton btnPuntaje;
@@ -77,6 +83,11 @@ public class JuegoVisual implements Screen, Observer {
     private Texture txtBtnMusicaClick;
     private BitmapFont fntFuenteBase;
     private Music mscMusicaFondo;
+    private ParticleEffect parEfcExplosion;
+    //efectos
+    private ParticleEffectPool parEfcPoolExplosion;
+    private Array<ParticleEffectPool.PooledEffect> actEfcExplosion;
+    private ParticleEffectPool.PooledEffect poolEfcExplosion;
 
     public JuegoVisual(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
@@ -101,6 +112,10 @@ public class JuegoVisual implements Screen, Observer {
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
+
+        batch = new SpriteBatch();
+        parEfcPoolExplosion = new ParticleEffectPool(parEfcExplosion, 25, 100);
+        actEfcExplosion = new Array<ParticleEffectPool.PooledEffect>();
     }
 
     @Override
@@ -378,6 +393,12 @@ public class JuegoVisual implements Screen, Observer {
                     if (combinacionTemp.contains(i)) {
                         matrizGrageasVisuales[i][j].setVisible(false);
                         bajar++;
+                        poolEfcExplosion = parEfcPoolExplosion.obtain();
+                        System.out.println(matrizGrageasVisuales[i][j].getX()+","+matrizGrageasVisuales[i][j].getY());
+                        poolEfcExplosion.setPosition(
+                                matrizGrageasVisuales[i][j].getX()+matrizGrageasVisuales[i][j].getWidth()/2,
+                                matrizGrageasVisuales[i][j].getY()+matrizGrageasVisuales[i][j].getHeight()/2);
+                        actEfcExplosion.add(poolEfcExplosion);
                     } else {
                         if (bajar != 0) {
                             posXAnt = matrizGrageasVisuales[i][j].getX();
@@ -468,6 +489,22 @@ public class JuegoVisual implements Screen, Observer {
             escena.act(delta);
             escena.setViewport(vista);
             escena.draw();
+
+            //dibuja los efectos de particulas
+            batch.begin();
+            float deltaTime = Gdx.graphics.getDeltaTime();
+            batch.setProjectionMatrix(adminPantalla.getCamara().combined);
+            for (int i = 0; i < actEfcExplosion.size; ) {
+                ParticleEffectPool.PooledEffect effect = actEfcExplosion.get(i);
+                if (effect.isComplete()) {
+                    parEfcPoolExplosion.free(effect);
+                    actEfcExplosion.removeIndex(i);
+                } else {
+                    effect.draw(batch, deltaTime);
+                    ++i;
+                }
+            }
+            batch.end();
         }
     }
 
@@ -519,6 +556,7 @@ public class JuegoVisual implements Screen, Observer {
         txtBtnMusicaClick.dispose();
         fntFuenteBase.dispose();
         mscMusicaFondo.dispose();
+        parEfcExplosion.dispose();
         escena.dispose();
         assetManager.unload("imagenes/fondogolosinas.png");
         assetManager.unload("imagenes/gragea.png");
@@ -527,9 +565,14 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.unload("imagenes/musica_click.png");
         assetManager.unload("fuentes/texto_bits.fnt");
         assetManager.unload("sonidos/musica_fondo.mp3");
+        assetManager.unload("efectos/explosion.effect");
     }
 
     public void cargarAssets() {
+        //loader para efectos de particulas
+        ParticleEffectLoader.ParticleEffectParameter effectParameter = new ParticleEffectLoader.ParticleEffectParameter();
+        effectParameter.imagesDir = Gdx.files.internal("imagenes");
+
         assetManager.load("imagenes/fondogolosinas.png", Texture.class);
         assetManager.load("imagenes/gragea.png", Texture.class);
         assetManager.load("imagenes/musica_on.png", Texture.class);
@@ -537,6 +580,7 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.load("imagenes/musica_click.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("sonidos/musica_fondo.mp3", Music.class);
+        assetManager.load("efectos/explosion.effect", ParticleEffect.class, effectParameter);
         assetManager.finishLoading();
         txtFondo = assetManager.get("imagenes/fondogolosinas.png");
         txtGragea = assetManager.get("imagenes/gragea.png");
@@ -545,6 +589,7 @@ public class JuegoVisual implements Screen, Observer {
         txtBtnMusicaClick = assetManager.get("imagenes/musica_click.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
         mscMusicaFondo = assetManager.get("sonidos/musica_fondo.mp3");
+        parEfcExplosion = assetManager.get("efectos/explosion.effect");
     }
 
     public void limpiarPosGrageas() {
