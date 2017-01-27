@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -83,6 +84,7 @@ public class JuegoVisual implements Screen, Observer {
     private Texture txtBtnMusicaClick;
     private BitmapFont fntFuenteBase;
     private Music mscMusicaFondo;
+    private Sound sndExplosion;
     private ParticleEffect parEfcExplosion;
     //efectos
     private ParticleEffectPool parEfcPoolExplosion;
@@ -316,7 +318,7 @@ public class JuegoVisual implements Screen, Observer {
             matrizGrageasVisuales[juegoLogico.getSegundaGrageaX()][juegoLogico.getSegundaGrageaY()] = priGragea;
             if (animacionesEjecutando > 0) {
                 dormir();
-                sleep(500);
+                //sleep(500);
             }
         }
     }
@@ -357,7 +359,7 @@ public class JuegoVisual implements Screen, Observer {
         if (hayNuevas) {
             if (animacionesEjecutando > 0) {
                 dormir();
-                sleep(500);
+                //sleep(500);
             }
         }
     }
@@ -394,7 +396,6 @@ public class JuegoVisual implements Screen, Observer {
                         matrizGrageasVisuales[i][j].setVisible(false);
                         bajar++;
                         poolEfcExplosion = parEfcPoolExplosion.obtain();
-                        System.out.println(matrizGrageasVisuales[i][j].getX()+","+matrizGrageasVisuales[i][j].getY());
                         poolEfcExplosion.setPosition(
                                 matrizGrageasVisuales[i][j].getX()+matrizGrageasVisuales[i][j].getWidth()/2,
                                 matrizGrageasVisuales[i][j].getY()+matrizGrageasVisuales[i][j].getHeight()/2);
@@ -422,10 +423,10 @@ public class JuegoVisual implements Screen, Observer {
                     }
                 }
             }
-            //Sound sCombinacion = Gdx.audio.newSound(Gdx.files.internal("combinacion.mp3"));
+            sndExplosion.play();
             if (animacionesEjecutando > 0) {
                 dormir();
-                sleep(500);
+                //sleep(500);
             }
         }
     }
@@ -461,7 +462,6 @@ public class JuegoVisual implements Screen, Observer {
      */
     synchronized public void animacionTermina() {
         animacionesEjecutando--;
-        System.out.println(animacionesEjecutando);
         if (animacionesEjecutando == 0) {
             notify();
         }
@@ -556,6 +556,7 @@ public class JuegoVisual implements Screen, Observer {
         txtBtnMusicaClick.dispose();
         fntFuenteBase.dispose();
         mscMusicaFondo.dispose();
+        sndExplosion.dispose();
         parEfcExplosion.dispose();
         escena.dispose();
         assetManager.unload("imagenes/fondogolosinas.png");
@@ -565,6 +566,7 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.unload("imagenes/musica_click.png");
         assetManager.unload("fuentes/texto_bits.fnt");
         assetManager.unload("sonidos/musica_fondo.mp3");
+        assetManager.unload("sonidos/explosion.mp3");
         assetManager.unload("efectos/explosion.effect");
     }
 
@@ -580,6 +582,7 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.load("imagenes/musica_click.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("sonidos/musica_fondo.mp3", Music.class);
+        assetManager.load("sonidos/explosion.mp3", Sound.class);
         assetManager.load("efectos/explosion.effect", ParticleEffect.class, effectParameter);
         assetManager.finishLoading();
         txtFondo = assetManager.get("imagenes/fondogolosinas.png");
@@ -589,6 +592,7 @@ public class JuegoVisual implements Screen, Observer {
         txtBtnMusicaClick = assetManager.get("imagenes/musica_click.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
         mscMusicaFondo = assetManager.get("sonidos/musica_fondo.mp3");
+        sndExplosion = assetManager.get("sonidos/explosion.mp3");
         parEfcExplosion = assetManager.get("efectos/explosion.effect");
     }
 
