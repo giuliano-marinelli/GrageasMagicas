@@ -198,26 +198,6 @@ public class JuegoVisual implements Screen, Observer {
         tblTablero = new Table();
         escena.addActor(tblTablero);
 
-        TextButton.TextButtonStyle btnStlPuntaje = new TextButton.TextButtonStyle();
-        btnStlPuntaje.font = fntFuenteBase;
-        btnStlPuntaje.fontColor = Color.GOLD;
-        btnPuntaje = new TextButton((int) juegoLogico.getPuntaje() + "", btnStlPuntaje);
-        btnPuntaje.getLabel().setFontScale(2, 2);
-        btnPuntaje.setWidth(btnPuntaje.getPrefWidth());
-        btnPuntaje.setHeight(btnPuntaje.getPrefHeight());
-        btnPuntaje.setPosition(50, altoCamara - btnPuntaje.getHeight() - 25);
-        escena.addActor(btnPuntaje);
-
-        TextButton.TextButtonStyle btnStlMovimientos = new TextButton.TextButtonStyle();
-        btnStlMovimientos.font = fntFuenteBase;
-        btnStlMovimientos.fontColor = Color.BLUE;
-        btnMovimientos = new TextButton(juegoLogico.getMovimientos() + " / " + juegoLogico.getMovimientosTotales(), btnStlMovimientos);
-        btnMovimientos.getLabel().setFontScale(2, 2);
-        btnMovimientos.setWidth(btnMovimientos.getPrefWidth());
-        btnMovimientos.setHeight(btnMovimientos.getPrefHeight());
-        btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
-        escena.addActor(btnMovimientos);
-
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;
         btnVolver = new TextButton(strings.get("btn_volver"), btnStlVolver);
@@ -323,6 +303,26 @@ public class JuegoVisual implements Screen, Observer {
             }
         });
         escena.addActor(btnFinJuego);
+
+        TextButton.TextButtonStyle btnStlPuntaje = new TextButton.TextButtonStyle();
+        btnStlPuntaje.font = fntFuenteBase;
+        btnStlPuntaje.fontColor = Color.GOLD;
+        btnPuntaje = new TextButton((int) juegoLogico.getPuntaje() + "", btnStlPuntaje);
+        btnPuntaje.getLabel().setFontScale(2, 2);
+        btnPuntaje.setWidth(btnPuntaje.getPrefWidth());
+        btnPuntaje.setHeight(btnPuntaje.getPrefHeight());
+        btnPuntaje.setPosition(50, altoCamara - btnPuntaje.getHeight() - 25);
+        escena.addActor(btnPuntaje);
+
+        TextButton.TextButtonStyle btnStlMovimientos = new TextButton.TextButtonStyle();
+        btnStlMovimientos.font = fntFuenteBase;
+        btnStlMovimientos.fontColor = Color.BLUE;
+        btnMovimientos = new TextButton(juegoLogico.getMovimientos() + " / " + juegoLogico.getMovimientosTotales(), btnStlMovimientos);
+        btnMovimientos.getLabel().setFontScale(2, 2);
+        btnMovimientos.setWidth(btnMovimientos.getPrefWidth());
+        btnMovimientos.setHeight(btnMovimientos.getPrefHeight());
+        btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
+        escena.addActor(btnMovimientos);
 
         tblTablero.row();
         for (int i = 0; i < cantFilas; i++) {
