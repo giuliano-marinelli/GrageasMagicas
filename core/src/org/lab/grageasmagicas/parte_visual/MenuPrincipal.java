@@ -54,7 +54,7 @@ public class MenuPrincipal implements Screen {
 
         cargarAssets();
 
-        System.out.println(strings.getLocale());
+        //System.out.println(strings.getLocale());
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
@@ -90,10 +90,10 @@ public class MenuPrincipal implements Screen {
         btnTestEffects = new ImageTextButton("TestEffects", btnStlMenu);
         btnTestEffects.getLabel().setFontScale(1.5f, 1.5f);
         btnTestEffects.setTransform(true);
-        btnTestEffects.setScale(0.5f,0.5f);
+        btnTestEffects.setScale(0.5f, 0.5f);
         btnTestEffects.setWidth(btnTestEffects.getPrefWidth());
         btnTestEffects.setHeight(btnTestEffects.getPrefHeight());
-        btnTestEffects.setPosition(anchoCamara / 2 + btnAcercaDe.getWidth() - btnTestEffects.getWidth(), altoCamara*0.1f);
+        btnTestEffects.setPosition(anchoCamara / 2 + btnAcercaDe.getWidth() - btnTestEffects.getWidth(), altoCamara * 0.1f);
         escena.addActor(btnTestEffects);
 
         imgTitulo = new Image(txtTitulo);
@@ -106,11 +106,12 @@ public class MenuPrincipal implements Screen {
                 Gdx.app.log("Click", "Presiono jugar");
                 int ancho = 5;
                 int alto = 5;
-                int cantGragea = 3;
+                int cantGragea = 7;
                 int velocidad = 10;
+                int movimientos = 10;
                 AtomicBoolean finJuego = new AtomicBoolean(false);
 
-                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, finJuego);
+                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, finJuego);
 
                 JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 

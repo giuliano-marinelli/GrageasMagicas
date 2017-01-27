@@ -17,10 +17,12 @@ public class Principal {
         int velocidad = 10;//TecladoIn.readInt();
         //System.out.println("Cantidad de grageas: ");
         int cantGragea = 3;//TecladoIn.readInt();
+        //System.out.println("Cantidad de movimientos: ");
+        int cantMovimientos = 10;//TecladoIn.readInt();
         AtomicBoolean finJuego = new AtomicBoolean(false);
 
         //crea y lanza el juego
-        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, finJuego);
+        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, cantMovimientos, finJuego);
         Thread juegoThread = new Thread(juego);
         juegoThread.start();
     }

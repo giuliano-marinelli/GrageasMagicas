@@ -25,6 +25,8 @@ public class Juego extends Observable implements Runnable {
     private int ancho;
     private int velocidad;
     private int cantGragea;
+    private int movimientos;
+    private int movimientosTotales;
     private boolean pausa = false;
     private AtomicBoolean finJuego;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
@@ -43,10 +45,12 @@ public class Juego extends Observable implements Runnable {
     private CyclicBarrier barrierVerificarJugada;
     private boolean hayJugadas;
 
-    public Juego(int ancho, int alto, int velocidad, int cantGragea, AtomicBoolean finJuego) {
+    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, AtomicBoolean finJuego) {
         this.ancho = ancho;
         this.alto = alto;
         this.velocidad = velocidad;
+        this.movimientos = 0;
+        this.movimientosTotales = movimientos;
         this.cantGragea = cantGragea;
         this.primerGrageaX = -1;
         this.primerGrageaY = -1;
@@ -107,14 +111,13 @@ public class Juego extends Observable implements Runnable {
             //incialmente se realizan las combinaciones que hallan salido de forma aleatoria
             combinacionInicial();
 
-            while (!finJuego.get()) {
+            while (!finJuego.get() && movimientos < movimientosTotales) {
                 System.out.println("\033[32mJuega\033[30m");
                 System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
                 //Imprime el juego por consola
                 System.out.println(toStringComb(matrizGrageas));
 
-                setChanged();
-                notifyObservers();
+                sincronizar();
 
                 limpiarPosGrageas();
 
@@ -155,8 +158,7 @@ public class Juego extends Observable implements Runnable {
                     System.out.println("\033[34mGrageas intercambiadas\033[30m");
                     System.out.println(toStringComb(matrizGrageas));
 
-                    setChanged();
-                    notifyObservers();
+                    sincronizar();
                     /*System.out.println("Presione enter...");
                     TecladoIn.read();*/
 
@@ -166,6 +168,7 @@ public class Juego extends Observable implements Runnable {
                         System.out.println();
                         intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
                     } else {
+                        movimientos++;
                         limpiarPosGrageas();
                         //elimina las combinaciones hasta que no quede ninguna
                         eliminarCombinaciones();
@@ -178,6 +181,15 @@ public class Juego extends Observable implements Runnable {
                         dormir();
                     }
                 }
+            }
+            if (movimientos >= movimientosTotales) {
+                System.out.println("Fin de la partida!");
+                System.out.println("Puntaje logrado: \033[32m"+puntaje+"\033[30m");
+                finJuego.set(true);
+
+                sincronizar();
+                barrierEntrada.await();
+                barrierEntrada.await();
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Juego.class.getName()).log(Level.SEVERE, null, ex);
@@ -257,8 +269,7 @@ public class Juego extends Observable implements Runnable {
             //Imprime el juego por consola
             System.out.println(toStringComb(matrizGrageas));
 
-            setChanged();
-            notifyObservers();
+            sincronizar();
             /*System.out.println("Presione enter...");
             TecladoIn.read();*/
 
@@ -302,10 +313,9 @@ public class Juego extends Observable implements Runnable {
                 System.out.println();
                 System.out.println(toStringComb(matrizGrageas));
 
-                setChanged();
-                notifyObservers();
-                        /*System.out.println("Presione enter...");
-                        TecladoIn.read();*/
+                sincronizar();
+                /*System.out.println("Presione enter...");
+                TecladoIn.read();*/
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -325,8 +335,7 @@ public class Juego extends Observable implements Runnable {
                 System.out.println("No queda ningún movimiento posible!");
                 hayJugadas = false;
 
-                setChanged();
-                notifyObservers();
+                sincronizar();
 
                 barrierEntrada.await();
                 barrierEntrada.await();
@@ -344,8 +353,7 @@ public class Juego extends Observable implements Runnable {
                 //queda en espera de que los eliminadores terminen
                 barrierElim.await();
 
-                setChanged();
-                notifyObservers();
+                sincronizar();
 
                 //limpia el buffer con las combinaciones de grageas que ya fueron
                 //eliminadas por los eliminadores
@@ -736,5 +744,21 @@ public class Juego extends Observable implements Runnable {
 
     public void setHayJugadas(boolean hayJugadas) {
         this.hayJugadas = hayJugadas;
+    }
+
+    public int getMovimientos() {
+        return movimientos;
+    }
+
+    public void setMovimientos(int movimientos) {
+        this.movimientos = movimientos;
+    }
+
+    public int getMovimientosTotales() {
+        return movimientosTotales;
+    }
+
+    public void setMovimientosTotales(int movimientosTotales) {
+        this.movimientosTotales = movimientosTotales;
     }
 }
