@@ -92,9 +92,9 @@ public class DBSesion {
 
     }
 
-    public boolean verificarSesion(String usuario, String pass) {
+    public int verificarSesion(String usuario, String pass) {
         DatabaseCursor cursor = null;
-        boolean valido = false;
+        int valido = -1;
 
 
         try {
@@ -113,11 +113,12 @@ public class DBSesion {
         }
 
 
-        dbHandler = null;
+        //dbHandler = null;
         Gdx.app.log("DatabaseTest", "dispose");
 
-        if (cursor.getCount() > 0) {
-            valido = true;
+        if (cursor.getCount() == 1) {
+            cursor.next();
+            valido = Integer.parseInt(String.valueOf(cursor.getString(0)));
         }
 
 
@@ -130,10 +131,10 @@ public class DBSesion {
         return valido;
     }
 
-    public int verificarUsuario(String usuario) {
+    public boolean verificarUsuario(String usuario) {
 
         DatabaseCursor cursor = null;
-        int existe = -1;
+        boolean existe = false;
 
         try {
             dbHandler.openOrCreateDatabase();
@@ -151,10 +152,7 @@ public class DBSesion {
             e.printStackTrace();
         }
 
-        if (cursor.getCount() == 1) {
-            cursor.next();
-            existe = Integer.parseInt(String.valueOf(cursor.getString(0)));
-        }
+        existe = (cursor.getCount() == 1);
 
         return existe;
 

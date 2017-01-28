@@ -36,11 +36,11 @@ public class DBManager {
         dbPuntaje.agregarPuntaje(isUser, puntaje);
     }
 
-    public int verificarNickname(String nickname) {
+    public boolean verificarNickname(String nickname) {
         return dbSesion.verificarUsuario(nickname);
     }
 
-    public boolean verificarSesion(String nickname, String pass) {
+    public int verificarSesion(String nickname, String pass) {
         return dbSesion.verificarSesion(nickname, pass);
     }
 
