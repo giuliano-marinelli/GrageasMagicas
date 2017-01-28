@@ -174,6 +174,7 @@ public class Login implements Screen {
 
     @Override
     public void render(float delta) {
+        assetManager.update();
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         escena.act(delta);
@@ -191,8 +192,8 @@ public class Login implements Screen {
         escena.dispose();
         //assetManager.clear();
         assetManager.unload("imagenes/fondogolosinas.png");
-        assetManager.unload("imagenes/menu_btn_up2.png");
-        assetManager.unload("imagenes/menu_btn_down2.png");
+        assetManager.unload("imagenes/login_btn_up.png");
+        assetManager.unload("imagenes/login_btn_down.png");
         assetManager.unload("imagenes/fin_btn_fondo.png");
         assetManager.unload("fuentes/texto_bits.fnt");
         assetManager.unload("strings/strings");
@@ -200,15 +201,15 @@ public class Login implements Screen {
 
     private void cargarAssets() {
         assetManager.load("imagenes/fondogolosinas.png", Texture.class);
-        assetManager.load("imagenes/menu_btn_up2.png", Texture.class);
-        assetManager.load("imagenes/menu_btn_down2.png", Texture.class);
+        assetManager.load("imagenes/login_btn_up.png", Texture.class);
+        assetManager.load("imagenes/login_btn_down.png", Texture.class);
         assetManager.load("imagenes/fin_btn_fondo.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("strings/strings", I18NBundle.class);
         assetManager.finishLoading();
         txtFondo = assetManager.get("imagenes/fondogolosinas.png");
-        txtBtnMenuUp = assetManager.get("imagenes/menu_btn_up2.png");
-        txtBtnMenuDown = assetManager.get("imagenes/menu_btn_down2.png");
+        txtBtnMenuUp = assetManager.get("imagenes/login_btn_up.png");
+        txtBtnMenuDown = assetManager.get("imagenes/login_btn_down.png");
         txtFieldLogin = assetManager.get("imagenes/fin_btn_fondo.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
         strings = assetManager.get("strings/strings");

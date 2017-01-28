@@ -227,7 +227,6 @@ public class JuegoVisual implements Screen, Observer {
                         barrierRespuestaVisual.await();
 
                         adminPantalla.setScreen(menuPrincipal);
-                        //adminPantalla.setScreen(new RankingPuntaje(adminPantalla, juegoLogico.getPuntaje()));
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
