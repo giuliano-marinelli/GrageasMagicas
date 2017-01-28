@@ -38,8 +38,8 @@ public class DBPuntaje {
         DATABASE_CREATE = "create table if not exists "
                 + TABLE_RANKING + "(" + COLUMNA_PUESTO
                 + " integer primary key autoincrement, " + COLUMNA_ID_USUARIO
-                + " text not null," + COLUMNA_PUNTAJE + " int );" +
-                "foreign key " + COLUMNA_ID_USUARIO + " references " + DBSesion.getTableUsuario() + "(" + DBSesion.getColumnaID() + ")";
+                + " integer not null," + COLUMNA_PUNTAJE + " integer " +
+                "foreign key " + COLUMNA_ID_USUARIO + " references " + DBSesion.getTableUsuario() + "(" + DBSesion.getColumnaID() + "));";
 
         Gdx.app.log("database create dbpuntaje", DATABASE_CREATE);
 
