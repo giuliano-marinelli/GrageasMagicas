@@ -29,7 +29,8 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.lab.estructuras.Point;
-import org.lab.grageasmagicas.parte_logica.*;
+import org.lab.grageasmagicas.parte_logica.Gragea;
+import org.lab.grageasmagicas.parte_logica.Juego;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,6 @@ import java.util.Observer;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CyclicBarrier;
-
-import static java.lang.Thread.sleep;
 
 
 public class JuegoVisual implements Screen, Observer {
@@ -235,7 +234,10 @@ public class JuegoVisual implements Screen, Observer {
                         barrierRespuestaVisual.await();
 
                         //dispose();
-                        adminPantalla.setScreen(menuPrincipal);
+                        ////////////LO SACO PARA TESTEAR///////////
+                        //adminPantalla.setScreen(menuPrincipal);
+                        ///////////////////////////////////////////
+                        adminPantalla.setScreen(new RankingPuntaje(adminPantalla, juegoLogico.getPuntaje()));
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
