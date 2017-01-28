@@ -27,8 +27,8 @@ public class DBManager {
 
         dbHandler.setupDatabase();
 
-        dbPuntaje = new DBPuntaje(administradorPantalla, dbHandler);
         dbSesion = new DBSesion(administradorPantalla, dbHandler);
+        dbPuntaje = new DBPuntaje(administradorPantalla, dbHandler);
 
     }
 
@@ -45,7 +45,7 @@ public class DBManager {
     }
 
     public Table mostrarPuntajes() {
-        return dbPuntaje.mostrarPuntajes();
+        return new Table();//dbPuntaje.mostrarPuntajes();
     }
 
     public void upgrade(){

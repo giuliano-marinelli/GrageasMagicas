@@ -27,14 +27,15 @@ public class DBSesion {
         dbHandler = db;
 
         DATABASE_CREATE = "create table if not exists "
-                + TABLE_USUARIO + "(" + COLUMNA_ID
-                + " integer primary key autoincrement, " + COLUMNA_USER
-                + " integer not null," + COLUMNA_PASSWORD + " integer );";
+                + TABLE_USUARIO + "(" +
+                COLUMNA_ID + " integer primary key autoincrement, " +
+                COLUMNA_USER + " text not null," +
+                COLUMNA_PASSWORD + " integer not null );";
 
         try {
             dbHandler.openOrCreateDatabase();
             dbHandler.execSQL(DATABASE_CREATE);
-            dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_ID + ", " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( " + 4 + ", " + 4 + " , " + 1234 + " )");
+//            dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_ID + ", " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( " + 4 + ", 'yuyio' , " + 1234 + " )");
 
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
@@ -57,14 +58,14 @@ public class DBSesion {
 
         try {
             dbHandler.openOrCreateDatabase();
-            dbHandler.execSQL(DATABASE_CREATE);
+            //dbHandler.execSQL(DATABASE_CREATE);
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
         try {
-            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
-            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
+            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "='" + usuario + "'");
+            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "='" + usuario + "'");
 
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
@@ -72,10 +73,10 @@ public class DBSesion {
 
 
         if (cursor.getCount() == 0) {
-            Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( " + usuario + " , " + pass + " )");
+            Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( '" + usuario + "' , " + pass + " )");
 
             try {
-                dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( " + usuario + " , " + pass + " )");
+                dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( '" + usuario + "' , " + pass + " )");
                 exito = true;
             } catch (SQLiteGdxException e) {
                 e.printStackTrace();
@@ -99,28 +100,26 @@ public class DBSesion {
 
         try {
             dbHandler.openOrCreateDatabase();
-            dbHandler.execSQL(DATABASE_CREATE);
+            //dbHandler.execSQL(DATABASE_CREATE);
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
         try {
-            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario + " AND " + COLUMNA_PASSWORD + "=" + pass);
-            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario + " AND " + COLUMNA_PASSWORD + "=" + pass);
+            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "='" + usuario + "' AND " + COLUMNA_PASSWORD + "=" + pass);
+            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "='" + usuario + "' AND " + COLUMNA_PASSWORD + "=" + pass);
+
+            //dbHandler = null;
+            Gdx.app.log("DatabaseTest", cursor.getCount()+"");
+
+            if (cursor.getCount() == 1) {
+                cursor.next();
+                valido = Integer.parseInt(String.valueOf(cursor.getString(0)));
+            }
 
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
-
-
-        //dbHandler = null;
-        Gdx.app.log("DatabaseTest", "dispose");
-
-        if (cursor.getCount() == 1) {
-            cursor.next();
-            valido = Integer.parseInt(String.valueOf(cursor.getString(0)));
-        }
-
 
         try {
             dbHandler.closeDatabase();
@@ -138,16 +137,16 @@ public class DBSesion {
 
         try {
             dbHandler.openOrCreateDatabase();
-            dbHandler.execSQL(DATABASE_CREATE);
+            //dbHandler.execSQL(DATABASE_CREATE);
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
 
         try {
-            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
-            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
-
+            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "='" + usuario + "'");
+            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "='" + usuario + "'");
+            dbHandler.closeDatabase();
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }

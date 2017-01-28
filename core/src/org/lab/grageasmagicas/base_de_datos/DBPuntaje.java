@@ -36,25 +36,24 @@ public class DBPuntaje {
         dbHandler=db;
 
         DATABASE_CREATE = "create table if not exists "
-                + TABLE_RANKING + "(" + COLUMNA_PUESTO
-                + " integer primary key autoincrement, " + COLUMNA_ID_USUARIO
-                + " integer not null, " + COLUMNA_PUNTAJE + " integer, " +
-                " foreign key " + COLUMNA_ID_USUARIO + " references " + DBSesion.getTableUsuario() + "(" + DBSesion.getColumnaID() + "));";
+                + TABLE_RANKING + "(" +
+                COLUMNA_PUESTO + " integer primary key autoincrement, " +
+                COLUMNA_PUNTAJE + " integer, " +
+                COLUMNA_ID_USUARIO + " references " + DBSesion.getTableUsuario() + "(" + DBSesion.getColumnaID() + "));";
 
         Gdx.app.log("database create dbpuntaje", DATABASE_CREATE);
 
 
-        dbHandler.setupDatabase();
+        //dbHandler.setupDatabase();
         try {
             dbHandler.openOrCreateDatabase();
             dbHandler.execSQL(DATABASE_CREATE);
+            dbHandler.closeDatabase();
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
         Gdx.app.log("dbPuntaje", "Se creo db");
-
-        cargarAssets();
 
     }
 
@@ -63,7 +62,7 @@ public class DBPuntaje {
 
         try {
             dbHandler.openOrCreateDatabase();
-            dbHandler.execSQL(DATABASE_CREATE);
+            //dbHandler.execSQL(DATABASE_CREATE);
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
@@ -73,7 +72,7 @@ public class DBPuntaje {
 
 
         try {
-            dbHandler.execSQL("INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( " + idUsuario + " , " + nuevoPuntaje + " )");
+            //dbHandler.execSQL("INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( " + idUsuario + " , " + nuevoPuntaje + " )");
             dbHandler.closeDatabase();
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
@@ -82,7 +81,7 @@ public class DBPuntaje {
 
     }
 
-    public Table mostrarPuntajes() {
+    /*public Table mostrarPuntajes() {
         DatabaseCursor cursor = null;
 
 
@@ -135,7 +134,7 @@ public class DBPuntaje {
         Gdx.app.log("DatabaseTest", "dispose");
 
         return ranking;
-    }
+    }*/
 
     public String getTableRanking() {
         return TABLE_RANKING;
@@ -155,10 +154,5 @@ public class DBPuntaje {
 
     public String getDatabaseCreate() {
         return DATABASE_CREATE;
-    }
-
-    private void cargarAssets() {
-        assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
-        fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
     }
 }
