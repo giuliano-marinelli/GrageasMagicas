@@ -190,7 +190,7 @@ public class Login implements Screen {
         fntFuenteBase.dispose();
         escena.dispose();
         //assetManager.clear();
-        assetManager.unload("imagenes/fondogolosinas.png");
+        assetManager.unload("imagenes/fondo_tablero.png");
         assetManager.unload("imagenes/login_btn_up.png");
         assetManager.unload("imagenes/login_btn_down.png");
         assetManager.unload("imagenes/fin_btn_fondo.png");
@@ -199,14 +199,14 @@ public class Login implements Screen {
     }
 
     private void cargarAssets() {
-        assetManager.load("imagenes/fondogolosinas.png", Texture.class);
+        assetManager.load("imagenes/fondo_tablero.png", Texture.class);
         assetManager.load("imagenes/login_btn_up.png", Texture.class);
         assetManager.load("imagenes/login_btn_down.png", Texture.class);
         assetManager.load("imagenes/fin_btn_fondo.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("strings/strings", I18NBundle.class);
         assetManager.finishLoading();
-        txtFondo = assetManager.get("imagenes/fondogolosinas.png");
+        txtFondo = assetManager.get("imagenes/fondo_tablero.png");
         txtBtnMenuUp = assetManager.get("imagenes/login_btn_up.png");
         txtBtnMenuDown = assetManager.get("imagenes/login_btn_down.png");
         txtFieldLogin = assetManager.get("imagenes/fin_btn_fondo.png");

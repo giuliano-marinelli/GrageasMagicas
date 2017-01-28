@@ -6,6 +6,8 @@ import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.DatabaseFactory;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 
+import java.util.ArrayList;
+
 public class InterfazDB {
 
     private String dbNombre;
@@ -31,6 +33,7 @@ public class InterfazDB {
         dbAdministrador = DatabaseFactory.getNewDatabase(dbNombre, dbVersion, creationQuery, null);
         dbAdministrador.setupDatabase();
 
+        consultarRanking();
         //crearUsuario("a","1");
     }
 
@@ -96,6 +99,30 @@ public class InterfazDB {
             e.printStackTrace();
         }
         return res;
+    }
+
+    //devuelve un arreglo con los 10 usuarios con puntaje mas alto junto con su puntaje
+    public ArrayList<String[]> consultarRanking() {
+        ArrayList<String[]> ranking = new ArrayList();
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT * FROM puntaje NATURAL JOIN usuario ORDER BY valor DESC";
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            int i = 0;
+            String nombre;
+            String puntaje;
+            while (respuesta.next() && i < 10) {
+                nombre = respuesta.getString(3);
+                puntaje = respuesta.getString(1);
+                String[] fila = {nombre,puntaje};
+                ranking.add(fila);
+                i++;
+            }
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+        return ranking;
     }
 
 }

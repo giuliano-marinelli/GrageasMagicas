@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -40,6 +41,7 @@ public class MenuPrincipal implements Screen {
     private ImageTextButton btnAcercaDe;
     private ImageTextButton btnTestEffects;
     private ImageButton btnSesion;
+    private ImageButton btnRanking;
     private TextButton btnSesionMensaje;
     private Image imgFondo;
     private Image imgTitulo;
@@ -48,6 +50,7 @@ public class MenuPrincipal implements Screen {
     private Texture txtBtnMenuUp;
     private Texture txtBtnMenuDown;
     private Texture txtBtnSesion;
+    private Texture txtBtnRanking;
     private Texture txtTitulo;
     private BitmapFont fntFuenteBase;
 
@@ -81,57 +84,6 @@ public class MenuPrincipal implements Screen {
         btnJugar = new ImageTextButton(strings.get("btn_jugar"), btnStlMenu);
         btnJugar.setPosition(anchoCamara / 2, altoCamara * 0.6f);
         btnJugar.getLabel().setFontScale(2.5f, 2.5f);
-        escena.addActor(btnJugar);
-
-        btnOpciones = new ImageTextButton(strings.get("btn_opciones"), btnStlMenu);
-        btnOpciones.setPosition(anchoCamara / 2, altoCamara * 0.4f);
-        btnOpciones.getLabel().setFontScale(2f, 2f);
-        escena.addActor(btnOpciones);
-
-        btnAcercaDe = new ImageTextButton(strings.get("btn_acerca_de"), btnStlMenu);
-        btnAcercaDe.setPosition(anchoCamara / 2, altoCamara * 0.2f);
-        btnAcercaDe.getLabel().setFontScale(2f, 2f);
-        escena.addActor(btnAcercaDe);
-
-        TextureRegionDrawable trBtnSesion = new TextureRegionDrawable(new TextureRegion(txtBtnSesion));
-
-        btnSesion = new ImageButton(trBtnSesion);
-        btnSesion.setPosition(50, 50);
-        btnSesion.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!adminPantalla.isSession()) {
-                    Login login = new Login(adminPantalla);
-
-                    adminPantalla.setScreen(login);
-                }
-            }
-        });
-        escena.addActor(btnSesion);
-
-        TextButton.TextButtonStyle btnStlSesionMensaje = new TextButton.TextButtonStyle();
-        btnStlSesionMensaje.font = fntFuenteBase;
-        btnStlSesionMensaje.fontColor = Color.BLACK;
-        btnSesionMensaje = new TextButton(strings.get("btn_sesion_no_log"), btnStlSesionMensaje);
-        btnSesionMensaje.setPosition(100 + btnSesion.getWidth(), 50 + btnSesion.getHeight() / 2 - btnSesionMensaje.getHeight() / 2);
-        if(adminPantalla.isSession()) {
-            btnSesionMensaje.setText(strings.get("btn_sesion_log")+" "+adminPantalla.getUser());
-        }
-        escena.addActor(btnSesionMensaje);
-
-        btnTestEffects = new ImageTextButton("TestEffects", btnStlMenu);
-        btnTestEffects.getLabel().setFontScale(1.5f, 1.5f);
-        btnTestEffects.setTransform(true);
-        btnTestEffects.setScale(0.5f, 0.5f);
-        btnTestEffects.setWidth(btnTestEffects.getPrefWidth());
-        btnTestEffects.setHeight(btnTestEffects.getPrefHeight());
-        btnTestEffects.setPosition(anchoCamara / 2 + btnAcercaDe.getWidth() - btnTestEffects.getWidth(), altoCamara * 0.1f);
-        escena.addActor(btnTestEffects);
-
-        imgTitulo = new Image(txtTitulo);
-        imgTitulo.setPosition(anchoCamara / 2 - imgTitulo.getWidth() / 2, altoCamara * 0.8f);
-        escena.addActor(imgTitulo);
-
         btnJugar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -155,27 +107,102 @@ public class MenuPrincipal implements Screen {
                 adminPantalla.setScreen(juegoVisual);
             }
         });
+        escena.addActor(btnJugar);
 
+        btnOpciones = new ImageTextButton(strings.get("btn_opciones"), btnStlMenu);
+        btnOpciones.setPosition(anchoCamara / 2, altoCamara * 0.4f);
+        btnOpciones.getLabel().setFontScale(2f, 2f);
         btnOpciones.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Click", "Presiono opciones");
             }
         });
+        escena.addActor(btnOpciones);
 
+        btnAcercaDe = new ImageTextButton(strings.get("btn_acerca_de"), btnStlMenu);
+        btnAcercaDe.setPosition(anchoCamara / 2, altoCamara * 0.2f);
+        btnAcercaDe.getLabel().setFontScale(2f, 2f);
         btnAcercaDe.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Click", "Presiono acerca de");
             }
         });
+        escena.addActor(btnAcercaDe);
 
+        TextureRegionDrawable trBtnSesionLog = new TextureRegionDrawable(new TextureRegion(txtBtnSesion));
+        Drawable trBtnSesionNoLog = trBtnSesionLog.tint(Color.RED);
+
+        if (!adminPantalla.isSession()) {
+            btnSesion = new ImageButton(trBtnSesionNoLog);
+        } else {
+            btnSesion = new ImageButton(trBtnSesionLog);
+        }
+        btnSesion.setPosition(50, 50);
+        btnSesion.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!adminPantalla.isSession()) {
+                    Login login = new Login(adminPantalla);
+
+                    adminPantalla.setScreen(login);
+                }
+            }
+        });
+        escena.addActor(btnSesion);
+
+        TextButton.TextButtonStyle btnStlSesionMensaje = new TextButton.TextButtonStyle();
+        btnStlSesionMensaje.font = fntFuenteBase;
+        btnStlSesionMensaje.fontColor = Color.BLACK;
+        btnSesionMensaje = new TextButton("", btnStlSesionMensaje);
+        if (adminPantalla.isSession()) {
+            btnSesionMensaje.setText(strings.get("btn_sesion_log") + " " + adminPantalla.getUser());
+            btnSesionMensaje.getLabel().setFontScale(1.5f, 1.5f);
+            btnStlSesionMensaje.fontColor = Color.BLUE;
+        } else {
+            btnSesionMensaje.setText(strings.get("btn_sesion_no_log"));
+            btnStlSesionMensaje.fontColor = Color.RED;
+        }
+        btnSesionMensaje.setWidth(btnSesionMensaje.getPrefWidth());
+        btnSesionMensaje.setHeight(btnSesionMensaje.getPrefHeight());
+        btnSesionMensaje.setPosition(100 + btnSesion.getWidth(), 50 + btnSesion.getHeight() / 2 - btnSesionMensaje.getHeight() / 2);
+        escena.addActor(btnSesionMensaje);
+
+        TextureRegionDrawable trBtnRanking = new TextureRegionDrawable(new TextureRegion(txtBtnRanking));
+
+        btnRanking = new ImageButton(trBtnRanking);
+        btnRanking.setPosition(50, 100 + btnSesion.getHeight());
+        btnRanking.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Ranking ranking = new Ranking(adminPantalla);
+
+                adminPantalla.setScreen(ranking);
+            }
+        });
+        escena.addActor(btnRanking);
+
+        /*
+        btnTestEffects = new ImageTextButton("TestEffects", btnStlMenu);
+        btnTestEffects.getLabel().setFontScale(1.5f, 1.5f);
+        btnTestEffects.setTransform(true);
+        btnTestEffects.setScale(0.5f, 0.5f);
+        btnTestEffects.setWidth(btnTestEffects.getPrefWidth());
+        btnTestEffects.setHeight(btnTestEffects.getPrefHeight());
+        btnTestEffects.setPosition(anchoCamara / 2 + btnAcercaDe.getWidth() - btnTestEffects.getWidth(), altoCamara * 0.1f);
         btnTestEffects.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 adminPantalla.setScreen(new TestEffect(adminPantalla));
             }
         });
+        escena.addActor(btnTestEffects);
+        */
+
+        imgTitulo = new Image(txtTitulo);
+        imgTitulo.setPosition(anchoCamara / 2 - imgTitulo.getWidth() / 2, altoCamara * 0.8f);
+        escena.addActor(imgTitulo);
     }
 
     public void resize(int width, int height) {
@@ -212,32 +239,36 @@ public class MenuPrincipal implements Screen {
         txtBtnMenuUp.dispose();
         txtBtnMenuDown.dispose();
         txtBtnSesion.dispose();
+        txtBtnRanking.dispose();
         txtTitulo.dispose();
         fntFuenteBase.dispose();
         escena.dispose();
         //assetManager.clear();
-        assetManager.unload("imagenes/fondo.jpg");
+        assetManager.unload("imagenes/fondogolosinas.png");
         assetManager.unload("imagenes/menu_btn_up.png");
         assetManager.unload("imagenes/menu_btn_down.png");
         assetManager.unload("imagenes/btn_sesion.png");
+        assetManager.unload("imagenes/ranking.png");
         assetManager.unload("imagenes/titulo.png");
         assetManager.unload("fuentes/texto_bits.fnt");
         assetManager.unload("strings/strings");
     }
 
     private void cargarAssets() {
-        assetManager.load("imagenes/fondo.jpg", Texture.class);
+        assetManager.load("imagenes/fondogolosinas.png", Texture.class);
         assetManager.load("imagenes/menu_btn_up.png", Texture.class);
         assetManager.load("imagenes/menu_btn_down.png", Texture.class);
         assetManager.load("imagenes/btn_sesion.png", Texture.class);
+        assetManager.load("imagenes/ranking.png", Texture.class);
         assetManager.load("imagenes/titulo.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("strings/strings", I18NBundle.class);
         assetManager.finishLoading();
-        txtFondo = assetManager.get("imagenes/fondo.jpg");
+        txtFondo = assetManager.get("imagenes/fondogolosinas.png");
         txtBtnMenuUp = assetManager.get("imagenes/menu_btn_up.png");
         txtBtnMenuDown = assetManager.get("imagenes/menu_btn_down.png");
         txtBtnSesion = assetManager.get("imagenes/btn_sesion.png");
+        txtBtnRanking = assetManager.get("imagenes/ranking.png");
         txtTitulo = assetManager.get("imagenes/titulo.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
         strings = assetManager.get("strings/strings");
