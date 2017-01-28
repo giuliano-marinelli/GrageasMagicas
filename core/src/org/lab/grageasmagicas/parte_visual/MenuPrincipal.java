@@ -3,6 +3,7 @@ package org.lab.grageasmagicas.parte_visual;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,7 +11,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -32,16 +35,19 @@ public class MenuPrincipal implements Screen {
     private Stage escena;
     private I18NBundle strings;
     //actors
-    ImageTextButton btnJugar;
-    ImageTextButton btnOpciones;
-    ImageTextButton btnAcercaDe;
-    ImageTextButton btnTestEffects;
-    Image imgFondo;
-    Image imgTitulo;
+    private ImageTextButton btnJugar;
+    private ImageTextButton btnOpciones;
+    private ImageTextButton btnAcercaDe;
+    private ImageTextButton btnTestEffects;
+    private ImageButton btnSesion;
+    private TextButton btnSesionMensaje;
+    private Image imgFondo;
+    private Image imgTitulo;
     //assets
     private Texture txtFondo;
     private Texture txtBtnMenuUp;
     private Texture txtBtnMenuDown;
+    private Texture txtBtnSesion;
     private Texture txtTitulo;
     private BitmapFont fntFuenteBase;
 
@@ -87,6 +93,32 @@ public class MenuPrincipal implements Screen {
         btnAcercaDe.getLabel().setFontScale(2f, 2f);
         escena.addActor(btnAcercaDe);
 
+        TextureRegionDrawable trBtnSesion = new TextureRegionDrawable(new TextureRegion(txtBtnSesion));
+
+        btnSesion = new ImageButton(trBtnSesion);
+        btnSesion.setPosition(50, 50);
+        btnSesion.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!adminPantalla.isSession()) {
+                    Login login = new Login(adminPantalla);
+
+                    adminPantalla.setScreen(login);
+                }
+            }
+        });
+        escena.addActor(btnSesion);
+
+        TextButton.TextButtonStyle btnStlSesionMensaje = new TextButton.TextButtonStyle();
+        btnStlSesionMensaje.font = fntFuenteBase;
+        btnStlSesionMensaje.fontColor = Color.BLACK;
+        btnSesionMensaje = new TextButton(strings.get("btn_sesion_no_log"), btnStlSesionMensaje);
+        btnSesionMensaje.setPosition(100 + btnSesion.getWidth(), 50 + btnSesion.getHeight() / 2 - btnSesionMensaje.getHeight() / 2);
+        if(adminPantalla.isSession()) {
+            btnSesionMensaje.setText(strings.get("btn_sesion_log")+" "+adminPantalla.getUser());
+        }
+        escena.addActor(btnSesionMensaje);
+
         btnTestEffects = new ImageTextButton("TestEffects", btnStlMenu);
         btnTestEffects.getLabel().setFontScale(1.5f, 1.5f);
         btnTestEffects.setTransform(true);
@@ -120,7 +152,6 @@ public class MenuPrincipal implements Screen {
                 Thread juegoControladorThread = new Thread(juegoControlador);
                 juegoControladorThread.start();
 
-                //dispose();
                 adminPantalla.setScreen(juegoVisual);
             }
         });
@@ -166,6 +197,7 @@ public class MenuPrincipal implements Screen {
         dispose();
     }
 
+    @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -174,16 +206,20 @@ public class MenuPrincipal implements Screen {
         escena.draw();
     }
 
+    @Override
     public void dispose() {
         txtFondo.dispose();
         txtBtnMenuUp.dispose();
         txtBtnMenuDown.dispose();
+        txtBtnSesion.dispose();
         txtTitulo.dispose();
         fntFuenteBase.dispose();
         escena.dispose();
+        //assetManager.clear();
         assetManager.unload("imagenes/fondo.jpg");
         assetManager.unload("imagenes/menu_btn_up.png");
         assetManager.unload("imagenes/menu_btn_down.png");
+        assetManager.unload("imagenes/btn_sesion.png");
         assetManager.unload("imagenes/titulo.png");
         assetManager.unload("fuentes/texto_bits.fnt");
         assetManager.unload("strings/strings");
@@ -193,6 +229,7 @@ public class MenuPrincipal implements Screen {
         assetManager.load("imagenes/fondo.jpg", Texture.class);
         assetManager.load("imagenes/menu_btn_up.png", Texture.class);
         assetManager.load("imagenes/menu_btn_down.png", Texture.class);
+        assetManager.load("imagenes/btn_sesion.png", Texture.class);
         assetManager.load("imagenes/titulo.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("strings/strings", I18NBundle.class);
@@ -200,6 +237,7 @@ public class MenuPrincipal implements Screen {
         txtFondo = assetManager.get("imagenes/fondo.jpg");
         txtBtnMenuUp = assetManager.get("imagenes/menu_btn_up.png");
         txtBtnMenuDown = assetManager.get("imagenes/menu_btn_down.png");
+        txtBtnSesion = assetManager.get("imagenes/btn_sesion.png");
         txtTitulo = assetManager.get("imagenes/titulo.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
         strings = assetManager.get("strings/strings");

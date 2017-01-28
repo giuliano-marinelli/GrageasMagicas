@@ -22,8 +22,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.concurrent.BrokenBarrierException;
 
-import static java.lang.Thread.sleep;
-
 public class Login implements Screen {
 
     //visual
@@ -191,6 +189,7 @@ public class Login implements Screen {
         txtFieldLogin.dispose();
         fntFuenteBase.dispose();
         escena.dispose();
+        //assetManager.clear();
         assetManager.unload("imagenes/fondogolosinas.png");
         assetManager.unload("imagenes/menu_btn_up2.png");
         assetManager.unload("imagenes/menu_btn_down2.png");

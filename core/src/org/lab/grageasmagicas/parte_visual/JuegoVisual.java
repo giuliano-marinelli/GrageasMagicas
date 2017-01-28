@@ -161,8 +161,8 @@ public class JuegoVisual implements Screen, Observer {
 
             if (juegoLogico.getPuntaje() >= juegoLogico.getPuntajeGanar()) {
                 parEfcBrillante.setPosition(
-                        btnPuntajeGanar.getX()+btnPuntajeGanar.getWidth()/2,
-                        btnPuntajeGanar.getY()+btnPuntajeGanar.getHeight()/2);
+                        btnPuntajeGanar.getX() + btnPuntajeGanar.getWidth() / 2,
+                        btnPuntajeGanar.getY() + btnPuntajeGanar.getHeight() / 2);
                 parEfcBrillante.start();
                 drawParEfcBrillante = true;
             }
@@ -187,13 +187,6 @@ public class JuegoVisual implements Screen, Observer {
             verificarMovimientoPosible();
 
             if (juegoLogico.isFinJuego()) {
-                if (juegoLogico.getPuntaje() < juegoLogico.getPuntajeGanar()) {
-                    btnFinJuego.setText(strings.get("btn_fin_derrota"));
-                    btnFinJuego.getLabel().setColor(Color.RED);
-                } else {
-                    btnFinJuego.setText(strings.get("btn_fin_victoria"));
-                    btnFinJuego.getLabel().setColor(Color.GREEN);
-                }
                 mostrarResultado();
             }
 
@@ -233,11 +226,8 @@ public class JuegoVisual implements Screen, Observer {
 
                         barrierRespuestaVisual.await();
 
-                        //dispose();
-                        ////////////LO SACO PARA TESTEAR///////////
-                        //adminPantalla.setScreen(menuPrincipal);
-                        ///////////////////////////////////////////
-                        adminPantalla.setScreen(new RankingPuntaje(adminPantalla, juegoLogico.getPuntaje()));
+                        adminPantalla.setScreen(menuPrincipal);
+                        //adminPantalla.setScreen(new RankingPuntaje(adminPantalla, juegoLogico.getPuntaje()));
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -342,7 +332,7 @@ public class JuegoVisual implements Screen, Observer {
         btnPuntajeGanar.getLabel().setFontScale(2, 2);
         btnPuntajeGanar.setWidth(btnPuntajeGanar.getPrefWidth());
         btnPuntajeGanar.setHeight(btnPuntajeGanar.getPrefHeight());
-        btnPuntajeGanar.setPosition(anchoCamara/2 - btnPuntajeGanar.getWidth()/2, 25);
+        btnPuntajeGanar.setPosition(anchoCamara / 2 - btnPuntajeGanar.getWidth() / 2, 25);
         escena.addActor(btnPuntajeGanar);
 
         TextButton.TextButtonStyle btnStlMovimientos = new TextButton.TextButtonStyle();
@@ -550,6 +540,16 @@ public class JuegoVisual implements Screen, Observer {
      *
      */
     public void mostrarResultado() {
+        if (juegoLogico.getPuntaje() < juegoLogico.getPuntajeGanar()) {
+            btnFinJuego.setText(strings.get("btn_fin_derrota"));
+            btnFinJuego.getLabel().setColor(Color.RED);
+        } else {
+            btnFinJuego.setText(strings.get("btn_fin_victoria"));
+            btnFinJuego.getLabel().setColor(Color.GREEN);
+            if (adminPantalla.isSession()) {
+                adminPantalla.getDbManager().insertarPuntaje(adminPantalla.getIdUser(), juegoLogico.getPuntaje());
+            }
+        }
         btnFinJuego.setVisible(true);
         btnPuntaje.getLabel().setFontScale(4, 4);
         btnPuntaje.setWidth(btnPuntaje.getPrefWidth());
@@ -671,6 +671,7 @@ public class JuegoVisual implements Screen, Observer {
         parEfcExplosion.dispose();
         parEfcBrillante.dispose();
         escena.dispose();
+        //assetManager.clear();
         assetManager.unload("imagenes/fondogolosinas.png");
         assetManager.unload("imagenes/gragea.png");
         assetManager.unload("imagenes/musica_on.png");

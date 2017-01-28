@@ -12,6 +12,6 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new org.lab.grageasmagicas.parte_visual.AdministradorPantalla(), config);
+		initialize(new AdministradorPantalla(), config);
 	}
 }

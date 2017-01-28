@@ -13,4 +13,6 @@ eclipse.project {
 dependencies {
     compile files('../android/libs/gdx-sqlite-android.jar')
     compile files('../android/libs/gdx-sqlite.jar')
+    compile files('../desktop/build/libs/gdx-sqlite-desktop.jar')
+    compile files('../desktop/build/libs/sqlite-jdbc-3.7.2.jar')
 }
