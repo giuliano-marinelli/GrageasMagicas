@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.sql.Database;
 import com.badlogic.gdx.sql.DatabaseCursor;
-import com.badlogic.gdx.sql.DatabaseFactory;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 
 import org.lab.grageasmagicas.parte_visual.AdministradorPantalla;
@@ -17,36 +16,32 @@ import org.lab.grageasmagicas.parte_visual.AdministradorPantalla;
 public class DBPuntaje {
 
 
-    public  String TABLE_RANKING = "ranking";
-    public  String COLUMNA_PUESTO = "_id";
-    public  String COLUMNA_NOMBRE = "nombre";
-    public  String COLUMNA_PUNTAJE = "puntaje";
+    private String TABLE_RANKING = "ranking";
+    private String COLUMNA_PUESTO = "_id";
+    private String COLUMNA_ID_USUARIO = "_idUsuario";
+    private String COLUMNA_PUNTAJE = "puntaje";
     private Database dbHandler;
     private AssetManager assetManager;
     private BitmapFont fntFuenteBase;
 
-    private static final String DATABASE_NAME = "ranking.db";
-    private static final int DATABASE_VERSION = 1;
 
     // En DATABASE_CREATE va la cadena que es una sentencia CREATE TABLE de SQLite
     private String DATABASE_CREATE;
 
-    public DBPuntaje(String nombreTable, String nombreColumnaNombre, String nombreColumnaPuntaje, AdministradorPantalla administradorPantalla) {
-        Gdx.app.log("dbPuntaje", "empezo creacion de db");
 
-        TABLE_RANKING = nombreTable;
-        COLUMNA_NOMBRE = nombreColumnaNombre;
-        COLUMNA_PUNTAJE = nombreColumnaPuntaje;
+    public DBPuntaje(AdministradorPantalla administradorPantalla, Database db) {
+
+
         assetManager = administradorPantalla.getAssetManager();
+        dbHandler=db;
 
         DATABASE_CREATE = "create table if not exists "
                 + TABLE_RANKING + "(" + COLUMNA_PUESTO
-                + " integer primary key autoincrement, " + COLUMNA_NOMBRE
-                + " text not null," + COLUMNA_PUNTAJE  + " int );";
+                + " integer primary key autoincrement, " + COLUMNA_ID_USUARIO
+                + " text not null," + COLUMNA_PUNTAJE + " int );" +
+                "foreign key " + COLUMNA_ID_USUARIO + " references " + DBSesion.getTableUsuario() + "(" + DBSesion.getColumnaID() + ")";
 
-
-        dbHandler = DatabaseFactory.getNewDatabase(DATABASE_NAME,
-                DATABASE_VERSION, DATABASE_CREATE, null);
+        Gdx.app.log("database create dbpuntaje", DATABASE_CREATE);
 
 
         dbHandler.setupDatabase();
@@ -64,7 +59,7 @@ public class DBPuntaje {
     }
 
 
-    public void agregarPuntaje(String nombre, int nuevoPuntaje) {
+    public void agregarPuntaje(int idUsuario, int nuevoPuntaje) {
 
         try {
             dbHandler.openOrCreateDatabase();
@@ -74,14 +69,16 @@ public class DBPuntaje {
         }
 
 
-        Gdx.app.log("DBPuntaje", "INSERT INTO "+ TABLE_RANKING +" ( "+COLUMNA_NOMBRE+ ") VALUES ( '"+nombre+"' )");
-        Gdx.app.log("DBPuntaje", "INSERT INTO "+ TABLE_RANKING +" ( "+COLUMNA_PUNTAJE+ ") VALUES ( "+nuevoPuntaje+" )");
+        Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( '" + idUsuario + "' , " + nuevoPuntaje + " )");
+
 
         try {
-            dbHandler.execSQL("INSERT INTO "+ TABLE_RANKING +" ( "+COLUMNA_NOMBRE+ ", "+COLUMNA_PUNTAJE+ ") VALUES ( '"+nombre+"' , "+nuevoPuntaje+" )");
+            dbHandler.execSQL("INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( '" + idUsuario + "' , " + nuevoPuntaje + " )");
+            dbHandler.closeDatabase();
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
+
 
     }
 
@@ -89,7 +86,6 @@ public class DBPuntaje {
         DatabaseCursor cursor = null;
 
 
-
         try {
             dbHandler.openOrCreateDatabase();
             dbHandler.execSQL(DATABASE_CREATE);
@@ -98,39 +94,36 @@ public class DBPuntaje {
         }
 
         try {
-            Gdx.app.log("DBPuntaje", "SELECT * FROM "+ TABLE_RANKING+" ORDER BY "+COLUMNA_PUNTAJE+ " DESC ");
-            cursor = dbHandler.rawQuery("SELECT * FROM "+ TABLE_RANKING+" ORDER BY "+COLUMNA_PUNTAJE+ " DESC ");
+            Gdx.app.log("asql", "SELECT * FROM " + TABLE_RANKING + " r INNER JOIN "+DBSesion.getTableUsuario()+" u on (r."+COLUMNA_PUESTO+" = u."+DBSesion.getColumnaID()+") ORDER BY " + COLUMNA_PUNTAJE + " DESC ");
+            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_RANKING + " r INNER JOIN "+DBSesion.getTableUsuario()+" u on (r."+COLUMNA_PUESTO+" = u."+DBSesion.getColumnaID()+") ORDER BY " + COLUMNA_PUNTAJE + " DESC ");
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
-
-
-
+        Gdx.app.log("join ", "cursor: "+cursor.getCount());
 
         Table ranking = new Table();
 
         TextButton.TextButtonStyle tuplaStl = new TextButton.TextButtonStyle();
         tuplaStl.font = fntFuenteBase;
-        tuplaStl.fontColor = new Color(Color.PINK.r,Color.PINK.g, Color.PINK.b, Color.PINK.a );
-
+        tuplaStl.fontColor = Color.PINK;
 
 
         ranking.row();
 
-        int i=0;
-        while (i<10 && cursor.next()) {
+        int i = 0;
+        while (i < 10 && cursor.next()) {
 
-            ranking.add(new TextButton((i+1)+".  "+String.valueOf(cursor.getString(1))+"  "+String.valueOf(cursor.getString(2)), tuplaStl));
+            ranking.add(new TextButton((i + 1) + ".  " + String.valueOf(cursor.getString(4)) + "  " + String.valueOf(cursor.getString(2)), tuplaStl));
 
             ranking.row();
-
-            ranking.padBottom(5f);
-            ranking.setFillParent(true);
-            ranking.pack();
             i++;
 
         }
+
+        ranking.padBottom(5f);
+        ranking.setFillParent(true);
+        ranking.pack();
 
 
         try {
@@ -153,19 +146,11 @@ public class DBPuntaje {
     }
 
     public String getColumnaNombre() {
-        return COLUMNA_NOMBRE;
+        return COLUMNA_ID_USUARIO;
     }
 
     public String getColumnaPuntaje() {
         return COLUMNA_PUNTAJE;
-    }
-
-    public String getDatabaseName() {
-        return DATABASE_NAME;
-    }
-
-    public int getDatabaseVersion() {
-        return DATABASE_VERSION;
     }
 
     public String getDatabaseCreate() {

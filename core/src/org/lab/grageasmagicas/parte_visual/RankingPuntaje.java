@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import org.lab.grageasmagicas.base_de_datos.DBManager;
+
 public class RankingPuntaje implements Screen {
 
 
@@ -111,9 +113,9 @@ public class RankingPuntaje implements Screen {
                             public void clicked(InputEvent event, float x, float y) {
 
                                 //Este constructor crea la base de datos solo si no esta creada. Si esta creada, la prepara para ser usada
-                                org.lab.grageasmagicas.base_de_datos.DBPuntaje db = new org.lab.grageasmagicas.base_de_datos.DBPuntaje(TABLE_RANKING, COLUMNA_NOMBRE, COLUMNA_PUNTAJE, adminPantalla);
+                                DBManager db = new DBManager(adminPantalla);
 
-                                db.agregarPuntaje(ingresoNombre.getText(), puntaje);
+                                db.insertarPuntaje(4, puntaje);
 
                                 ingresoNombre.setVisible(false);
                                 //btnAgregarNombre.setVisible(false);
@@ -186,14 +188,15 @@ public class RankingPuntaje implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override
 
     public void dispose() {
-        txtFondo.dispose();
 
+        escena.dispose();
+        txtFondo.dispose();
         fntFuenteBase.dispose();
         escena.dispose();;
         assetManager.unload("imagenes/fin_btn_fondo.png");
