@@ -12,9 +12,9 @@ public class DBSesion {
 
 
     private static final String TABLE_USUARIO = "usuario";
-    private   static final String COLUMNA_ID = "_id";
-    private   String COLUMNA_USER = "usuario";
-    private   String COLUMNA_PASSWORD = "password";
+    private static final String COLUMNA_ID = "_id";
+    private String COLUMNA_USER = "usuario";
+    private String COLUMNA_PASSWORD = "password";
     private Database dbHandler;
 
     // En DATABASE_CREATE va la cadena que es una sentencia CREATE TABLE de SQLite
@@ -22,9 +22,9 @@ public class DBSesion {
 
     public DBSesion(AdministradorPantalla administradorPantalla, Database db) {
 
-    Gdx.app.log("dbSesion", "empezo creacion de db");
+        Gdx.app.log("dbSesion", "empezo creacion de db");
 
-        dbHandler=db;
+        dbHandler = db;
 
         DATABASE_CREATE = "create table if not exists "
                 + TABLE_USUARIO + "(" + COLUMNA_ID
@@ -34,7 +34,7 @@ public class DBSesion {
         try {
             dbHandler.openOrCreateDatabase();
             dbHandler.execSQL(DATABASE_CREATE);
-            dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( "+COLUMNA_ID +", "+ COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( "+4+", " + 4 + " , " + 1234 + " )");
+            dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_ID + ", " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( " + 4 + ", " + 4 + " , " + 1234 + " )");
 
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
@@ -53,7 +53,7 @@ public class DBSesion {
     public boolean agregarUsuario(String usuario, String pass) {
 
         DatabaseCursor cursor = null;
-        boolean exito=false;
+        boolean exito = false;
 
         try {
             dbHandler.openOrCreateDatabase();
@@ -63,21 +63,20 @@ public class DBSesion {
         }
 
         try {
-            Gdx.app.log("DBSesion", "SELECT * FROM "+ TABLE_USUARIO +" WHERE "+ COLUMNA_USER + "="+usuario);
-            cursor = dbHandler.rawQuery("SELECT * FROM "+ TABLE_USUARIO +" WHERE "+ COLUMNA_USER + "="+usuario);
+            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
+            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
 
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
 
-
-        if(cursor.getCount()==0) {
+        if (cursor.getCount() == 0) {
             Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( '" + usuario + "' , " + pass + " )");
 
             try {
                 dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( '" + usuario + "' , " + pass + " )");
-                exito=true;
+                exito = true;
             } catch (SQLiteGdxException e) {
                 e.printStackTrace();
             }
@@ -95,7 +94,7 @@ public class DBSesion {
 
     public boolean verificarSesion(String usuario, String pass) {
         DatabaseCursor cursor = null;
-        boolean valido=false;
+        boolean valido = false;
 
 
         try {
@@ -106,22 +105,19 @@ public class DBSesion {
         }
 
         try {
-            Gdx.app.log("DBSesion", "SELECT * FROM "+ TABLE_USUARIO +" WHERE "+ COLUMNA_USER + "="+usuario+" AND "+COLUMNA_PASSWORD+"="+pass);
-            cursor = dbHandler.rawQuery("SELECT * FROM "+ TABLE_USUARIO +" WHERE "+ COLUMNA_USER + "="+usuario+" AND "+COLUMNA_PASSWORD+"="+pass);
+            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario + " AND " + COLUMNA_PASSWORD + "=" + pass);
+            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario + " AND " + COLUMNA_PASSWORD + "=" + pass);
 
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
 
-
-
-
         dbHandler = null;
         Gdx.app.log("DatabaseTest", "dispose");
 
-        if(cursor.getCount()>0){
-            valido=true;
+        if (cursor.getCount() > 0) {
+            valido = true;
         }
 
 
@@ -134,10 +130,10 @@ public class DBSesion {
         return valido;
     }
 
-    public boolean verificarUsuario(String usuario){
+    public int verificarUsuario(String usuario) {
 
         DatabaseCursor cursor = null;
-        boolean existe=false;
+        int existe = -1;
 
         try {
             dbHandler.openOrCreateDatabase();
@@ -147,17 +143,17 @@ public class DBSesion {
         }
 
 
-
         try {
-            Gdx.app.log("DBSesion", "SELECT * FROM "+ TABLE_USUARIO +" WHERE "+ COLUMNA_USER + "="+usuario);
-            cursor = dbHandler.rawQuery("SELECT * FROM "+ TABLE_USUARIO +" WHERE "+ COLUMNA_USER + "="+usuario);
+            Gdx.app.log("DBSesion", "SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
+            cursor = dbHandler.rawQuery("SELECT * FROM " + TABLE_USUARIO + " WHERE " + COLUMNA_USER + "=" + usuario);
 
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
-        if(cursor.getCount()==1){
-            existe=true;
+        if (cursor.getCount() == 1) {
+            cursor.next();
+            existe = Integer.parseInt(String.valueOf(cursor.getString(0)));
         }
 
         return existe;
