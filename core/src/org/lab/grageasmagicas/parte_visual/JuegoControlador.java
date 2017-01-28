@@ -37,7 +37,7 @@ public class JuegoControlador implements Runnable {
         while (!finJuego.get()) {
             try {
                 barrierEntradaLogico.await();
-                if (!juegoLogico.isFinJuego()) {
+                if (!finJuego.get()) {
                     if (juegoLogico.isHayJugadas()) {
                         juegoVisual.setInputGrageas(true);
                     }

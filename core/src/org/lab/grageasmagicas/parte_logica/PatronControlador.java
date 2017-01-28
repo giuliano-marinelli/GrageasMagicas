@@ -100,8 +100,8 @@ public class PatronControlador implements Runnable {
                     Thread tL2 = new Thread(l2);
                     tL2.start();
                     barrierFinPatrones.await();
+                    barrierVerificarJugada.await();
                 }
-                barrierVerificarJugada.await();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
