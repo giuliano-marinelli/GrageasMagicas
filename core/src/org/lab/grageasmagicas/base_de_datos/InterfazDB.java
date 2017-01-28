@@ -1,6 +1,5 @@
 package org.lab.grageasmagicas.base_de_datos;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.sql.Database;
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.DatabaseFactory;
@@ -18,25 +17,36 @@ public class InterfazDB {
         dbNombre = "GrageasMagicasDB.sqlite";
         dbVersion = 1;
 
-        String creationQuery =
+        String crearUsuario =
                 "CREATE TABLE IF NOT EXISTS usuario (" +
                         "id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "nombre TEXT NOT NULL, " +
                         "contrasena TEXT NOT NULL" +
-                        ");" +
-                        "CREATE TABLE IF NOT EXISTS puntaje (" +
+                        ");";
+
+        String crearPuntaje =
+                "CREATE TABLE IF NOT EXISTS puntaje (" +
                         "id_puntaje INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "valor INTEGER NOT NULL, " +
                         "id_usuario INTEGER REFERENCES usuario(id_usuario)" +
                         ");";
 
-        dbAdministrador = DatabaseFactory.getNewDatabase(dbNombre, dbVersion, creationQuery, null);
+        dbAdministrador = DatabaseFactory.getNewDatabase(dbNombre, dbVersion, null, null);
         dbAdministrador.setupDatabase();
 
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            dbAdministrador.execSQL(crearUsuario);
+            dbAdministrador.execSQL(crearPuntaje);
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+
         //consultarRanking();
-        //crearUsuario("yuyo","123");
-        //crearUsuario("tibu","123");
-        //crearUsuario("ines","123");
+        crearUsuario("yuyo","123");
+        crearUsuario("tibu","123");
+        crearUsuario("ines","123");
     }
 
     public void insertarPuntaje(int idUsuario, int puntaje) {
@@ -116,7 +126,7 @@ public class InterfazDB {
             while (respuesta.next() && i < 10) {
                 nombre = respuesta.getString(3);
                 puntaje = respuesta.getString(1);
-                String[] fila = {nombre,puntaje};
+                String[] fila = {nombre, puntaje};
                 ranking.add(fila);
                 i++;
             }
