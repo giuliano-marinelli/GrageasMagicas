@@ -111,7 +111,7 @@ public class RankingPuntaje implements Screen {
                             public void clicked(InputEvent event, float x, float y) {
 
                                 //Este constructor crea la base de datos solo si no esta creada. Si esta creada, la prepara para ser usada
-                                DBPuntaje db = new DBPuntaje(TABLE_RANKING, COLUMNA_NOMBRE, COLUMNA_PUNTAJE, adminPantalla);
+                                org.lab.grageasmagicas.base_de_datos.DBPuntaje db = new org.lab.grageasmagicas.base_de_datos.DBPuntaje(TABLE_RANKING, COLUMNA_NOMBRE, COLUMNA_PUNTAJE, adminPantalla);
 
                                 db.agregarPuntaje(ingresoNombre.getText(), puntaje);
 
