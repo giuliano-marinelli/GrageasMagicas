@@ -33,8 +33,10 @@ public class InterfazDB {
         dbAdministrador = DatabaseFactory.getNewDatabase(dbNombre, dbVersion, creationQuery, null);
         dbAdministrador.setupDatabase();
 
-        consultarRanking();
-        //crearUsuario("a","1");
+        //consultarRanking();
+        //crearUsuario("yuyo","123");
+        //crearUsuario("tibu","123");
+        //crearUsuario("ines","123");
     }
 
     public void insertarPuntaje(int idUsuario, int puntaje) {
