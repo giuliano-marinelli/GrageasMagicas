@@ -38,8 +38,8 @@ public class DBPuntaje {
         DATABASE_CREATE = "create table if not exists "
                 + TABLE_RANKING + "(" + COLUMNA_PUESTO
                 + " integer primary key autoincrement, " + COLUMNA_ID_USUARIO
-                + " integer not null," + COLUMNA_PUNTAJE + " integer " +
-                "foreign key " + COLUMNA_ID_USUARIO + " references " + DBSesion.getTableUsuario() + "(" + DBSesion.getColumnaID() + "));";
+                + " integer not null, " + COLUMNA_PUNTAJE + " integer, " +
+                " foreign key " + COLUMNA_ID_USUARIO + " references " + DBSesion.getTableUsuario() + "(" + DBSesion.getColumnaID() + "));";
 
         Gdx.app.log("database create dbpuntaje", DATABASE_CREATE);
 
@@ -69,11 +69,11 @@ public class DBPuntaje {
         }
 
 
-        Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( '" + idUsuario + "' , " + nuevoPuntaje + " )");
+        Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( " + idUsuario + " , " + nuevoPuntaje + " )");
 
 
         try {
-            dbHandler.execSQL("INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( '" + idUsuario + "' , " + nuevoPuntaje + " )");
+            dbHandler.execSQL("INSERT INTO " + TABLE_RANKING + " ( " + COLUMNA_ID_USUARIO + ", " + COLUMNA_PUNTAJE + ") VALUES ( " + idUsuario + " , " + nuevoPuntaje + " )");
             dbHandler.closeDatabase();
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
@@ -100,7 +100,7 @@ public class DBPuntaje {
             e.printStackTrace();
         }
 
-        Gdx.app.log("join ", "cursor: "+cursor.getCount());
+//        Gdx.app.log("join ", "cursor: "+cursor.getCount());
 
         Table ranking = new Table();
 

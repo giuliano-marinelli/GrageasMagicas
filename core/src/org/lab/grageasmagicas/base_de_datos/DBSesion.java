@@ -72,10 +72,10 @@ public class DBSesion {
 
 
         if (cursor.getCount() == 0) {
-            Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( '" + usuario + "' , " + pass + " )");
+            Gdx.app.log("DBPuntaje", "INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( " + usuario + " , " + pass + " )");
 
             try {
-                dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( '" + usuario + "' , " + pass + " )");
+                dbHandler.execSQL("INSERT INTO " + TABLE_USUARIO + " ( " + COLUMNA_USER + ", " + COLUMNA_PASSWORD + ") VALUES ( " + usuario + " , " + pass + " )");
                 exito = true;
             } catch (SQLiteGdxException e) {
                 e.printStackTrace();
