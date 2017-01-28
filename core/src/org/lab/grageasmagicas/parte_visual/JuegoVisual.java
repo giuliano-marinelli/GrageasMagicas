@@ -546,7 +546,7 @@ public class JuegoVisual implements Screen, Observer {
             btnFinJuego.setText(strings.get("btn_fin_victoria"));
             btnFinJuego.getLabel().setColor(Color.GREEN);
             if (adminPantalla.isSession()) {
-                adminPantalla.getDbManager().insertarPuntaje(adminPantalla.getIdUser(), juegoLogico.getPuntaje());
+                adminPantalla.getInterfazDb().insertarPuntaje(adminPantalla.getIdUser(), juegoLogico.getPuntaje());
             }
         }
         btnFinJuego.setVisible(true);

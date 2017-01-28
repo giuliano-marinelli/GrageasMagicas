@@ -20,8 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.util.concurrent.BrokenBarrierException;
-
 public class Login implements Screen {
 
     //visual
@@ -115,12 +113,13 @@ public class Login implements Screen {
         btnSingIn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                String user = fieldUser.getText();
-                String password = fieldPassword.getText();
-                int idUser = adminPantalla.getDbManager().verificarSesion(user, password);
-                if (idUser != -1) {
-                    adminPantalla.setIdUser(idUser);
-                    adminPantalla.setUser(user);
+                String usuario = fieldUser.getText();
+                String contrasena = fieldPassword.getText();
+                //verifica que el usuario y contraseña sean correcto, si devuelve -1 son incorrectos
+                int idUsuario = adminPantalla.getInterfazDb().iniciarSesion(usuario, contrasena);
+                if (idUsuario != -1) {
+                    adminPantalla.setIdUser(idUsuario);
+                    adminPantalla.setUser(usuario);
                     adminPantalla.setSession(true);
 
                     MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);

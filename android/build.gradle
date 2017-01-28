@@ -123,6 +123,6 @@ idea {
     }
 }
 dependencies {
-    compile files('libs/gdx-sqlite-android.jar')
-    compile files('libs/gdx-sqlite.jar')
+    compile files('libs/gdx-sqlite-android/gdx-sqlite-android.jar')
+    compile files('libs/gdx-sqlite-android/gdx-sqlite.jar')
 }

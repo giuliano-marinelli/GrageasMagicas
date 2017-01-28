@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import org.lab.grageasmagicas.base_de_datos.DBManager;
+import org.lab.grageasmagicas.base_de_datos.InterfazDB;
 
 
 public class AdministradorPantalla extends Game {
@@ -20,12 +20,12 @@ public class AdministradorPantalla extends Game {
     private Camera camara;
     private Viewport vista;
     private AssetManager assetManager;
-    private DBManager dbManager;
+    private InterfazDB interfazDb;
 
     @Override
     public void create() {
         assetManager = new AssetManager();
-        dbManager = new DBManager(this);
+        interfazDb = new InterfazDB();
         session = false;
         camara = new OrthographicCamera(anchoCamara, altoCamara);
         vista = new StretchViewport(anchoCamara, altoCamara, camara);
@@ -42,8 +42,8 @@ public class AdministradorPantalla extends Game {
         return assetManager;
     }
 
-    public DBManager getDbManager() {
-        return dbManager;
+    public InterfazDB getInterfazDb() {
+        return interfazDb;
     }
 
     public int getAnchoCamara() {

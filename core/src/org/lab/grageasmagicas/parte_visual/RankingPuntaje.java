@@ -1,26 +1,15 @@
 package org.lab.grageasmagicas.parte_visual;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import org.lab.grageasmagicas.base_de_datos.DBManager;
-
-public class RankingPuntaje implements Screen {
+public class RankingPuntaje {
 
 
     private AdministradorPantalla adminPantalla;
@@ -43,7 +32,7 @@ public class RankingPuntaje implements Screen {
     private BitmapFont fntFuenteBase;
     private int puntaje;
     private TextButton.TextButtonStyle btnStlVolver;
-
+/*
     public RankingPuntaje(AdministradorPantalla adminPantalla, int nuevoPuntaje){
             this.adminPantalla = adminPantalla;
             this.anchoCamara = adminPantalla.getAnchoCamara();
@@ -113,7 +102,7 @@ public class RankingPuntaje implements Screen {
                             public void clicked(InputEvent event, float x, float y) {
 
                                 //Este constructor crea la base de datos solo si no esta creada. Si esta creada, la prepara para ser usada
-                                DBManager db = new DBManager(adminPantalla);
+                                InterfazDB db = new InterfazDB(adminPantalla);
 
                                 db.insertarPuntaje(4, puntaje);
 
@@ -214,5 +203,5 @@ public class RankingPuntaje implements Screen {
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
 
     }
-
+*/
 }

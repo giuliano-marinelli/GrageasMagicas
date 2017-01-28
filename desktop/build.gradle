@@ -38,6 +38,5 @@ task afterEclipseImport(description: "Post processing after project generation",
     }
 }
 dependencies {
-    compile files('build/libs/gdx-sqlite-desktop.jar')
-    compile files('build/libs/gdx-sqlite.jar')
+    compile files('src/org/lab/gdx-sqlite-desktop/sqlite-jdbc-3.7.2.jar')
 }
