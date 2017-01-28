@@ -90,10 +90,10 @@ public class MenuPrincipal implements Screen {
                 Gdx.app.log("Click", "Presiono jugar");
                 int ancho = 5;
                 int alto = 5;
-                int cantGragea = 7;
+                int cantGragea = 5;
                 int velocidad = 10;
                 int movimientos = 10;
-                int puntajeGanar = 350;
+                int puntajeGanar = 500;
                 AtomicBoolean finJuego = new AtomicBoolean(false);
 
                 Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, finJuego);
