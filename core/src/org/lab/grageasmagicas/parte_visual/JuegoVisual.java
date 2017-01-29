@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import org.lab.estructuras.Point;
 import org.lab.grageasmagicas.parte_logica.Gragea;
 import org.lab.grageasmagicas.parte_logica.Juego;
+import org.lab.grageasmagicas.parte_logica.JuegoLogico2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class JuegoVisual implements Screen, Observer {
     private float[][] matrizPosGrageaX;
     private float[][] matrizPosGrageaY;
     //juego logico
-    private Juego juegoLogico;
+    private JuegoLogico2 juegoLogico;
     private Gragea[][] matrizGrageasLogica;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
     private int cantColumnas;
@@ -629,7 +630,7 @@ public class JuegoVisual implements Screen, Observer {
         synchronized (this) {
             if (assetManager.update()) {
                 //seteamos los nuevos datos obtenidos desde el juego logico observado
-                juegoLogico = (Juego) observable;
+                juegoLogico = (JuegoLogico2) observable;
                 matrizGrageasLogica = juegoLogico.getMatrizGrageas();
                 grageasCombinadas = juegoLogico.getGrageasCombinadas();
                 cantColumnas = matrizGrageasLogica[0].length;

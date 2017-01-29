@@ -8,13 +8,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JuegoControlador implements Runnable {
 
-    private Juego juegoLogico;
+    private JuegoLogico2 juegoLogico;
     private JuegoVisual juegoVisual;
     private CyclicBarrier barrierEntradaLogico = new CyclicBarrier(2);
     private CyclicBarrier barrierRespuestaVisual = new CyclicBarrier(2);
     private AtomicBoolean finJuego;
 
-    public JuegoControlador(Juego juegoLogico, JuegoVisual juegoVisual, AtomicBoolean finJuego) {
+    public JuegoControlador(JuegoLogico2 juegoLogico, JuegoVisual juegoVisual, AtomicBoolean finJuego) {
         this.juegoLogico = juegoLogico;
         this.juegoVisual = juegoVisual;
         this.finJuego = finJuego;
@@ -43,7 +43,9 @@ public class JuegoControlador implements Runnable {
                     }
                     juegoVisual.setInputMenus(true);
                 }
+               // System.out.println("1 juegoControlador");
                 barrierRespuestaVisual.await();
+               // System.out.println("2 juegoControlador");
                 if (!finJuego.get()) {
                     if (juegoLogico.isHayJugadas()) {
                         juegoVisual.setInputGrageas(false);
@@ -55,13 +57,16 @@ public class JuegoControlador implements Runnable {
                         juegoVisual.setHayGrageaSeleccionada(false);
                     }
                 }
+               // System.out.println("3 juegoControlador");
                 barrierEntradaLogico.await();
+               // System.out.println("4 juegoControlador");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (BrokenBarrierException e) {
                 e.printStackTrace();
             }
         }
+        System.out.println("SALIO JUEGO CONTROLADOR");
     }
 
 }

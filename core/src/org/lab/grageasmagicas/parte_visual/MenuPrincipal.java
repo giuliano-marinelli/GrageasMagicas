@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import org.lab.grageasmagicas.parte_logica.Juego;
+import org.lab.grageasmagicas.parte_logica.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -92,11 +92,11 @@ public class MenuPrincipal implements Screen {
                 int alto = 5;
                 int cantGragea = 5;
                 int velocidad = 10;
-                int movimientos = 10;
-                int puntajeGanar = 500;
+                int movimientos = 3;
+                int puntajeGanar = 30;
                 AtomicBoolean finJuego = new AtomicBoolean(false);
 
-                Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, finJuego);
+                JuegoLogico2 juegoLogico = new JuegoLogico2(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, finJuego);
 
                 JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 
