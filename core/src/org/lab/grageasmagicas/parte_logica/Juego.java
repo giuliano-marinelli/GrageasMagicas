@@ -34,6 +34,7 @@ public class Juego extends Observable implements Runnable {
     private int segundaGrageaY;
     private boolean pausa;
     private boolean hayJugadas;
+    private boolean huboCombo;
     private AtomicBoolean finJuego;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
     private Comprobador[] comprobadorAlto;
@@ -240,7 +241,12 @@ public class Juego extends Observable implements Runnable {
                         encontro = true;
                     }
                     j++;
-                } while (!encontro && j < grageasCombinadas.size());
+                }
+                while (!encontro && j < grageasCombinadas.size());
+                //cuando encuentra un combo setea la variable huboCombo en true una única vez por jugada.
+                if (!huboCombo && encontro) {
+                    huboCombo = true;
+                }
             }
         }
 
@@ -779,5 +785,13 @@ public class Juego extends Observable implements Runnable {
 
     public void setMovimientosTotales(int movimientosTotales) {
         this.movimientosTotales = movimientosTotales;
+    }
+
+    public boolean getHuboCombo() {
+        return huboCombo;
+    }
+
+    public void setHuboCombo(boolean b) {
+        huboCombo = b;
     }
 }
