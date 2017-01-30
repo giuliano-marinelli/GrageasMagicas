@@ -501,6 +501,10 @@ public class JuegoVisual implements Screen, Observer {
                         }
                     }
                 }
+                if (juegoLogico.getHuboCombo()) {
+                    Gdx.input.vibrate(200);
+                    juegoLogico.setHuboCombo(false);
+                }
             }
             sndExplosion.play();
             if (animacionesEjecutando > 0) {

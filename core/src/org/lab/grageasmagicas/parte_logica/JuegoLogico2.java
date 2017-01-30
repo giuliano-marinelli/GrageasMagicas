@@ -34,6 +34,7 @@ public class JuegoLogico2 extends Observable implements Runnable {
     private int segundaGrageaY;
     private boolean pausa;
     private boolean hayJugadas;
+    private boolean huboCombo;
     private AtomicBoolean finJuego;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
     private Comprobador[] comprobadorAlto;
@@ -278,7 +279,7 @@ public class JuegoLogico2 extends Observable implements Runnable {
      * Se realiza despues de cada comprobacion.
      */
     public void calcularCombos() {
-        boolean encontro;
+        boolean encontro = false;
         List<Point> grageasDuplicadas = new ArrayList();
         for (int i = 0; i < grageasCombinadas.size(); i++) {
             Point grageaAct = grageasCombinadas.get(i);
@@ -292,6 +293,10 @@ public class JuegoLogico2 extends Observable implements Runnable {
                     }
                     j++;
                 } while (!encontro && j < grageasCombinadas.size());
+                //cuando encuentra un combo setea la variable huboCombo en true una única vez por jugada.
+                if (!huboCombo && encontro) {
+                    huboCombo = true;
+                }
             }
         }
 
@@ -759,5 +764,13 @@ public class JuegoLogico2 extends Observable implements Runnable {
 
     public void setMovimientosTotales(int movimientosTotales) {
         this.movimientosTotales = movimientosTotales;
+    }
+
+    public boolean getHuboCombo() {
+        return huboCombo;
+    }
+
+    public void setHuboCombo(boolean b) {
+        huboCombo = b;
     }
 }

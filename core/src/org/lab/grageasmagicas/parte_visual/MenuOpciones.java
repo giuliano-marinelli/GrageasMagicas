@@ -111,10 +111,12 @@ public class MenuOpciones implements Screen {
         btnSonidoOnOf.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (btnSonidoOnOf.isChecked()) {
+                if (!btnSonidoOnOf.isChecked()) {
                     btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("encendido"));
+                    btnSonidoOnOf.setChecked(false);
                 } else {
                     btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("apagado"));
+                    btnSonidoOnOf.setChecked(true);
                 }
             }
         });
@@ -131,10 +133,13 @@ public class MenuOpciones implements Screen {
         btnVibracion.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (btnVibracion.isChecked()) {
+                if (!btnVibracion.isChecked()) {
                     btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("encendido"));
+                    Gdx.input.vibrate(200);
+                    btnVibracion.setChecked(false);
                 } else {
                     btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("apagado"));
+                    btnVibracion.setChecked(true);
                 }
             }
         });
