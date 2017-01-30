@@ -3,7 +3,7 @@ package org.lab.grageasmagicas.parte_visual;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import org.lab.grageasmagicas.parte_logica.JuegoLogico2;
+import org.lab.grageasmagicas.parte_logica.Juego;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,13 +24,13 @@ public class NivelListener extends ClickListener {
         if (nivel <= nivelLogrado) {
             int ancho = 5;
             int alto = 5;
-            int cantGragea = 3 + (nivel / 10);
             int velocidad = 10;
-            int movimientos = 10 + ((nivel / 10) * 5);
-            int puntajeGanar = movimientos * 30 + (nivel * 25);
+            int cantGragea = 4 + (nivel / 10);
+            int movimientos = 5 + ((nivel / 5) * 2);
+            int puntajeGanar = movimientos * 30 + (nivel * 100) - (nivel/10*1000);
             AtomicBoolean finJuego = new AtomicBoolean(false);
 
-            JuegoLogico2 juegoLogico = new JuegoLogico2(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, finJuego);
+            Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, finJuego);
 
             JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 
@@ -39,10 +39,10 @@ public class NivelListener extends ClickListener {
             juegoControladorThread.start();
 
             adminPantalla.setScreen(juegoVisual);
+            //System.out.println(cantGragea+","+movimientos+","+puntajeGanar);
         } else {
             System.out.println("Nivel no alcanzado");
         }
-        //System.out.println(cantGragea+","+movimientos+","+puntajeGanar);
     }
 
 }

@@ -28,6 +28,7 @@ public class Juego extends Observable implements Runnable {
     private int movimientosTotales;
     private int puntajeGanar;
     private int puntaje;
+    private int nivel;
     private int primerGrageaX;
     private int primerGrageaY;
     private int segundaGrageaX;
@@ -47,7 +48,7 @@ public class Juego extends Observable implements Runnable {
     private CyclicBarrier barrierVerificarJugada;
 
 
-    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, AtomicBoolean finJuego) {
+    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, int nivel, AtomicBoolean finJuego) {
         this.ancho = ancho;
         this.alto = alto;
         this.velocidad = velocidad;
@@ -56,6 +57,7 @@ public class Juego extends Observable implements Runnable {
         this.cantGragea = cantGragea;
         this.puntajeGanar = puntajeGanar;
         this.puntaje = 0;
+        this.nivel = nivel;
         this.primerGrageaX = -1;
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
@@ -793,5 +795,13 @@ public class Juego extends Observable implements Runnable {
 
     public void setHuboCombo(boolean b) {
         huboCombo = b;
+    }
+
+    public int getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
     }
 }

@@ -127,6 +127,20 @@ public class InterfazDB {
         return nivelLogrado;
     }
 
+    public void desbloquearNivel(int idUsuario, int nivelGanado) {
+        try {
+            if (consultarNivelLogrado(idUsuario) < nivelGanado + 1) {
+                dbAdministrador.openOrCreateDatabase();
+                String query = "UPDATE usuario SET nivel_logrado=" + (nivelGanado + 1) + " WHERE id_usuario=" + idUsuario;
+                dbAdministrador.execSQL(query);
+                dbAdministrador.closeDatabase();
+            }
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     //verifica que el usuario y contraseña esten en la db y si es asi envia el id correspondiente
     //al mismo, caso contrario devuelve -1
     public int iniciarSesion(String nombre, String contrasena) {

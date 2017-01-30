@@ -8,13 +8,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JuegoControlador implements Runnable {
 
-    private JuegoLogico2 juegoLogico;
+    private Juego juegoLogico;
     private JuegoVisual juegoVisual;
     private CyclicBarrier barrierEntradaLogico = new CyclicBarrier(2);
     private CyclicBarrier barrierRespuestaVisual = new CyclicBarrier(2);
     private AtomicBoolean finJuego;
 
-    public JuegoControlador(JuegoLogico2 juegoLogico, JuegoVisual juegoVisual, AtomicBoolean finJuego) {
+    public JuegoControlador(Juego juegoLogico, JuegoVisual juegoVisual, AtomicBoolean finJuego) {
         this.juegoLogico = juegoLogico;
         this.juegoVisual = juegoVisual;
         this.finJuego = finJuego;
@@ -66,7 +66,7 @@ public class JuegoControlador implements Runnable {
                 e.printStackTrace();
             }
         }
-        System.out.println("SALIO JUEGO CONTROLADOR");
+        //System.out.println("SALIO JUEGO CONTROLADOR");
     }
 
 }

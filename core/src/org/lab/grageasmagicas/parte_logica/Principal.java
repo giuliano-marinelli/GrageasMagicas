@@ -13,18 +13,20 @@ public class Principal {
         int ancho = 5;//TecladoIn.readInt();
         //System.out.println("Ingrese alto del juego: ");
         int alto = 5;//TecladoIn.readInt();
+        //System.out.println("Nivel: ");
+        int nivel = 0;//TecladoIn.readInt();
         //System.out.println("Ingrese velocidad: ");
         int velocidad = 10;//TecladoIn.readInt();
         //System.out.println("Cantidad de grageas: ");
-        int cantGragea = 3;//TecladoIn.readInt();
+        int cantGragea = 4 + (nivel / 10);//TecladoIn.readInt();
         //System.out.println("Cantidad de movimientos: ");
-        int cantMovimientos = 10;//TecladoIn.readInt();
+        int movimientos = 5 + ((nivel / 5) * 2);//TecladoIn.readInt();
         //System.out.println("Puntaje para ganar: ");
-        int puntajeGanar = 500;//TecladoIn.readInt();
+        int puntajeGanar =  movimientos * 30 + (nivel * 100) - (nivel/10*1000);//TecladoIn.readInt();
         AtomicBoolean finJuego = new AtomicBoolean(false);
 
         //crea y lanza el juego
-        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, cantMovimientos, puntajeGanar, finJuego);
+        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, finJuego);
         Thread juegoThread = new Thread(juego);
         juegoThread.start();
     }

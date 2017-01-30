@@ -30,6 +30,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.lab.estructuras.Point;
 import org.lab.grageasmagicas.parte_logica.Gragea;
+import org.lab.grageasmagicas.parte_logica.Juego;
 import org.lab.grageasmagicas.parte_logica.JuegoLogico2;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class JuegoVisual implements Screen, Observer {
     private float[][] matrizPosGrageaX;
     private float[][] matrizPosGrageaY;
     //juego logico
-    private JuegoLogico2 juegoLogico;
+    private Juego juegoLogico;
     private Gragea[][] matrizGrageasLogica;
     private CopyOnWriteArrayList<Point> grageasCombinadas;
     private int cantColumnas;
@@ -221,12 +222,11 @@ public class JuegoVisual implements Screen, Observer {
             public void clicked(InputEvent event, float x, float y) {
                 try {
                     if (isInputMenus()) {
-                        MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);
                         juegoLogico.terminar();
 
                         barrierRespuestaVisual.await();
 
-                        adminPantalla.setScreen(menuPrincipal);
+                        adminPantalla.setScreen(new MenuPrincipal(adminPantalla));
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -298,12 +298,11 @@ public class JuegoVisual implements Screen, Observer {
             public void clicked(InputEvent event, float x, float y) {
                 try {
                     //if (isInputMenus()) {
-                    MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);
                     juegoLogico.terminar();
 
                     barrierRespuestaVisual.await();
 
-                    adminPantalla.setScreen(menuPrincipal);
+                    adminPantalla.setScreen(new MenuNiveles(adminPantalla));
                     //}
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -551,6 +550,7 @@ public class JuegoVisual implements Screen, Observer {
             btnFinJuego.getLabel().setColor(Color.GREEN);
             if (adminPantalla.isSesion()) {
                 adminPantalla.getInterfazDb().insertarPuntaje(adminPantalla.getIdUsuario(), juegoLogico.getPuntaje());
+                adminPantalla.getInterfazDb().desbloquearNivel(adminPantalla.getIdUsuario(), juegoLogico.getNivel());
             }
         }
         btnFinJuego.setVisible(true);
@@ -633,7 +633,7 @@ public class JuegoVisual implements Screen, Observer {
         synchronized (this) {
             if (assetManager.update()) {
                 //seteamos los nuevos datos obtenidos desde el juego logico observado
-                juegoLogico = (JuegoLogico2) observable;
+                juegoLogico = (Juego) observable;
                 matrizGrageasLogica = juegoLogico.getMatrizGrageas();
                 grageasCombinadas = juegoLogico.getGrageasCombinadas();
                 cantColumnas = matrizGrageasLogica[0].length;
