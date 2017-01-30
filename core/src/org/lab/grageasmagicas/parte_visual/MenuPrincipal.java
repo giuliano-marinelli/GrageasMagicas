@@ -87,24 +87,7 @@ public class MenuPrincipal implements Screen {
         btnJugar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Click", "Presiono jugar");
-                int ancho = 5;
-                int alto = 5;
-                int cantGragea = 5;
-                int velocidad = 10;
-                int movimientos = 3;
-                int puntajeGanar = 30;
-                AtomicBoolean finJuego = new AtomicBoolean(false);
-
-                JuegoLogico2 juegoLogico = new JuegoLogico2(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, finJuego);
-
-                JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
-
-                JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual, finJuego);
-                Thread juegoControladorThread = new Thread(juegoControlador);
-                juegoControladorThread.start();
-
-                adminPantalla.setScreen(juegoVisual);
+                adminPantalla.setScreen(new MenuNiveles(adminPantalla));
             }
         });
         escena.addActor(btnJugar);
@@ -115,7 +98,6 @@ public class MenuPrincipal implements Screen {
         btnOpciones.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Click", "Presiono opciones");
                 adminPantalla.setScreen(new MenuOpciones(adminPantalla));
             }
         });
@@ -127,7 +109,6 @@ public class MenuPrincipal implements Screen {
         btnAcercaDe.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Click", "Presiono acerca de");
                 adminPantalla.setScreen(new MenuAcercaDe(adminPantalla));
             }
         });
@@ -146,9 +127,7 @@ public class MenuPrincipal implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!adminPantalla.isSession()) {
-                    Login login = new Login(adminPantalla);
-
-                    adminPantalla.setScreen(login);
+                    adminPantalla.setScreen(new MenuLogin(adminPantalla));
                 }
             }
         });
@@ -178,7 +157,7 @@ public class MenuPrincipal implements Screen {
         btnRanking.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Ranking ranking = new Ranking(adminPantalla);
+                MenuRanking ranking = new MenuRanking(adminPantalla);
 
                 adminPantalla.setScreen(ranking);
             }
