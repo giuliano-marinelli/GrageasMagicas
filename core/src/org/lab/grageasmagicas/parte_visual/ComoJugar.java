@@ -67,7 +67,7 @@ public class ComoJugar implements Screen {
     @Override
     public void show() {
         imgFondo = new Image(txtFondo);
-        // imgFondo.setScale(anchoCamara / imgFondo.getWidth(), altoCamara / imgFondo.getHeight());
+        imgFondo.setScale(anchoCamara / imgFondo.getWidth(), altoCamara / imgFondo.getHeight());
         escena.addActor(imgFondo);
 
         TextButton.TextButtonStyle btnStlDatos = new TextButton.TextButtonStyle();
@@ -185,7 +185,7 @@ public class ComoJugar implements Screen {
         fntFuenteBase.dispose();
         escena.dispose();
         //assetManager.clear();
-        assetManager.unload("imagenes/fondo_tablero.png");
+        assetManager.unload("imagenes/fondogolosinas.png");
         assetManager.unload("fuentes/texto_bits.fnt");
         assetManager.unload("strings/strings");
         assetManager.unload("imagenes/movimientos/ElimCruzv.png");
@@ -196,7 +196,7 @@ public class ComoJugar implements Screen {
     }
 
     private void cargarAssets() {
-        assetManager.load("imagenes/fondo_tablero.png", Texture.class);
+        assetManager.load("imagenes/fondogolosinas.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("strings/strings", I18NBundle.class);
         assetManager.load("imagenes/movimientos/ElimCruzv.png", Texture.class);
@@ -205,7 +205,7 @@ public class ComoJugar implements Screen {
         assetManager.load("imagenes/movimientos/movCruzOk.png", Texture.class);
         assetManager.load("imagenes/movimientos/flechaPerspectivaBot.png", Texture.class);
         assetManager.finishLoading();
-        txtFondo = assetManager.get("imagenes/fondo_tablero.png");
+        txtFondo = assetManager.get("imagenes/fondogolosinas.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
         strings = assetManager.get("strings/strings");
         txtElimCruz = assetManager.get("imagenes/movimientos/ElimCruzv.png");
