@@ -95,7 +95,7 @@ public class MenuOpciones implements Screen {
         btnComoJugar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                adminPantalla.setScreen(new ComoJugar(adminPantalla));
             }
         });
         escena.addActor(btnComoJugar);
