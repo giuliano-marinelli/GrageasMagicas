@@ -118,9 +118,8 @@ public class MenuLogin implements Screen {
                 //verifica que el usuario y contraseña sean correcto, si devuelve -1 son incorrectos
                 int idUsuario = adminPantalla.getInterfazDb().iniciarSesion(usuario, contrasena);
                 if (idUsuario != -1) {
-                    adminPantalla.setIdUser(idUsuario);
-                    adminPantalla.setUser(usuario);
-                    adminPantalla.setSession(true);
+                    adminPantalla.setIdUsuario(idUsuario);
+                    adminPantalla.setSesion(true);
 
                     MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);
 

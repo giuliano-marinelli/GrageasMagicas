@@ -14,9 +14,8 @@ public class AdministradorPantalla extends Game {
 
     private int anchoCamara = 1280;
     private int altoCamara = 720;
-    private int idUser;
-    private boolean session;
-    private String user;
+    private int idUsuario;
+    private boolean sesion;
     private Camera camara;
     private Viewport vista;
     private AssetManager assetManager;
@@ -27,9 +26,14 @@ public class AdministradorPantalla extends Game {
     public void create() {
         assetManager = new AssetManager();
         interfazDb = new InterfazDB();
-        session = false;
         camara = new OrthographicCamera(anchoCamara, altoCamara);
         vista = new StretchViewport(anchoCamara, altoCamara, camara);
+        idUsuario = interfazDb.consultarSesion();
+        if(idUsuario != -1) {
+            sesion = true;
+        } else {
+            sesion = false;
+        }
         setScreen(new MenuPrincipal(this));
     }
 
@@ -79,28 +83,20 @@ public class AdministradorPantalla extends Game {
         this.vista = vista;
     }
 
-    public String getUser() {
-        return user;
+    public int getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
-    public int getIdUser() {
-        return idUser;
+    public boolean isSesion() {
+        return sesion;
     }
 
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
-    }
-
-    public boolean isSession() {
-        return session;
-    }
-
-    public void setSession(boolean session) {
-        this.session = session;
+    public void setSesion(boolean sesion) {
+        this.sesion = sesion;
     }
 
     public int getNumVersion(){

@@ -20,10 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import org.lab.grageasmagicas.parte_logica.*;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class MenuPrincipal implements Screen {
 
     //visual
@@ -117,7 +113,7 @@ public class MenuPrincipal implements Screen {
         TextureRegionDrawable trBtnSesionLog = new TextureRegionDrawable(new TextureRegion(txtBtnSesion));
         Drawable trBtnSesionNoLog = trBtnSesionLog.tint(Color.RED);
 
-        if (!adminPantalla.isSession()) {
+        if (!adminPantalla.isSesion()) {
             btnSesion = new ImageButton(trBtnSesionNoLog);
         } else {
             btnSesion = new ImageButton(trBtnSesionLog);
@@ -126,8 +122,13 @@ public class MenuPrincipal implements Screen {
         btnSesion.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!adminPantalla.isSession()) {
+                if (!adminPantalla.isSesion()) {
                     adminPantalla.setScreen(new MenuLogin(adminPantalla));
+                } else {
+                    adminPantalla.getInterfazDb().borrarSesion();
+                    adminPantalla.setIdUsuario(-1);
+                    adminPantalla.setSesion(false);
+                    show();
                 }
             }
         });
@@ -137,8 +138,9 @@ public class MenuPrincipal implements Screen {
         btnStlSesionMensaje.font = fntFuenteBase;
         btnStlSesionMensaje.fontColor = Color.BLACK;
         btnSesionMensaje = new TextButton("", btnStlSesionMensaje);
-        if (adminPantalla.isSession()) {
-            btnSesionMensaje.setText(strings.get("btn_sesion_log") + " " + adminPantalla.getUser());
+        if (adminPantalla.isSesion()) {
+            btnSesionMensaje.setText(strings.get("btn_sesion_log") + " " +
+                    adminPantalla.getInterfazDb().consultarNombreUsuario(adminPantalla.getIdUsuario()));
             btnSesionMensaje.getLabel().setFontScale(1.5f, 1.5f);
             btnStlSesionMensaje.fontColor = Color.BLUE;
         } else {

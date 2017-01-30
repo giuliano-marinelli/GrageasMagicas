@@ -15,16 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import org.lab.grageasmagicas.parte_logica.JuegoLogico2;
-
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MenuNiveles implements Screen {
 
@@ -59,8 +55,8 @@ public class MenuNiveles implements Screen {
 
         cantNiveles = 50;
 
-        if (adminPantalla.isSession()) {
-            nivelLogrado = adminPantalla.getInterfazDb().consultarNivelLogrado(adminPantalla.getIdUser());
+        if (adminPantalla.isSesion()) {
+            nivelLogrado = adminPantalla.getInterfazDb().consultarNivelLogrado(adminPantalla.getIdUsuario());
         } else {
             nivelLogrado = 0;
         }

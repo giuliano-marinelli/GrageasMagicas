@@ -30,7 +30,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.lab.estructuras.Point;
 import org.lab.grageasmagicas.parte_logica.Gragea;
-import org.lab.grageasmagicas.parte_logica.Juego;
 import org.lab.grageasmagicas.parte_logica.JuegoLogico2;
 
 import java.util.ArrayList;
@@ -546,8 +545,8 @@ public class JuegoVisual implements Screen, Observer {
         } else {
             btnFinJuego.setText(strings.get("btn_fin_victoria"));
             btnFinJuego.getLabel().setColor(Color.GREEN);
-            if (adminPantalla.isSession()) {
-                adminPantalla.getInterfazDb().insertarPuntaje(adminPantalla.getIdUser(), juegoLogico.getPuntaje());
+            if (adminPantalla.isSesion()) {
+                adminPantalla.getInterfazDb().insertarPuntaje(adminPantalla.getIdUsuario(), juegoLogico.getPuntaje());
             }
         }
         btnFinJuego.setVisible(true);

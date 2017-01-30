@@ -22,7 +22,7 @@ public class InterfazDB {
                         "id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "nombre TEXT NOT NULL, " +
                         "contrasena TEXT NOT NULL, " +
-                        "nivel_logrado INTEGER DEFAULT 0"+
+                        "nivel_logrado INTEGER DEFAULT 0" +
                         ");";
 
         String crearPuntaje =
@@ -34,17 +34,16 @@ public class InterfazDB {
 
         String crearSesion =
                 "CREATE TABLE IF NOT EXISTS sesion (" +
-                        "id_sesion INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "id_usuario INTEGER REFERENCES usuario(id_usuario)" +
+                        "id_usuario INTEGER PRIMARY KEY REFERENCES usuario(id_usuario)" +
                         ");";
 
         String crearOpciones =
                 "CREATE TABLE IF NOT EXISTS opciones (" +
                         "id_opciones INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "id_usuario INTEGER REFERENCES usuario(id_usuario), " +
-                        "vibracion BOOLEAN DEFAULT true, "+
-                        "sonido BOOLEAN DEFAULT true, "+
-                        "musica BOOLEAN DEFAULT true"+
+                        "vibracion BOOLEAN DEFAULT true, " +
+                        "sonido BOOLEAN DEFAULT true, " +
+                        "musica BOOLEAN DEFAULT true" +
                         ");";
 
         dbAdministrador = DatabaseFactory.getNewDatabase(dbNombre, dbVersion, null, null);
@@ -54,15 +53,17 @@ public class InterfazDB {
             dbAdministrador.openOrCreateDatabase();
             dbAdministrador.execSQL(crearUsuario);
             dbAdministrador.execSQL(crearPuntaje);
+            dbAdministrador.execSQL(crearSesion);
+            dbAdministrador.execSQL(crearOpciones);
             dbAdministrador.closeDatabase();
         } catch (SQLiteGdxException e) {
             e.printStackTrace();
         }
 
         //consultarRanking();
-        crearUsuario("yuyo","123");
-        crearUsuario("tibu","123");
-        crearUsuario("ines","123");
+        crearUsuario("yuyo", "123");
+        crearUsuario("tibu", "123");
+        crearUsuario("ines", "123");
     }
 
     public void insertarPuntaje(int idUsuario, int puntaje) {
@@ -92,6 +93,40 @@ public class InterfazDB {
         return exito;
     }
 
+    //devuelve el nombre que corresponde tal idUsuario, si no lo encuentra devuelve cadena vacia
+    public String consultarNombreUsuario(int idUsuario) {
+        String nombreUsuario = "";
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT nombre FROM usuario WHERE id_usuario=" + idUsuario;
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            while (respuesta.next()) {
+                nombreUsuario = respuesta.getString(0);
+            }
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+        return nombreUsuario;
+    }
+
+    //devuelve el nivel logrado por el usuario, si no lo encuentra devuelve -1
+    public int consultarNivelLogrado(int idUsuario) {
+        int nivelLogrado = -1;
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT nivel_logrado FROM usuario WHERE id_usuario=" + idUsuario;
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            while (respuesta.next()) {
+                nivelLogrado = respuesta.getInt(0);
+            }
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+        return nivelLogrado;
+    }
+
     //verifica que el usuario y contraseña esten en la db y si es asi envia el id correspondiente
     //al mismo, caso contrario devuelve -1
     public int iniciarSesion(String nombre, String contrasena) {
@@ -99,6 +134,55 @@ public class InterfazDB {
         try {
             dbAdministrador.openOrCreateDatabase();
             String query = "SELECT * FROM usuario WHERE nombre='" + nombre + "' AND contrasena='" + contrasena + "'";
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            while (respuesta.next()) {
+                idUsuario = respuesta.getInt(0);
+            }
+            dbAdministrador.closeDatabase();
+            if (idUsuario != -1) {
+                modificarSesion(idUsuario);
+            }
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+        return idUsuario;
+    }
+
+    //crea o modifica la sesion existente con el nuevo idUsuario que se va a loguear
+    public void modificarSesion(int idUsuario) {
+        try {
+            String query;
+            if (consultarSesion() != -1) {
+                query = "UPDATE sesion SET id_usuario=" + idUsuario;
+            } else {
+                query = "INSERT INTO sesion(id_usuario) VALUES (" + idUsuario + ")";
+            }
+            dbAdministrador.openOrCreateDatabase();
+            dbAdministrador.execSQL(query);
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //borra el dato de sesion
+    public void borrarSesion() {
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "DELETE FROM sesion";
+            dbAdministrador.execSQL(query);
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //si hay sesion devuelve el idUsuario correspondiente, sino devuelve -1
+    public int consultarSesion() {
+        int idUsuario = -1;
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT * FROM sesion";
             DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
             while (respuesta.next()) {
                 idUsuario = respuesta.getInt(0);
@@ -152,24 +236,5 @@ public class InterfazDB {
         }
         return ranking;
     }
-
-    //devuelve el nivel logrado por el usuario, si no lo encuentra devuelve -1
-    public int consultarNivelLogrado(int idUsuario) {
-        int nivelLogrado = -1;
-        try {
-            dbAdministrador.openOrCreateDatabase();
-            String query = "SELECT nivel_logrado FROM usuario WHERE id_usuario="+idUsuario;
-            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
-            while (respuesta.next()) {
-                nivelLogrado = respuesta.getInt(0);
-            }
-            dbAdministrador.closeDatabase();
-        } catch (SQLiteGdxException e) {
-            e.printStackTrace();
-        }
-        return nivelLogrado;
-    }
-
-
 
 }
