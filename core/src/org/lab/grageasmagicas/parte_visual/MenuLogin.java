@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Login implements Screen {
+public class MenuLogin implements Screen {
 
     //visual
     private int anchoCamara;
@@ -45,7 +45,7 @@ public class Login implements Screen {
     private Texture txtFieldLogin;
     private BitmapFont fntFuenteBase;
 
-    public Login(AdministradorPantalla adminPantalla) {
+    public MenuLogin(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
         this.anchoCamara = adminPantalla.getAnchoCamara();
         this.altoCamara = adminPantalla.getAltoCamara();

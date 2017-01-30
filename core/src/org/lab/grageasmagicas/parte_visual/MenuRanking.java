@@ -8,22 +8,19 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 
-public class Ranking implements Screen {
+public class MenuRanking implements Screen {
 
     //visual
     private int anchoCamara;
@@ -38,11 +35,12 @@ public class Ranking implements Screen {
     private TextButton btnVolver;
     private Image imgFondo;
     private Table tblRanking;
+    private ScrollPane scrPaneRanking;
     //assets
     private Texture txtFondo;
     private BitmapFont fntFuenteBase;
 
-    public Ranking(AdministradorPantalla adminPantalla) {
+    public MenuRanking(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
         this.anchoCamara = adminPantalla.getAnchoCamara();
         this.altoCamara = adminPantalla.getAltoCamara();
@@ -66,23 +64,28 @@ public class Ranking implements Screen {
         TextButton.TextButtonStyle btnStlDatos = new TextButton.TextButtonStyle();
         btnStlDatos.font = fntFuenteBase;
         btnStlDatos.fontColor = Color.GOLD;
-        TextButton espacio = new TextButton("                       ",btnStlDatos);
 
         tblRanking = new Table();
         for (int i = 0; i < ranking.size(); i++) {
             tblRanking.row();
-            TextButton btnNombre = new TextButton(ranking.get(i)[0],btnStlDatos);
-            btnNombre.getLabel().setFontScale(1.5f,1.5f);
-            TextButton btnPuntaje = new TextButton(ranking.get(i)[1],btnStlDatos);
-            btnPuntaje.getLabel().setFontScale(1.5f,1.5f);
-            tblRanking.add(btnNombre);
-            tblRanking.add(espacio);
-            tblRanking.add(btnPuntaje);
+            TextButton btnPuesto = new TextButton("(" + (i + 1) + ")", btnStlDatos);
+            btnPuesto.getLabel().setFontScale(1.5f, 1.5f);
+            TextButton btnNombre = new TextButton(ranking.get(i)[0], btnStlDatos);
+            btnNombre.getLabel().setFontScale(1.5f, 1.5f);
+            TextButton btnPuntaje = new TextButton(ranking.get(i)[1], btnStlDatos);
+            btnPuntaje.getLabel().setFontScale(1.5f, 1.5f);
+            tblRanking.add(btnPuesto).space(50);
+            tblRanking.add(btnNombre).space(50);
+            tblRanking.add(btnPuntaje).space(50);
         }
         tblRanking.pad(50f);
-        tblRanking.setFillParent(true);
         tblRanking.pack();
-        escena.addActor(tblRanking);
+
+        scrPaneRanking = new ScrollPane(tblRanking);
+        scrPaneRanking.setWidth(anchoCamara / 2);
+        scrPaneRanking.setHeight(altoCamara);
+        scrPaneRanking.setPosition(anchoCamara / 2 - scrPaneRanking.getWidth() / 2, 0);
+        escena.addActor(scrPaneRanking);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;

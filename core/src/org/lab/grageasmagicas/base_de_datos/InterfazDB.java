@@ -21,7 +21,8 @@ public class InterfazDB {
                 "CREATE TABLE IF NOT EXISTS usuario (" +
                         "id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "nombre TEXT NOT NULL, " +
-                        "contrasena TEXT NOT NULL" +
+                        "contrasena TEXT NOT NULL, " +
+                        "nivel_logrado INTEGER DEFAULT 0"+
                         ");";
 
         String crearPuntaje =
@@ -29,6 +30,21 @@ public class InterfazDB {
                         "id_puntaje INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "valor INTEGER NOT NULL, " +
                         "id_usuario INTEGER REFERENCES usuario(id_usuario)" +
+                        ");";
+
+        String crearSesion =
+                "CREATE TABLE IF NOT EXISTS sesion (" +
+                        "id_sesion INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "id_usuario INTEGER REFERENCES usuario(id_usuario)" +
+                        ");";
+
+        String crearOpciones =
+                "CREATE TABLE IF NOT EXISTS opciones (" +
+                        "id_opciones INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "id_usuario INTEGER REFERENCES usuario(id_usuario), " +
+                        "vibracion BOOLEAN DEFAULT true, "+
+                        "sonido BOOLEAN DEFAULT true, "+
+                        "musica BOOLEAN DEFAULT true"+
                         ");";
 
         dbAdministrador = DatabaseFactory.getNewDatabase(dbNombre, dbVersion, null, null);
@@ -136,5 +152,24 @@ public class InterfazDB {
         }
         return ranking;
     }
+
+    //devuelve el nivel logrado por el usuario, si no lo encuentra devuelve -1
+    public int consultarNivelLogrado(int idUsuario) {
+        int nivelLogrado = -1;
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT nivel_logrado FROM usuario WHERE id_usuario="+idUsuario;
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            while (respuesta.next()) {
+                nivelLogrado = respuesta.getInt(0);
+            }
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+        return nivelLogrado;
+    }
+
+
 
 }

@@ -672,7 +672,7 @@ public class JuegoVisual implements Screen, Observer {
         parEfcBrillante.dispose();
         escena.dispose();
         //assetManager.clear();
-        assetManager.unload("imagenes/fondo_tablero.png");
+        assetManager.unload("imagenes/fondo_juego.png");
         assetManager.unload("imagenes/gragea.png");
         assetManager.unload("imagenes/musica_on.png");
         assetManager.unload("imagenes/musica_off.png");
@@ -691,7 +691,7 @@ public class JuegoVisual implements Screen, Observer {
         ParticleEffectLoader.ParticleEffectParameter effectParameter = new ParticleEffectLoader.ParticleEffectParameter();
         effectParameter.imagesDir = Gdx.files.internal("imagenes");
 
-        assetManager.load("imagenes/fondo_tablero.png", Texture.class);
+        assetManager.load("imagenes/fondo_juego.png", Texture.class);
         assetManager.load("imagenes/gragea.png", Texture.class);
         assetManager.load("imagenes/musica_on.png", Texture.class);
         assetManager.load("imagenes/musica_off.png", Texture.class);
@@ -704,7 +704,7 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.load("efectos/brillante.effect", ParticleEffect.class, effectParameter);
         assetManager.load("strings/strings", I18NBundle.class);
         assetManager.finishLoading();
-        txtFondo = assetManager.get("imagenes/fondo_tablero.png");
+        txtFondo = assetManager.get("imagenes/fondo_juego.png");
         txtGragea = assetManager.get("imagenes/gragea.png");
         txtBtnMusicaOn = assetManager.get("imagenes/musica_on.png");
         txtBtnMusicaOff = assetManager.get("imagenes/musica_off.png");
