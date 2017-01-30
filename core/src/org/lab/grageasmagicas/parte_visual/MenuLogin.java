@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -34,10 +35,12 @@ public class MenuLogin implements Screen {
     //actors
     private TextField fieldUser;
     private TextField fieldPassword;
-    private ImageTextButton btnSingIn;
+    private ImageTextButton btnSignIn;
+    private ImageTextButton btnSignUp;
     private TextButton btnMensajeError;
     private TextButton btnVolver;
     private Image imgFondo;
+    private Table tblLogin;
     //assets
     private Texture txtFondo;
     private Texture txtBtnMenuUp;
@@ -82,8 +85,6 @@ public class MenuLogin implements Screen {
         fieldUser.setAlignment(1);
         fieldUser.setWidth(500);
         fieldUser.setHeight(100);
-        fieldUser.setPosition(anchoCamara / 2 - fieldUser.getWidth() / 2, altoCamara - fieldUser.getHeight() - 50);
-        escena.addActor(fieldUser);
 
         fieldPassword = new TextField("", fieldStlLogin);
         fieldPassword.setMessageText(strings.get("field_password"));
@@ -92,25 +93,19 @@ public class MenuLogin implements Screen {
         fieldPassword.setHeight(100);
         fieldPassword.setPasswordCharacter('*');
         fieldPassword.setPasswordMode(true);
-        fieldPassword.setPosition(anchoCamara / 2 - fieldPassword.getWidth() / 2, altoCamara - fieldUser.getHeight() - fieldPassword.getHeight() - 150);
-        escena.addActor(fieldPassword);
 
         TextButton.TextButtonStyle btnStlMensajeError = new TextButton.TextButtonStyle();
         btnStlMensajeError.font = fntFuenteBase;
         btnStlMensajeError.fontColor = Color.RED;
         btnMensajeError = new TextButton(strings.get("btn_msj_error"), btnStlMensajeError);
-        btnMensajeError.setPosition(anchoCamara / 2 - btnMensajeError.getWidth() / 2,
-                altoCamara - fieldUser.getHeight() - fieldPassword.getHeight() - btnMensajeError.getHeight() - 200);
         btnMensajeError.setVisible(false);
-        escena.addActor(btnMensajeError);
 
-        btnSingIn = new ImageTextButton(strings.get("btn_sing_in"), btnStlMenu);
-        btnSingIn.getLabel().setFontScale(1.5f, 1.5f);
-        btnSingIn.setWidth(btnSingIn.getPrefWidth());
-        btnSingIn.setHeight(btnSingIn.getPrefHeight());
-        btnSingIn.setPosition(anchoCamara / 2 - btnSingIn.getWidth() / 2,
-                altoCamara - fieldUser.getHeight() - fieldPassword.getHeight() - btnMensajeError.getHeight() - btnSingIn.getHeight() - 250);
-        btnSingIn.addListener(new ClickListener() {
+        btnSignIn = new ImageTextButton(strings.get("btn_sing_in"), btnStlMenu);
+        btnSignIn.getLabel().setFontScale(1.5f, 1.5f);
+        btnSignIn.setWidth(btnSignIn.getPrefWidth());
+        btnSignIn.setHeight(btnSignIn.getPrefHeight());
+        btnSignIn.pad(25);
+        btnSignIn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String usuario = fieldUser.getText();
@@ -129,7 +124,35 @@ public class MenuLogin implements Screen {
                 }
             }
         });
-        escena.addActor(btnSingIn);
+
+        btnSignUp = new ImageTextButton(strings.get("btn_sing_up"),btnStlMenu);
+        btnSignUp.getLabel().setFontScale(1.5f, 1.5f);
+        btnSignUp.setWidth(btnSignIn.getPrefWidth());
+        btnSignUp.setHeight(btnSignIn.getPrefHeight());
+        btnSignUp.pad(25);
+        btnSignUp.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("Abrir pantalla de registro");
+            }
+        });
+
+        tblLogin = new Table();
+        tblLogin.row().padTop(50);
+        Table internal = new Table();
+        internal.row();
+        internal.add(fieldUser).width(350).height(75).pad(25);
+        internal.row();
+        internal.add(fieldPassword).width(350).height(75).pad(25);
+        tblLogin.add(internal);
+        tblLogin.add(btnSignIn);
+        tblLogin.row();
+        tblLogin.add(btnMensajeError).colspan(2);
+        tblLogin.row();
+        tblLogin.add(btnSignUp).colspan(2).padTop(125);
+        tblLogin.pack();
+        tblLogin.setPosition(anchoCamara / 2 - tblLogin.getWidth() / 2, altoCamara - tblLogin.getHeight());
+        escena.addActor(tblLogin);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;
