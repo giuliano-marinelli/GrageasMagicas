@@ -18,11 +18,11 @@ public class Principal {
         //System.out.println("Ingrese velocidad: ");
         int velocidad = 10;//TecladoIn.readInt();
         //System.out.println("Cantidad de grageas: ");
-        int cantGragea = 4 + (nivel / 10);//TecladoIn.readInt();
+        int cantGragea = 4 + nivel / 10;//TecladoIn.readInt();
         //System.out.println("Cantidad de movimientos: ");
-        int movimientos = 5 + ((nivel / 5) * 2);//TecladoIn.readInt();
+        int movimientos = 5 + (nivel / 5) * 2;//TecladoIn.readInt();
         //System.out.println("Puntaje para ganar: ");
-        int puntajeGanar =  movimientos * 30 + (nivel * 100) - (nivel/10*1000);//TecladoIn.readInt();
+        int puntajeGanar =  movimientos * 30 + (nivel + 1) * 50 - (nivel / 10) * (500);//TecladoIn.readInt();
         AtomicBoolean finJuego = new AtomicBoolean(false);
 
         //crea y lanza el juego

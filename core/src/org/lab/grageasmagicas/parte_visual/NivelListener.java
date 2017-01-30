@@ -25,9 +25,9 @@ public class NivelListener extends ClickListener {
             int ancho = 5;
             int alto = 5;
             int velocidad = 10;
-            int cantGragea = 4 + (nivel / 10);
-            int movimientos = 5 + ((nivel / 5) * 2);
-            int puntajeGanar = movimientos * 30 + (nivel * 100) - (nivel/10*1000);
+            int cantGragea = 4 + nivel / 10;
+            int movimientos = 5 + (nivel / 5) * 2;
+            int puntajeGanar = movimientos * 30 + (nivel + 1) * 50 - (nivel / 10) * (500);
             AtomicBoolean finJuego = new AtomicBoolean(false);
 
             Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, finJuego);
@@ -39,7 +39,7 @@ public class NivelListener extends ClickListener {
             juegoControladorThread.start();
 
             adminPantalla.setScreen(juegoVisual);
-            //System.out.println(cantGragea+","+movimientos+","+puntajeGanar);
+            //System.out.println(nivel+","+cantGragea+","+movimientos+","+puntajeGanar);
         } else {
             System.out.println("Nivel no alcanzado");
         }
