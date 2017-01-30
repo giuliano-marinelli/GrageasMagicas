@@ -116,6 +116,7 @@ public class MenuPrincipal implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Click", "Presiono opciones");
+                adminPantalla.setScreen(new MenuOpciones(adminPantalla));
             }
         });
         escena.addActor(btnOpciones);
@@ -127,6 +128,7 @@ public class MenuPrincipal implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Click", "Presiono acerca de");
+                adminPantalla.setScreen(new MenuAcercaDe(adminPantalla));
             }
         });
         escena.addActor(btnAcercaDe);

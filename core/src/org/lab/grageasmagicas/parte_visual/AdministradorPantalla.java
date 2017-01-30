@@ -21,6 +21,7 @@ public class AdministradorPantalla extends Game {
     private Viewport vista;
     private AssetManager assetManager;
     private InterfazDB interfazDb;
+    private final int NUMERO_VERSION = 1;
 
     @Override
     public void create() {
@@ -102,4 +103,7 @@ public class AdministradorPantalla extends Game {
         this.session = session;
     }
 
+    public int getNumVersion(){
+        return NUMERO_VERSION;
+    }
 }
