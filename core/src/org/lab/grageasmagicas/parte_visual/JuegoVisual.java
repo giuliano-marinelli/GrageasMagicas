@@ -222,6 +222,7 @@ public class JuegoVisual implements Screen, Observer {
             public void clicked(InputEvent event, float x, float y) {
                 try {
                     if (isInputMenus()) {
+
                         juegoLogico.terminar();
 
                         barrierRespuestaVisual.await();
