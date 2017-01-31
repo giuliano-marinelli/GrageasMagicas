@@ -10,13 +10,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
-
 
 public class MenuAcercaDe implements Screen {
 
@@ -31,11 +32,12 @@ public class MenuAcercaDe implements Screen {
     private I18NBundle strings;
     //actors
     private TextButton btnVolver;
-    private TextButton btnAcercaDe;
-    private TextButton btnNombreApp;
-    private TextButton btnVersion;
-    private TextButton btnDesarrolladores;
-    private TextButton btnNombreDesarrolladores;
+    private Label lblAcercaDe;
+    private Label lblNombreJuego;
+    private Label lblVersion;
+    private Label lblDesarrolladores;
+    private Label lblNombresDesarrolladores;
+    private Table tblContenido;
     private Image imgFondo;
     //assets
     private Texture txtFondo;
@@ -60,13 +62,56 @@ public class MenuAcercaDe implements Screen {
         imgFondo.setScale(anchoCamara / imgFondo.getWidth(), altoCamara / imgFondo.getHeight());
         escena.addActor(imgFondo);
 
-        ArrayList<String[]> ranking = adminPantalla.getInterfazDb().consultarRanking();
+        Label.LabelStyle lblStlAcercaDe = new Label.LabelStyle(fntFuenteBase, Color.GOLD);
 
-        TextButton.TextButtonStyle btnStlDatos = new TextButton.TextButtonStyle();
-        btnStlDatos.font = fntFuenteBase;
-        btnStlDatos.fontColor = Color.GOLD;
-        TextButton espacio = new TextButton("                       ", btnStlDatos);
+        lblAcercaDe = new Label(strings.get("btn_acerca_de"), lblStlAcercaDe);
+        lblAcercaDe.setFontScale(2f, 2f);
+        lblAcercaDe.setWrap(true);
+        lblAcercaDe.setAlignment(1);
 
+        Label.LabelStyle lblStlNombreJuego = new Label.LabelStyle(fntFuenteBase, Color.RED);
+
+        lblNombreJuego = new Label(strings.get("game"), lblStlNombreJuego);
+        lblNombreJuego.setFontScale(1.5f, 1.5f);
+        lblNombreJuego.setWrap(true);
+        lblNombreJuego.setAlignment(1);
+
+        Label.LabelStyle lblStlVersion = new Label.LabelStyle(fntFuenteBase, Color.LIGHT_GRAY);
+
+        lblVersion = new Label(strings.get("btn_version") + ": " + adminPantalla.getNumVersion(), lblStlVersion);
+        lblVersion.setFontScale(1.5f, 1.5f);
+        lblVersion.setWrap(true);
+        lblVersion.setAlignment(1);
+
+        Label.LabelStyle lblStlDesarrolladores = new Label.LabelStyle(fntFuenteBase, Color.GREEN);
+
+        lblDesarrolladores = new Label(strings.get("btn_desarrolladores"), lblStlDesarrolladores);
+        lblDesarrolladores.setFontScale(2f, 2f);
+        lblDesarrolladores.setWrap(true);
+        lblDesarrolladores.setAlignment(1);
+
+        Label.LabelStyle lblStlNombresDesarrolladores = new Label.LabelStyle(fntFuenteBase, Color.WHITE);
+
+        lblNombresDesarrolladores = new Label("Marinelli Giuliano\nInes Kurchan\nBermudez Martin", lblStlNombresDesarrolladores);
+        lblNombresDesarrolladores.setFontScale(1.5f, 1.5f);
+        lblNombresDesarrolladores.setWrap(true);
+        lblNombresDesarrolladores.setAlignment(1);
+
+        tblContenido = new Table();
+        tblContenido.row();
+        tblContenido.add(lblAcercaDe).padTop(50f);
+        tblContenido.row();
+        tblContenido.add(lblNombreJuego);
+        tblContenido.row();
+        tblContenido.add(lblVersion).padBottom(50f);
+        tblContenido.row();
+        tblContenido.add(lblDesarrolladores);
+        tblContenido.row();
+        tblContenido.add(lblNombresDesarrolladores).padBottom(50f);
+        //tblContenido.debug();
+        tblContenido.pack();
+        tblContenido.setPosition(anchoCamara / 2 - tblContenido.getWidth() / 2, altoCamara - tblContenido.getHeight());
+        escena.addActor(tblContenido);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;
@@ -84,59 +129,6 @@ public class MenuAcercaDe implements Screen {
             }
         });
         escena.addActor(btnVolver);
-
-
-        final TextButton.TextButtonStyle btnStlAcercaDe = new TextButton.TextButtonStyle();
-        btnStlAcercaDe.font = fntFuenteBase;
-        btnStlAcercaDe.fontColor = Color.FIREBRICK;
-        btnAcercaDe = new TextButton(strings.get("btn_acerca_de"), btnStlAcercaDe);
-        btnAcercaDe.getLabel().setFontScale(3, 3);
-        btnAcercaDe.setWidth(btnAcercaDe.getPrefWidth());
-        btnAcercaDe.setHeight(btnAcercaDe.getPrefHeight());
-        btnAcercaDe.setPosition(anchoCamara / 2 - (btnAcercaDe.getWidth() / 2), altoCamara * 0.8f);
-        escena.addActor(btnAcercaDe);
-
-        final TextButton.TextButtonStyle btnStlNombreApp = new TextButton.TextButtonStyle();
-        btnStlNombreApp.font = fntFuenteBase;
-        btnStlNombreApp.fontColor = Color.CHARTREUSE;
-        btnNombreApp = new TextButton(strings.get("btn_nombre_app"), btnStlNombreApp);
-        btnNombreApp.getLabel().setFontScale(2, 2);
-        btnNombreApp.setWidth(btnNombreApp.getPrefWidth());
-        btnNombreApp.setHeight(btnNombreApp.getPrefHeight());
-        btnNombreApp.setPosition(anchoCamara / 2 - (btnNombreApp.getWidth() / 2), altoCamara * 0.72f);
-        escena.addActor(btnNombreApp);
-
-        final TextButton.TextButtonStyle btnStlVersion = new TextButton.TextButtonStyle();
-        btnStlVersion.font = fntFuenteBase;
-        btnStlVersion.fontColor = Color.CHARTREUSE;
-        btnVersion = new TextButton(strings.get("btn_version")+": "+adminPantalla.getNumVersion(), btnStlVersion);
-        btnVersion.getLabel().setFontScale(2, 2);
-        btnVersion.setWidth(btnVersion.getPrefWidth());
-        btnVersion.setHeight(btnVersion.getPrefHeight());
-        btnVersion.setPosition(anchoCamara / 2 - (btnVersion.getWidth() / 2), altoCamara * 0.6f);
-        escena.addActor(btnVersion);
-
-        final TextButton.TextButtonStyle btnStlDesarrolladores = new TextButton.TextButtonStyle();
-        btnStlDesarrolladores.font = fntFuenteBase;
-        btnStlDesarrolladores.fontColor = Color.CHARTREUSE;
-        btnDesarrolladores = new TextButton(strings.get("btn_desarrolladores")+":", btnStlDesarrolladores);
-        btnDesarrolladores.getLabel().setFontScale(2, 2);
-        btnDesarrolladores.setWidth(btnDesarrolladores.getPrefWidth());
-        btnDesarrolladores.setHeight(btnDesarrolladores.getPrefHeight());
-        btnDesarrolladores.setPosition(anchoCamara / 2 - (btnDesarrolladores.getWidth() / 2), altoCamara * 0.5f);
-        escena.addActor(btnDesarrolladores);
-
-        final TextButton.TextButtonStyle btnStlNombreDesarrolladores = new TextButton.TextButtonStyle();
-        btnStlNombreDesarrolladores.font = fntFuenteBase;
-        btnStlNombreDesarrolladores.fontColor = Color.LIME;
-        btnNombreDesarrolladores = new TextButton("Marinelli Giuliano \n Ines Kurchan \n Bermudez Martin", btnStlDesarrolladores);
-        btnNombreDesarrolladores.getLabel().setFontScale(1.5f, 1.5f);
-        btnNombreDesarrolladores.setWidth(btnNombreDesarrolladores.getPrefWidth());
-        btnNombreDesarrolladores.setHeight(btnNombreDesarrolladores.getPrefHeight());
-        btnNombreDesarrolladores.setPosition(anchoCamara / 2 - (btnNombreDesarrolladores.getWidth() / 2), altoCamara * 0.3f);
-        escena.addActor(btnNombreDesarrolladores);
-
-
     }
 
     @Override

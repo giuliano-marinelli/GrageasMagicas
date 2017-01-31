@@ -42,8 +42,7 @@ public class InterfazDB {
                         "id_opciones INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "id_usuario INTEGER REFERENCES usuario(id_usuario), " +
                         "vibracion BOOLEAN DEFAULT true, " +
-                        "sonido BOOLEAN DEFAULT true, " +
-                        "musica BOOLEAN DEFAULT true" +
+                        "sonido BOOLEAN DEFAULT true" +
                         ");";
 
         dbAdministrador = DatabaseFactory.getNewDatabase(dbNombre, dbVersion, null, null);
@@ -60,10 +59,7 @@ public class InterfazDB {
             e.printStackTrace();
         }
 
-        //consultarRanking();
-        crearUsuario("yuyo", "123");
-        crearUsuario("tibu", "123");
-        crearUsuario("ines", "123");
+        crearOpcionesDefault();
     }
 
     public void insertarPuntaje(int idUsuario, int puntaje) {
@@ -77,12 +73,35 @@ public class InterfazDB {
         }
     }
 
+    public void crearOpcionesDefault() {
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT * FROM opciones WHERE id_usuario=-1";
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            if (respuesta.getCount() == 0) {
+                query = "INSERT INTO opciones(id_usuario) VALUES (-1)";
+                dbAdministrador.execSQL(query);
+            }
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean crearUsuario(String nombre, String contrasena) {
         boolean exito = false;
         try {
             if (!existeUsuario(nombre)) {
                 dbAdministrador.openOrCreateDatabase();
                 String query = "INSERT INTO usuario(nombre, contrasena) VALUES ('" + nombre + "','" + contrasena + "')";
+                dbAdministrador.execSQL(query);
+                query = "SELECT id_usuario FROM usuario WHERE nombre='" + nombre + "'";
+                int idUsuario = -1;
+                DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+                while (respuesta.next()) {
+                    idUsuario = respuesta.getInt(0);
+                }
+                query = "INSERT INTO opciones(id_usuario) VALUES (" + idUsuario + ")";
                 dbAdministrador.execSQL(query);
                 dbAdministrador.closeDatabase();
                 exito = true;
@@ -125,6 +144,64 @@ public class InterfazDB {
             e.printStackTrace();
         }
         return nivelLogrado;
+    }
+
+    public void setOpcionSonido(int idUsuario, boolean valor) {
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "UPDATE opciones SET sonido='" + valor + "' WHERE id_usuario=" + idUsuario;
+            dbAdministrador.execSQL(query);
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setOpcionVibracion(int idUsuario, boolean valor) {
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "UPDATE opciones SET vibracion='" + valor + "' WHERE id_usuario=" + idUsuario;
+            dbAdministrador.execSQL(query);
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean consultarOpcionSonido(int idUsuario) {
+        boolean sonido = true;
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT sonido FROM opciones WHERE id_usuario=" + idUsuario;
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            while (respuesta.next()) {
+                if (respuesta.getString(0).equals("false")) {
+                    sonido = false;
+                }
+            }
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+        return sonido;
+    }
+
+    public boolean consultarOpcionVibracion(int idUsuario) {
+        boolean vibracion = true;
+        try {
+            dbAdministrador.openOrCreateDatabase();
+            String query = "SELECT vibracion FROM opciones WHERE id_usuario=" + idUsuario;
+            DatabaseCursor respuesta = dbAdministrador.rawQuery(query);
+            while (respuesta.next()) {
+                if (respuesta.getString(0).equals("false")) {
+                    vibracion = false;
+                }
+            }
+            dbAdministrador.closeDatabase();
+        } catch (SQLiteGdxException e) {
+            e.printStackTrace();
+        }
+        return vibracion;
     }
 
     public void desbloquearNivel(int idUsuario, int nivelGanado) {

@@ -133,8 +133,6 @@ public class MenuLogin implements Screen {
         btnSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Abrir pantalla de registro");
-                //MenuRegistrarse menuRegistrarse = new MenuRegistrarse(adminPantalla);
                 adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuRegistrarse()));
             }
         });

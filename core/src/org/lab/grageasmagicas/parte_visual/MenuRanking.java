@@ -1,6 +1,5 @@
 package org.lab.grageasmagicas.parte_visual;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -34,6 +34,7 @@ public class MenuRanking implements Screen {
     //actors
     private TextButton btnVolver;
     private Image imgFondo;
+    private Label lblRanking;
     private Table tblRanking;
     private ScrollPane scrPaneRanking;
     //assets
@@ -61,24 +62,32 @@ public class MenuRanking implements Screen {
 
         ArrayList<String[]> ranking = adminPantalla.getInterfazDb().consultarRanking();
 
-        TextButton.TextButtonStyle btnStlDatos = new TextButton.TextButtonStyle();
-        btnStlDatos.font = fntFuenteBase;
-        btnStlDatos.fontColor = Color.GOLD;
+        Label.LabelStyle lblStlRanking = new Label.LabelStyle(fntFuenteBase, Color.GOLD);
+
+        lblRanking = new Label(strings.get("btn_ranking"), lblStlRanking);
+        lblRanking.setFontScale(2f, 2f);
+        lblRanking.setWrap(true);
+        lblRanking.setAlignment(1);
 
         tblRanking = new Table();
+        tblRanking.row();
+        tblRanking.add(lblRanking).colspan(3);
+
         for (int i = 0; i < ranking.size(); i++) {
             tblRanking.row();
-            TextButton btnPuesto = new TextButton("(" + (i + 1) + ")", btnStlDatos);
-            btnPuesto.getLabel().setFontScale(1.5f, 1.5f);
-            TextButton btnNombre = new TextButton(ranking.get(i)[0], btnStlDatos);
-            btnNombre.getLabel().setFontScale(1.5f, 1.5f);
-            TextButton btnPuntaje = new TextButton(ranking.get(i)[1], btnStlDatos);
-            btnPuntaje.getLabel().setFontScale(1.5f, 1.5f);
-            tblRanking.add(btnPuesto).space(50);
-            tblRanking.add(btnNombre).space(50);
-            tblRanking.add(btnPuntaje).space(50);
+            Label lblPuesto = new Label("(" + (i + 1) + ")", lblStlRanking);
+            lblPuesto.setFontScale(1.5f, 1.5f);
+            Label lblNombre = new Label(ranking.get(i)[0], lblStlRanking);
+            lblNombre.setFontScale(1.5f, 1.5f);
+            Label lblPuntaje = new Label(ranking.get(i)[1], lblStlRanking);
+            lblPuntaje.setFontScale(1.5f, 1.5f);
+            tblRanking.add(lblPuesto).space(50);
+            tblRanking.add(lblNombre).space(50);
+            tblRanking.add(lblPuntaje).space(50);
         }
         tblRanking.pad(50f);
+        tblRanking.top();
+        //tblRanking.debug();
         tblRanking.pack();
 
         scrPaneRanking = new ScrollPane(tblRanking);

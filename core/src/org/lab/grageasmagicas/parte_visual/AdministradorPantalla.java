@@ -1,7 +1,6 @@
 package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -30,7 +29,7 @@ public class AdministradorPantalla extends Game {
     private final int menuLogin = 4;
     private final int menuOpciones = 5;
     private final int menuAcercaDe = 6;
-    private final int comoJugar = 7;
+    private final int menuComoJugar = 7;
     private final int menuRanking = 8;
 
 
@@ -57,6 +56,10 @@ public class AdministradorPantalla extends Game {
 
     public AssetManager getAssetManager() {
         return assetManager;
+    }
+
+    public void setAssetManager(AssetManager assetManager) {
+        this.assetManager = assetManager;
     }
 
     public InterfazDB getInterfazDb() {
@@ -144,7 +147,7 @@ public class AdministradorPantalla extends Game {
         return juegoVisual;
     }
 
-    public int getComoJugar() {
-        return comoJugar;
+    public int getMenuComoJugar() {
+        return menuComoJugar;
     }
 }

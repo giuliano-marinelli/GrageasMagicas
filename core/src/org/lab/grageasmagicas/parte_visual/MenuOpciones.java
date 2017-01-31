@@ -10,13 +10,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
-import java.util.ArrayList;
 
 
 public class MenuOpciones implements Screen {
@@ -35,6 +34,8 @@ public class MenuOpciones implements Screen {
     private TextButton btnComoJugar;
     private TextButton btnSonidoOnOf;
     private TextButton btnVibracion;
+    private Label lblOpciones;
+    private Table tblContenido;
     private Image imgFondo;
     //assets
     private Texture txtFondo;
@@ -59,13 +60,85 @@ public class MenuOpciones implements Screen {
         imgFondo.setScale(anchoCamara / imgFondo.getWidth(), altoCamara / imgFondo.getHeight());
         escena.addActor(imgFondo);
 
-        ArrayList<String[]> ranking = adminPantalla.getInterfazDb().consultarRanking();
+        Label.LabelStyle lblStlOpciones = new Label.LabelStyle(fntFuenteBase, Color.GOLD);
 
-        TextButton.TextButtonStyle btnStlDatos = new TextButton.TextButtonStyle();
-        btnStlDatos.font = fntFuenteBase;
-        btnStlDatos.fontColor = Color.GOLD;
-        TextButton espacio = new TextButton("                       ", btnStlDatos);
+        lblOpciones = new Label(strings.get("btn_opciones"), lblStlOpciones);
+        lblOpciones.setFontScale(2f, 2f);
+        lblOpciones.setWrap(true);
+        lblOpciones.setAlignment(1);
 
+        TextButton.TextButtonStyle btnStlComoJugar = new TextButton.TextButtonStyle();
+        btnStlComoJugar.font = fntFuenteBase;
+        btnStlComoJugar.fontColor = Color.GREEN;
+
+        btnComoJugar = new TextButton(strings.get("btn_como_jugar"), btnStlComoJugar);
+        btnComoJugar.getLabel().setFontScale(1.5f, 1.5f);
+        btnComoJugar.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuComoJugar()));
+            }
+        });
+
+        TextButton.TextButtonStyle btnStlSonidoOnOf = new TextButton.TextButtonStyle();
+        btnStlSonidoOnOf.font = fntFuenteBase;
+
+        btnSonidoOnOf = new TextButton(strings.get("btn_sonido"), btnStlSonidoOnOf);
+        btnSonidoOnOf.getLabel().setFontScale(1.5f, 1.5f);
+        if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
+            btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("encendido"));
+        } else {
+            btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("apagado"));
+        }
+        btnSonidoOnOf.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
+                    btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("apagado"));
+                    adminPantalla.getInterfazDb().setOpcionSonido(adminPantalla.getIdUsuario(), false);
+                } else {
+                    btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("encendido"));
+                    adminPantalla.getInterfazDb().setOpcionSonido(adminPantalla.getIdUsuario(), true);
+                }
+            }
+        });
+
+        TextButton.TextButtonStyle btnStlVibracion = new TextButton.TextButtonStyle();
+        btnStlVibracion.font = fntFuenteBase;
+
+        btnVibracion = new TextButton(strings.get("btn_vibrar"), btnStlVibracion);
+        btnVibracion.getLabel().setFontScale(1.5f, 1.5f);
+        if (adminPantalla.getInterfazDb().consultarOpcionVibracion(adminPantalla.getIdUsuario())) {
+            btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("encendido"));
+        } else {
+            btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("apagado"));
+        }
+        btnVibracion.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (adminPantalla.getInterfazDb().consultarOpcionVibracion(adminPantalla.getIdUsuario())) {
+                    btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("apagado"));
+                    adminPantalla.getInterfazDb().setOpcionVibracion(adminPantalla.getIdUsuario(), false);
+                } else {
+                    btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("encendido"));
+                    adminPantalla.getInterfazDb().setOpcionVibracion(adminPantalla.getIdUsuario(), true);
+                }
+            }
+        });
+
+        tblContenido = new Table();
+        tblContenido.row();
+        tblContenido.add(lblOpciones).pad(50f);
+        tblContenido.row();
+        tblContenido.add(btnComoJugar).padBottom(25f);
+        tblContenido.row();
+        tblContenido.add(btnSonidoOnOf).padBottom(25f);
+        tblContenido.row();
+        tblContenido.add(btnVibracion).padBottom(25f);
+        //tblContenido.debug();
+        tblContenido.pack();
+        tblContenido.setPosition(anchoCamara / 2 - tblContenido.getWidth() / 2, altoCamara - tblContenido.getHeight());
+        escena.addActor(tblContenido);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;
@@ -83,67 +156,6 @@ public class MenuOpciones implements Screen {
             }
         });
         escena.addActor(btnVolver);
-
-
-        TextButton.TextButtonStyle btnStlComoJugar = new TextButton.TextButtonStyle();
-        btnStlComoJugar.font = fntFuenteBase;
-        btnComoJugar = new TextButton(strings.get("btn_como_jugar"), btnStlComoJugar);
-        btnComoJugar.getLabel().setFontScale(2, 2);
-        btnComoJugar.setWidth(btnVolver.getPrefWidth());
-        btnComoJugar.setHeight(btnVolver.getPrefHeight());
-        btnComoJugar.setPosition(450f, altoCamara - btnComoJugar.getHeight() - 50);
-        btnComoJugar.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                adminPantalla.setScreen(new ComoJugar(adminPantalla));
-            }
-        });
-        escena.addActor(btnComoJugar);
-
-        final TextButton.TextButtonStyle btnStlSonidoOnOf = new TextButton.TextButtonStyle();
-        btnStlSonidoOnOf.font = fntFuenteBase;
-        btnSonidoOnOf = new TextButton(strings.get("btn_sonido") + ": " + strings.get("encendido"), btnStlSonidoOnOf);
-        btnSonidoOnOf.getLabel().setFontScale(2, 2);
-        btnSonidoOnOf.setWidth(btnVolver.getPrefWidth());
-        btnSonidoOnOf.setHeight(btnVolver.getPrefHeight());
-        btnSonidoOnOf.setChecked(true);
-        btnSonidoOnOf.setPosition(575f, altoCamara - btnSonidoOnOf.getHeight() - 150);
-        btnSonidoOnOf.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!btnSonidoOnOf.isChecked()) {
-                    btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("encendido"));
-                    btnSonidoOnOf.setChecked(false);
-                } else {
-                    btnSonidoOnOf.setText(strings.get("btn_sonido") + ": " + strings.get("apagado"));
-                    btnSonidoOnOf.setChecked(true);
-                }
-            }
-        });
-        escena.addActor(btnSonidoOnOf);
-
-        final TextButton.TextButtonStyle btnStlVibracion = new TextButton.TextButtonStyle();
-        btnStlVibracion.font = fntFuenteBase;
-        btnVibracion = new TextButton(strings.get("btn_vibrar") + ": " + strings.get("encendido"), btnStlVibracion);
-        btnVibracion.getLabel().setFontScale(2, 2);
-        btnVibracion.setWidth(btnVibracion.getPrefWidth());
-        btnVibracion.setHeight(btnVibracion.getPrefHeight());
-        btnVibracion.setChecked(true);
-        btnVibracion.setPosition(350f, altoCamara - btnVibracion.getHeight() - 250);
-        btnVibracion.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!btnVibracion.isChecked()) {
-                    btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("encendido"));
-                    Gdx.input.vibrate(200);
-                    btnVibracion.setChecked(false);
-                } else {
-                    btnVibracion.setText(strings.get("btn_vibrar") + ": " + strings.get("apagado"));
-                    btnVibracion.setChecked(true);
-                }
-            }
-        });
-        escena.addActor(btnVibracion);
     }
 
     @Override

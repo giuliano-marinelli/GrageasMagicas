@@ -2,10 +2,6 @@ package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Screen;
 
-/**
- * Created by Bermu on 31/01/2017.
- */
-
 public class PantallaIntermedia implements Screen {
     private AdministradorPantalla adminPantalla;
     private int pantallaNueva;
@@ -37,7 +33,7 @@ public class PantallaIntermedia implements Screen {
                 adminPantalla.setScreen(new MenuAcercaDe(adminPantalla));
                 break;
             case 7:
-                adminPantalla.setScreen(new ComoJugar(adminPantalla));
+                adminPantalla.setScreen(new MenuComoJugar(adminPantalla));
                 break;
             case 8:
                 adminPantalla.setScreen(new MenuRanking(adminPantalla));

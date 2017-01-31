@@ -120,7 +120,9 @@ public class JuegoVisual implements Screen, Observer {
 
         mscMusicaFondo.setLooping(true);
         mscMusicaFondo.setVolume(0.25f);
-        mscMusicaFondo.play();
+        if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())){
+            mscMusicaFondo.play();
+        }
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
@@ -242,6 +244,11 @@ public class JuegoVisual implements Screen, Observer {
         TextureRegionDrawable trBtnMusicaOff = new TextureRegionDrawable(new TextureRegion(txtBtnMusicaOff));
         TextureRegionDrawable trBtnMusicaClick = new TextureRegionDrawable(new TextureRegion(txtBtnMusicaClick));
         btnMusica = new ImageButton(trBtnMusicaOn, trBtnMusicaClick, trBtnMusicaOff);
+        if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
+            btnMusica.setChecked(false);
+        } else {
+            btnMusica.setChecked(true);
+        }
         btnMusica.setDisabled(true);
         btnMusica.setPosition(anchoCamara - btnMusica.getWidth() - 75, altoCamara - btnMusica.getHeight() - btnVolver.getHeight() - 50);
         btnMusica.addListener(new ClickListener() {
@@ -249,11 +256,13 @@ public class JuegoVisual implements Screen, Observer {
             public void clicked(InputEvent event, float x, float y) {
                 if (isInputMenus()) {
                     btnMusica.setDisabled(false);
-                    if (mscMusicaFondo.isPlaying()) {
+                    if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
                         mscMusicaFondo.pause();
+                        adminPantalla.getInterfazDb().setOpcionSonido(adminPantalla.getIdUsuario(), false);
                         btnMusica.setChecked(true);
                     } else {
                         mscMusicaFondo.play();
+                        adminPantalla.getInterfazDb().setOpcionSonido(adminPantalla.getIdUsuario(), true);
                         btnMusica.setChecked(false);
                     }
                     btnMusica.setDisabled(true);
@@ -502,11 +511,15 @@ public class JuegoVisual implements Screen, Observer {
                     }
                 }
                 if (juegoLogico.getHuboCombo()) {
-                    Gdx.input.vibrate(200);
+                    if (adminPantalla.getInterfazDb().consultarOpcionVibracion(adminPantalla.getIdUsuario())) {
+                        Gdx.input.vibrate(200);
+                    }
                     juegoLogico.setHuboCombo(false);
                 }
             }
-            sndExplosion.play();
+            if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
+                sndExplosion.play();
+            }
             if (animacionesEjecutando > 0) {
                 dormir();
                 //sleep(500);

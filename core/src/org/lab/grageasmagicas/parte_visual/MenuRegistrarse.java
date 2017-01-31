@@ -37,13 +37,11 @@ public class MenuRegistrarse implements Screen {
     private TextField fieldUser;
     private TextField fieldPassword;
     private TextField fieldPasswordRepeat;
-    private ImageTextButton btnCreateAcc;
-    private TextButton btnMensajeUsuarioExiste;
-    private TextButton btnMensajeExito;
-    private TextButton btnMensajePassDif;
+    private ImageTextButton btnSignUp;
+    private TextButton btnMensajeError;
     private TextButton btnVolver;
     private Image imgFondo;
-    private Table tblCreateAcc;
+    private Table tblSignUp;
     //assets
     private Texture txtFondo;
     private Texture txtBtnMenuUp;
@@ -108,74 +106,58 @@ public class MenuRegistrarse implements Screen {
         TextButton.TextButtonStyle btnStlMensajeError = new TextButton.TextButtonStyle();
         btnStlMensajeError.font = fntFuenteBase;
         btnStlMensajeError.fontColor = Color.RED;
-        btnMensajeUsuarioExiste = new TextButton(strings.get("btn_msj_usuario_existe"), btnStlMensajeError);
-        btnMensajeUsuarioExiste.setVisible(false);
+        btnMensajeError = new TextButton("", btnStlMensajeError);
 
-        TextButton.TextButtonStyle btnStlMensajeExito = new TextButton.TextButtonStyle();
-        btnStlMensajeExito.font = fntFuenteBase;
-        btnStlMensajeExito.fontColor = Color.GREEN;
-        btnMensajeExito = new TextButton(strings.get("btn_msj_exito"), btnStlMensajeExito);
-        btnMensajeExito.setVisible(false);
-
-
-        btnMensajePassDif = new TextButton(strings.get("btn_msj_pass_dif"), btnStlMensajeError);
-        btnMensajePassDif.setVisible(false);
-
-        btnCreateAcc = new ImageTextButton(strings.get("btn_crear_cuenta"), btnStlMenu);
-        btnCreateAcc.getLabel().setFontScale(1.5f, 1.5f);
-        btnCreateAcc.setWidth(btnCreateAcc.getPrefWidth());
-        btnCreateAcc.setHeight(btnCreateAcc.getPrefHeight());
-        btnCreateAcc.pad(25);
-        btnCreateAcc.addListener(new ClickListener() {
+        btnSignUp = new ImageTextButton(strings.get("btn_crear_cuenta"), btnStlMenu);
+        btnSignUp.getLabel().setFontScale(1.5f, 1.5f);
+        btnSignUp.setWidth(btnSignUp.getPrefWidth());
+        btnSignUp.setHeight(btnSignUp.getPrefHeight());
+        btnSignUp.pad(25);
+        btnSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String usuario = fieldUser.getText();
                 String contrasena = fieldPassword.getText();
                 String contrasenaRep = fieldPasswordRepeat.getText();
-                btnMensajeUsuarioExiste.setVisible(false);
-                btnMensajePassDif.setVisible(false);
-                //verifica si las contraseñas ingresadas son identicas
-                if (contrasena.equals(contrasenaRep)) {
-                    //verifica que el usuario ingresado esté disponible
+
+                if (!usuario.equals("") && !contrasena.equals("") && !contrasenaRep.equals("")) {
                     boolean existe = adminPantalla.getInterfazDb().existeUsuario(usuario);
                     if (!existe) {
-                        //si el usuario esta disponible crea la nueva cuenta
-                        adminPantalla.getInterfazDb().crearUsuario(usuario, contrasena);
-                        btnMensajeExito.setVisible(true);
-                        adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuLogin()));
+                        if (contrasena.equals(contrasenaRep)) {
+                            adminPantalla.getInterfazDb().crearUsuario(usuario, contrasena);
+                            int idUsuario = adminPantalla.getInterfazDb().iniciarSesion(usuario, contrasena);
+                            adminPantalla.setIdUsuario(idUsuario);
+                            adminPantalla.setSesion(true);
+                            adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuPrincipal()));
+                        } else {
+                            btnMensajeError.setText(strings.get("btn_msj_error_pass_dif"));
+                        }
                     } else {
-                        btnMensajeUsuarioExiste.setVisible(true);
+                        btnMensajeError.setText(strings.get("btn_msj_error_nom_user"));
                     }
                 } else {
-                    btnMensajePassDif.setVisible(true);
+                    btnMensajeError.setText(strings.get("btn_msj_error_campos_obl"));
                 }
             }
         });
 
 
+        tblSignUp = new Table();
+        tblSignUp.row().padTop(50);
         Table internal = new Table();
         internal.row();
-        internal.add(btnMensajeUsuarioExiste);
+        internal.add(fieldUser).width(350).height(75).pad(25);
         internal.row();
-        internal.add(fieldUser).width(350).height(75);
+        internal.add(fieldPassword).width(350).height(75).pad(25);
         internal.row();
-        internal.add(fieldPassword).width(350).height(75);
-        internal.row();
-        internal.add(fieldPasswordRepeat).width(350).height(75);
-        internal.row();
-        internal.add(btnMensajePassDif);
-        internal.row();
-        internal.add(btnMensajeExito);
-        internal.row();
-        internal.pack();
-        tblCreateAcc = new Table();
-        tblCreateAcc.row().padTop(50);
-        tblCreateAcc.add(internal);
-        tblCreateAcc.add(btnCreateAcc);
-        tblCreateAcc.row();
-        tblCreateAcc.pack();
-        tblCreateAcc.setPosition(anchoCamara / 2 - tblCreateAcc.getWidth() / 2, altoCamara - tblCreateAcc.getHeight());
-        escena.addActor(tblCreateAcc);
+        internal.add(fieldPasswordRepeat).width(350).height(75).pad(25);
+        tblSignUp.add(internal);
+        tblSignUp.add(btnSignUp);
+        tblSignUp.row();
+        tblSignUp.add(btnMensajeError).colspan(2);
+        tblSignUp.pack();
+        tblSignUp.setPosition(anchoCamara / 2 - tblSignUp.getWidth() / 2, altoCamara - tblSignUp.getHeight());
+        escena.addActor(tblSignUp);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;
@@ -193,7 +175,6 @@ public class MenuRegistrarse implements Screen {
             }
         });
         escena.addActor(btnVolver);
-
     }
 
     @Override
