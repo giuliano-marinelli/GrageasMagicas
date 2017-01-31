@@ -1,6 +1,7 @@
 package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,6 +23,17 @@ public class AdministradorPantalla extends Game {
     private InterfazDB interfazDb;
     private final int NUMERO_VERSION = 1;
 
+    //valores para usar en pantalla intermedia
+    private final int menuPrincipal = 1;
+    private final int juegoVisual = 2;
+    private final int menuRegistrarse = 3;
+    private final int menuLogin = 4;
+    private final int menuOpciones = 5;
+    private final int menuAcercaDe = 6;
+    private final int comoJugar = 7;
+    private final int menuRanking = 8;
+
+
     @Override
     public void create() {
         assetManager = new AssetManager();
@@ -29,7 +41,7 @@ public class AdministradorPantalla extends Game {
         camara = new OrthographicCamera(anchoCamara, altoCamara);
         vista = new StretchViewport(anchoCamara, altoCamara, camara);
         idUsuario = interfazDb.consultarSesion();
-        if(idUsuario != -1) {
+        if (idUsuario != -1) {
             sesion = true;
         } else {
             sesion = false;
@@ -99,7 +111,40 @@ public class AdministradorPantalla extends Game {
         this.sesion = sesion;
     }
 
-    public int getNumVersion(){
+    public int getNumVersion() {
         return NUMERO_VERSION;
+    }
+
+
+    public int getMenuLogin() {
+        return menuLogin;
+    }
+
+    public int getMenuPrincipal() {
+        return menuPrincipal;
+    }
+
+    public int getMenuRegistrarse() {
+        return menuRegistrarse;
+    }
+
+    public int getMenuOpciones() {
+        return menuOpciones;
+    }
+
+    public int getMenuAcercaDe() {
+        return menuAcercaDe;
+    }
+
+    public int getMenuRanking() {
+        return menuRanking;
+    }
+
+    public int getJuegoVisual() {
+        return juegoVisual;
+    }
+
+    public int getComoJugar() {
+        return comoJugar;
     }
 }

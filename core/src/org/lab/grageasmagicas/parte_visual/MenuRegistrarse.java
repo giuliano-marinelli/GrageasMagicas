@@ -1,6 +1,5 @@
 package org.lab.grageasmagicas.parte_visual;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -21,7 +20,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class MenuLogin implements Screen {
+import static java.lang.Thread.sleep;
+
+public class MenuRegistrarse implements Screen {
 
     //visual
     private int anchoCamara;
@@ -35,12 +36,14 @@ public class MenuLogin implements Screen {
     //actors
     private TextField fieldUser;
     private TextField fieldPassword;
-    private ImageTextButton btnSignIn;
-    private ImageTextButton btnSignUp;
-    private TextButton btnMensajeError;
+    private TextField fieldPasswordRepeat;
+    private ImageTextButton btnCreateAcc;
+    private TextButton btnMensajeUsuarioExiste;
+    private TextButton btnMensajeExito;
+    private TextButton btnMensajePassDif;
     private TextButton btnVolver;
     private Image imgFondo;
-    private Table tblLogin;
+    private Table tblCreateAcc;
     //assets
     private Texture txtFondo;
     private Texture txtBtnMenuUp;
@@ -48,7 +51,7 @@ public class MenuLogin implements Screen {
     private Texture txtFieldLogin;
     private BitmapFont fntFuenteBase;
 
-    public MenuLogin(AdministradorPantalla adminPantalla) {
+    public MenuRegistrarse(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
         this.anchoCamara = adminPantalla.getAnchoCamara();
         this.altoCamara = adminPantalla.getAltoCamara();
@@ -94,67 +97,85 @@ public class MenuLogin implements Screen {
         fieldPassword.setPasswordCharacter('*');
         fieldPassword.setPasswordMode(true);
 
+        fieldPasswordRepeat = new TextField("", fieldStlLogin);
+        fieldPasswordRepeat.setMessageText(strings.get("field_password_repeat"));
+        fieldPasswordRepeat.setAlignment(1);
+        fieldPasswordRepeat.setWidth(500);
+        fieldPasswordRepeat.setHeight(100);
+        fieldPasswordRepeat.setPasswordCharacter('*');
+        fieldPasswordRepeat.setPasswordMode(true);
+
         TextButton.TextButtonStyle btnStlMensajeError = new TextButton.TextButtonStyle();
         btnStlMensajeError.font = fntFuenteBase;
         btnStlMensajeError.fontColor = Color.RED;
-        btnMensajeError = new TextButton(strings.get("btn_msj_error"), btnStlMensajeError);
-        btnMensajeError.setVisible(false);
+        btnMensajeUsuarioExiste = new TextButton(strings.get("btn_msj_usuario_existe"), btnStlMensajeError);
+        btnMensajeUsuarioExiste.setVisible(false);
 
-        btnSignIn = new ImageTextButton(strings.get("btn_sing_in"), btnStlMenu);
-        btnSignIn.getLabel().setFontScale(1.5f, 1.5f);
-        btnSignIn.setWidth(btnSignIn.getPrefWidth());
-        btnSignIn.setHeight(btnSignIn.getPrefHeight());
-        btnSignIn.pad(25);
-        btnSignIn.addListener(new ClickListener() {
+        TextButton.TextButtonStyle btnStlMensajeExito = new TextButton.TextButtonStyle();
+        btnStlMensajeExito.font = fntFuenteBase;
+        btnStlMensajeExito.fontColor = Color.GREEN;
+        btnMensajeExito = new TextButton(strings.get("btn_msj_exito"), btnStlMensajeExito);
+        btnMensajeExito.setVisible(false);
+
+
+        btnMensajePassDif = new TextButton(strings.get("btn_msj_pass_dif"), btnStlMensajeError);
+        btnMensajePassDif.setVisible(false);
+
+        btnCreateAcc = new ImageTextButton(strings.get("btn_crear_cuenta"), btnStlMenu);
+        btnCreateAcc.getLabel().setFontScale(1.5f, 1.5f);
+        btnCreateAcc.setWidth(btnCreateAcc.getPrefWidth());
+        btnCreateAcc.setHeight(btnCreateAcc.getPrefHeight());
+        btnCreateAcc.pad(25);
+        btnCreateAcc.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String usuario = fieldUser.getText();
                 String contrasena = fieldPassword.getText();
-                //verifica que el usuario y contraseña sean correcto, si devuelve -1 son incorrectos
-                int idUsuario = adminPantalla.getInterfazDb().iniciarSesion(usuario, contrasena);
-                if (idUsuario != -1) {
-                    adminPantalla.setIdUsuario(idUsuario);
-                    adminPantalla.setSesion(true);
-
-                    MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);
-
-                    adminPantalla.setScreen(menuPrincipal);
+                String contrasenaRep = fieldPasswordRepeat.getText();
+                btnMensajeUsuarioExiste.setVisible(false);
+                btnMensajePassDif.setVisible(false);
+                //verifica si las contraseñas ingresadas son identicas
+                if (contrasena.equals(contrasenaRep)) {
+                    //verifica que el usuario ingresado esté disponible
+                    boolean existe = adminPantalla.getInterfazDb().existeUsuario(usuario);
+                    if (!existe) {
+                        //si el usuario esta disponible crea la nueva cuenta
+                        adminPantalla.getInterfazDb().crearUsuario(usuario, contrasena);
+                        btnMensajeExito.setVisible(true);
+                        adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuLogin()));
+                    } else {
+                        btnMensajeUsuarioExiste.setVisible(true);
+                    }
                 } else {
-                    btnMensajeError.setVisible(true);
+                    btnMensajePassDif.setVisible(true);
                 }
             }
         });
 
-        btnSignUp = new ImageTextButton(strings.get("btn_sing_up"), btnStlMenu);
-        btnSignUp.getLabel().setFontScale(1.5f, 1.5f);
-        btnSignUp.setWidth(btnSignIn.getPrefWidth());
-        btnSignUp.setHeight(btnSignIn.getPrefHeight());
-        btnSignUp.pad(25);
-        btnSignUp.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Abrir pantalla de registro");
-                //MenuRegistrarse menuRegistrarse = new MenuRegistrarse(adminPantalla);
-                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuRegistrarse()));
-            }
-        });
 
-        tblLogin = new Table();
-        tblLogin.row().padTop(50);
         Table internal = new Table();
         internal.row();
-        internal.add(fieldUser).width(350).height(75).pad(25);
+        internal.add(btnMensajeUsuarioExiste);
         internal.row();
-        internal.add(fieldPassword).width(350).height(75).pad(25);
-        tblLogin.add(internal);
-        tblLogin.add(btnSignIn);
-        tblLogin.row();
-        tblLogin.add(btnMensajeError).colspan(2);
-        tblLogin.row();
-        tblLogin.add(btnSignUp).colspan(2).padTop(125);
-        tblLogin.pack();
-        tblLogin.setPosition(anchoCamara / 2 - tblLogin.getWidth() / 2, altoCamara - tblLogin.getHeight());
-        escena.addActor(tblLogin);
+        internal.add(fieldUser).width(350).height(75);
+        internal.row();
+        internal.add(fieldPassword).width(350).height(75);
+        internal.row();
+        internal.add(fieldPasswordRepeat).width(350).height(75);
+        internal.row();
+        internal.add(btnMensajePassDif);
+        internal.row();
+        internal.add(btnMensajeExito);
+        internal.row();
+        internal.pack();
+        tblCreateAcc = new Table();
+        tblCreateAcc.row().padTop(50);
+        tblCreateAcc.add(internal);
+        tblCreateAcc.add(btnCreateAcc);
+        tblCreateAcc.row();
+        tblCreateAcc.pack();
+        tblCreateAcc.setPosition(anchoCamara / 2 - tblCreateAcc.getWidth() / 2, altoCamara - tblCreateAcc.getHeight());
+        escena.addActor(tblCreateAcc);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;

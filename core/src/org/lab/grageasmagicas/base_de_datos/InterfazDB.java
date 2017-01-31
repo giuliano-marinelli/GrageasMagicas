@@ -208,7 +208,7 @@ public class InterfazDB {
         return idUsuario;
     }
 
-    //verifica que el nombre de usuario recibido no este registrado en la db
+    //devuelve true si el usuario recibido por parametro existe en la base de datos
     public boolean existeUsuario(String nombre) {
         boolean res = true;
         try {
