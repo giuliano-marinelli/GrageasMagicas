@@ -141,7 +141,7 @@ public class MenuPrincipal implements Screen {
                     adminPantalla.getInterfazDb().borrarSesion();
                     adminPantalla.setIdUsuario(-1);
                     adminPantalla.setSesion(false);
-                    show();
+                    adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuPrincipal()));
                 }
             }
         });
