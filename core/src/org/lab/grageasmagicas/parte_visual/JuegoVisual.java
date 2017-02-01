@@ -1,6 +1,7 @@
 package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
@@ -120,12 +121,13 @@ public class JuegoVisual implements Screen, Observer {
 
         mscMusicaFondo.setLooping(true);
         mscMusicaFondo.setVolume(0.25f);
-        if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())){
+        if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
             mscMusicaFondo.play();
         }
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
+        Gdx.input.setCatchBackKey(true);
 
         batch = new SpriteBatch();
         parEfcPoolExplosion = new ParticleEffectPool(parEfcExplosion, 25, 100);
@@ -229,7 +231,7 @@ public class JuegoVisual implements Screen, Observer {
 
                         barrierRespuestaVisual.await();
 
-                        adminPantalla.setScreen(new MenuPrincipal(adminPantalla));
+                        adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -307,13 +309,11 @@ public class JuegoVisual implements Screen, Observer {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 try {
-                    //if (isInputMenus()) {
                     juegoLogico.terminar();
 
                     barrierRespuestaVisual.await();
 
-                    adminPantalla.setScreen(new MenuNiveles(adminPantalla));
-                    //}
+                    adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (BrokenBarrierException e) {
@@ -628,6 +628,22 @@ public class JuegoVisual implements Screen, Observer {
                 parEfcBrillante.draw(batch, deltaTime);
                 if (parEfcBrillante.isComplete()) {
                     parEfcBrillante.reset();
+                }
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.BACK)) {
+                if (isInputMenus()) {
+                    try {
+                        juegoLogico.terminar();
+
+                        barrierRespuestaVisual.await();
+
+                        adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (BrokenBarrierException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

@@ -3,16 +3,20 @@ package org.lab.grageasmagicas.parte_visual;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -30,6 +34,7 @@ public class MenuPrincipal implements Screen {
     private AdministradorPantalla adminPantalla;
     private Viewport vista;
     private Stage escena;
+    private SpriteBatch batch;
     private I18NBundle strings;
     //actors
     private ImageTextButton btnJugar;
@@ -39,16 +44,16 @@ public class MenuPrincipal implements Screen {
     private ImageButton btnSesion;
     private ImageButton btnRanking;
     private TextButton btnSesionMensaje;
-    private Image imgFondo;
-    private Image imgTitulo;
+    private Label lblTitulo;
     //assets
     private Texture txtFondo;
     private Texture txtBtnMenuUp;
     private Texture txtBtnMenuDown;
     private Texture txtBtnSesion;
     private Texture txtBtnRanking;
-    private Texture txtTitulo;
     private BitmapFont fntFuenteBase;
+    private BitmapFont fntFuenteTitulo;
+    private ParticleEffect parEfcLuz;
 
     public MenuPrincipal(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
@@ -63,13 +68,21 @@ public class MenuPrincipal implements Screen {
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
+
+        batch = new SpriteBatch();
     }
 
     @Override
     public void show() {
-        imgFondo = new Image(txtFondo);
-        imgFondo.setScale(anchoCamara / imgFondo.getWidth(), altoCamara / imgFondo.getHeight());
-        escena.addActor(imgFondo);
+        Label.LabelStyle lblStlTitulo = new Label.LabelStyle(fntFuenteTitulo, Color.WHITE);
+
+        lblTitulo = new Label(strings.get("game"), lblStlTitulo);
+        lblTitulo.setFontScale(1.25f, 1.25f);
+        lblTitulo.setPosition(anchoCamara / 2 - lblTitulo.getPrefWidth() / 2, altoCamara - lblTitulo.getPrefHeight());
+        escena.addActor(lblTitulo);
+
+        parEfcLuz.setPosition(100, altoCamara/2);
+        parEfcLuz.start();
 
         TextureRegionDrawable trBtnMenuUp = new TextureRegionDrawable(new TextureRegion(txtBtnMenuUp));
         TextureRegionDrawable trBtnMenuDown = new TextureRegionDrawable(new TextureRegion(txtBtnMenuDown));
@@ -83,7 +96,7 @@ public class MenuPrincipal implements Screen {
         btnJugar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                adminPantalla.setScreen(new MenuNiveles(adminPantalla));
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
             }
         });
         escena.addActor(btnJugar);
@@ -94,7 +107,7 @@ public class MenuPrincipal implements Screen {
         btnOpciones.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                adminPantalla.setScreen(new MenuOpciones(adminPantalla));
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuOpciones()));
             }
         });
         escena.addActor(btnOpciones);
@@ -105,7 +118,7 @@ public class MenuPrincipal implements Screen {
         btnAcercaDe.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                adminPantalla.setScreen(new MenuAcercaDe(adminPantalla));
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuAcercaDe()));
             }
         });
         escena.addActor(btnAcercaDe);
@@ -123,7 +136,7 @@ public class MenuPrincipal implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!adminPantalla.isSesion()) {
-                    adminPantalla.setScreen(new MenuLogin(adminPantalla));
+                    adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuLogin()));
                 } else {
                     adminPantalla.getInterfazDb().borrarSesion();
                     adminPantalla.setIdUsuario(-1);
@@ -159,9 +172,7 @@ public class MenuPrincipal implements Screen {
         btnRanking.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                MenuRanking ranking = new MenuRanking(adminPantalla);
-
-                adminPantalla.setScreen(ranking);
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuRanking()));
             }
         });
         escena.addActor(btnRanking);
@@ -182,10 +193,6 @@ public class MenuPrincipal implements Screen {
         });
         escena.addActor(btnTestEffects);
         */
-
-        imgTitulo = new Image(txtTitulo);
-        imgTitulo.setPosition(anchoCamara / 2 - imgTitulo.getWidth() / 2, altoCamara * 0.8f);
-        escena.addActor(imgTitulo);
     }
 
     public void resize(int width, int height) {
@@ -211,9 +218,21 @@ public class MenuPrincipal implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        float deltaTime = Gdx.graphics.getDeltaTime();
+        batch.setProjectionMatrix(adminPantalla.getCamara().combined);
+        batch.draw(txtFondo, 0, 0, anchoCamara, altoCamara);
+        parEfcLuz.draw(batch, deltaTime);
+        if (parEfcLuz.isComplete()) {
+            parEfcLuz.reset();
+        }
+        batch.end();
         escena.act(delta);
         escena.setViewport(vista);
         escena.draw();
+
+
     }
 
     @Override
@@ -223,8 +242,9 @@ public class MenuPrincipal implements Screen {
         txtBtnMenuDown.dispose();
         txtBtnSesion.dispose();
         txtBtnRanking.dispose();
-        txtTitulo.dispose();
         fntFuenteBase.dispose();
+        fntFuenteTitulo.dispose();
+        parEfcLuz.dispose();
         escena.dispose();
         //assetManager.clear();
         assetManager.unload("imagenes/fondogolosinas.png");
@@ -232,19 +252,25 @@ public class MenuPrincipal implements Screen {
         assetManager.unload("imagenes/menu_btn_down.png");
         assetManager.unload("imagenes/btn_sesion.png");
         assetManager.unload("imagenes/ranking.png");
-        assetManager.unload("imagenes/titulo.png");
         assetManager.unload("fuentes/texto_bits.fnt");
+        assetManager.unload("fuentes/texto_super.fnt");
+        assetManager.unload("efectos/luz.effect");
         assetManager.unload("strings/strings");
     }
 
     private void cargarAssets() {
+        //loader para efectos de particulas
+        ParticleEffectLoader.ParticleEffectParameter effectParameter = new ParticleEffectLoader.ParticleEffectParameter();
+        effectParameter.imagesDir = Gdx.files.internal("imagenes");
+
         assetManager.load("imagenes/fondogolosinas.png", Texture.class);
         assetManager.load("imagenes/menu_btn_up.png", Texture.class);
         assetManager.load("imagenes/menu_btn_down.png", Texture.class);
         assetManager.load("imagenes/btn_sesion.png", Texture.class);
         assetManager.load("imagenes/ranking.png", Texture.class);
-        assetManager.load("imagenes/titulo.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
+        assetManager.load("fuentes/texto_super.fnt", BitmapFont.class);
+        assetManager.load("efectos/luz.effect", ParticleEffect.class, effectParameter);
         assetManager.load("strings/strings", I18NBundle.class);
         assetManager.finishLoading();
         txtFondo = assetManager.get("imagenes/fondogolosinas.png");
@@ -252,8 +278,9 @@ public class MenuPrincipal implements Screen {
         txtBtnMenuDown = assetManager.get("imagenes/menu_btn_down.png");
         txtBtnSesion = assetManager.get("imagenes/btn_sesion.png");
         txtBtnRanking = assetManager.get("imagenes/ranking.png");
-        txtTitulo = assetManager.get("imagenes/titulo.png");
+        parEfcLuz = assetManager.get("efectos/luz.effect");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
+        fntFuenteTitulo = assetManager.get("fuentes/texto_super.fnt");
         strings = assetManager.get("strings/strings");
     }
 }

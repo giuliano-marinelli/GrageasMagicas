@@ -38,6 +38,9 @@ public class PantallaIntermedia implements Screen {
             case 8:
                 adminPantalla.setScreen(new MenuRanking(adminPantalla));
                 break;
+            case 9:
+                adminPantalla.setScreen(new MenuNiveles(adminPantalla));
+                break;
             default:
                 adminPantalla.setScreen(new MenuPrincipal(adminPantalla));
         }

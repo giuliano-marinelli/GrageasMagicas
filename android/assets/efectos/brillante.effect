@@ -115,7 +115,7 @@ active: false
 - Tint - 
 colorsCount: 3
 colors0: 1.0
-colors1: 0.7490196
+colors1: 0.74509805
 colors2: 0.047058824
 timelineCount: 1
 timeline0: 0.0
@@ -126,21 +126,21 @@ highMin: 1.0
 highMax: 1.0
 relative: false
 scalingCount: 4
-scaling0: 0.0
-scaling1: 1.0
-scaling2: 0.75
-scaling3: 0.0
+scaling0: 0.1754386
+scaling1: 0.19298245
+scaling2: 0.19298245
+scaling3: 0.15789473
 timelineCount: 4
 timeline0: 0.0
-timeline1: 0.2
-timeline2: 0.8
+timeline1: 0.1780822
+timeline2: 0.80136985
 timeline3: 1.0
 - Options - 
 attached: false
-continuous: false
+continuous: true
 aligned: false
 additive: true
 behind: false
 premultipliedAlpha: false
 - Image Path -
-particle.png
+/C:/Documentos/Programas/libGDX/particle.png

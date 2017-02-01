@@ -1,6 +1,7 @@
 package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -60,6 +61,7 @@ public class MenuRegistrarse implements Screen {
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
+        Gdx.input.setCatchBackKey(true);
     }
 
     @Override
@@ -143,18 +145,16 @@ public class MenuRegistrarse implements Screen {
 
 
         tblSignUp = new Table();
-        tblSignUp.row().padTop(50);
-        Table internal = new Table();
-        internal.row();
-        internal.add(fieldUser).width(350).height(75).pad(25);
-        internal.row();
-        internal.add(fieldPassword).width(350).height(75).pad(25);
-        internal.row();
-        internal.add(fieldPasswordRepeat).width(350).height(75).pad(25);
-        tblSignUp.add(internal);
-        tblSignUp.add(btnSignUp);
         tblSignUp.row();
-        tblSignUp.add(btnMensajeError).colspan(2);
+        tblSignUp.add(fieldUser).width(600).height(75).pad(25).colspan(2).padTop(50);
+        tblSignUp.row();
+        tblSignUp.add(fieldPassword).width(275).height(75);
+        tblSignUp.add(fieldPasswordRepeat).width(275).height(75);
+        tblSignUp.row();
+        tblSignUp.add(btnMensajeError).padTop(50f).padBottom(50f).colspan(2);
+        tblSignUp.row();
+        tblSignUp.add(btnSignUp).colspan(2);
+        //tblSignUp.debug();
         tblSignUp.pack();
         tblSignUp.setPosition(anchoCamara / 2 - tblSignUp.getWidth() / 2, altoCamara - tblSignUp.getHeight());
         escena.addActor(tblSignUp);
@@ -169,9 +169,7 @@ public class MenuRegistrarse implements Screen {
         btnVolver.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);
-
-                adminPantalla.setScreen(menuPrincipal);
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuLogin()));
             }
         });
         escena.addActor(btnVolver);
@@ -199,12 +197,14 @@ public class MenuRegistrarse implements Screen {
 
     @Override
     public void render(float delta) {
-        assetManager.update();
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         escena.act(delta);
         escena.setViewport(vista);
         escena.draw();
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuLogin()));
+        }
     }
 
     @Override

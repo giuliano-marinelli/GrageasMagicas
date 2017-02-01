@@ -1,6 +1,7 @@
 package org.lab.grageasmagicas.parte_visual;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -54,6 +55,7 @@ public class MenuAcercaDe implements Screen {
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
+        Gdx.input.setCatchBackKey(true);
     }
 
     @Override
@@ -123,9 +125,7 @@ public class MenuAcercaDe implements Screen {
         btnVolver.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                MenuPrincipal menuPrincipal = new MenuPrincipal(adminPantalla);
-
-                adminPantalla.setScreen(menuPrincipal);
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuPrincipal()));
             }
         });
         escena.addActor(btnVolver);
@@ -153,12 +153,14 @@ public class MenuAcercaDe implements Screen {
 
     @Override
     public void render(float delta) {
-        assetManager.update();
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         escena.act(delta);
         escena.setViewport(vista);
         escena.draw();
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)) {
+            adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuPrincipal()));
+        }
     }
 
     @Override
