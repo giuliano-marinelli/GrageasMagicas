@@ -12,6 +12,8 @@ import org.lab.grageasmagicas.base_de_datos.InterfazDB;
 
 public class AdministradorPantalla extends Game {
 
+    //AndroidLauncher crea una instancia de AdministradorPantalla cuando se abre la aplicación
+
     private int anchoCamara = 1280;
     private int altoCamara = 720;
     private int idUsuario;
@@ -36,16 +38,26 @@ public class AdministradorPantalla extends Game {
 
     @Override
     public void create() {
+        //assetManager facilita la carga de texturas que serán usadas para la parte gráfica de la aplicación
         assetManager = new AssetManager();
+        //interfazDb maneja la creación y acceso a las tablas SQLite y contiene las queries para crear usuarios y
+        //demás operaciones relacionadas con la base de datos
         interfazDb = new InterfazDB();
+        //camara y vista sirven para controlar la escala de las imágenes y las usaran las clases que extienden
+        //Screen, que las conocen a traves de los métodos getCamara y getVista de esta clase
         camara = new OrthographicCamera(anchoCamara, altoCamara);
         vista = new StretchViewport(anchoCamara, altoCamara, camara);
+        //El método consultarSesion() de interfazDb nos permite determinar si hay un usuario en la tabla Usuario de SQLite
+        //Si no hay un usuario creado, devolverá -1. Si hay un usuario creado, devolverá el id del usuario
         idUsuario = interfazDb.consultarSesion();
         if (idUsuario != -1) {
             sesion = true;
         } else {
             sesion = false;
         }
+        //setScreen nos permite pasar el control de la pantalla a una instancia de la clase MenuPrincipal, que tiene
+        //los botones Jugar, Opciones, etc.
+
         setScreen(new MenuPrincipal(this));
     }
 
