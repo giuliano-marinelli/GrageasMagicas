@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -64,10 +63,14 @@ public class MenuPrincipal implements Screen {
 
         cargarAssets();
 
-        //System.out.println(strings.getLocale());
-
+        //Esta instancia de la clase stage es la encargada de recibir los eventos de input y coordinar que los reciban
+        //los actores correspondientes(por ej, un botón). Para esto requiere ser usada como argumento del
+        //método setInputProcessor
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
+
+        //la clase SpriteBatch sirve de intermediario entre el código y Open Graphics Library, la especificación estándar de
+        // una interfaz que permite producir gráficos en Android
 
         batch = new SpriteBatch();
     }
@@ -75,6 +78,7 @@ public class MenuPrincipal implements Screen {
     @Override
     public void show() {
         Label.LabelStyle lblStlTitulo = new Label.LabelStyle(fntFuenteTitulo, Color.WHITE);
+
 
         lblTitulo = new Label(strings.get("game"), lblStlTitulo);
         lblTitulo.setFontScale(1.25f, 1.25f);
@@ -93,6 +97,9 @@ public class MenuPrincipal implements Screen {
         btnJugar = new ImageTextButton(strings.get("btn_jugar"), btnStlMenu);
         btnJugar.setPosition(anchoCamara / 2, altoCamara * 0.6f);
         btnJugar.getLabel().setFontScale(2.5f, 2.5f);
+        //El botón jugar le da el control de la pantalla a una instancia de PantallaIntermedia que a su vez
+        // le da el control a una instancia de MenuNiveles, que consulta SQLite para
+        //encontrar el nivel logrado por el usuario y permite elegir al usuario qué nivel quiere jugar
         btnJugar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -101,6 +108,9 @@ public class MenuPrincipal implements Screen {
         });
         escena.addActor(btnJugar);
 
+        //El botón Opciones le da el control de la pantalla a una instancia de Pantalla Intermedia, que a su vez le da el
+        //control de la pantalla a una instancia de MenuOpciones,  que permite configurar opciones de sonido y vibración
+        // y leer las reglas del juego.
         btnOpciones = new ImageTextButton(strings.get("btn_opciones"), btnStlMenu);
         btnOpciones.setPosition(anchoCamara / 2, altoCamara * 0.4f);
         btnOpciones.getLabel().setFontScale(2f, 2f);
@@ -112,6 +122,9 @@ public class MenuPrincipal implements Screen {
         });
         escena.addActor(btnOpciones);
 
+        //El botón Opciones le da el control de la pantalla a una instancia de Pantalla Intermedia, que a su vez le da el
+        //control de la pantalla a una instancia de MenuAcercaDe,  que muestra información sobre la aplicación y sus
+        // desarrolladores.
         btnAcercaDe = new ImageTextButton(strings.get("btn_acerca_de"), btnStlMenu);
         btnAcercaDe.setPosition(anchoCamara / 2, altoCamara * 0.2f);
         btnAcercaDe.getLabel().setFontScale(2f, 2f);
@@ -122,6 +135,14 @@ public class MenuPrincipal implements Screen {
             }
         });
         escena.addActor(btnAcercaDe);
+
+        //Si la variable boolean Sesion de adminPantalla es false, la instancia de PantallaIntermedia que crea el botón Sesión
+        //le da el control de la pantalla a una instancia de MenuLogin, que permite iniciar sesión con usuario y contraseña
+        // o dirigirse al menú de registro de cuenta.
+        // Si es true, cierra  la sesión de usuario usando el método borrarSesion de interfazDb, que modifica
+        // la tabla sesión, setea las variables de adminPantalla de sesion en false y de idUsuario en -1 y
+        // le da el control de la pantalla a la instancia de MenuPrincipal
+
 
         TextureRegionDrawable trBtnSesionLog = new TextureRegionDrawable(new TextureRegion(txtBtnSesion));
         Drawable trBtnSesionNoLog = trBtnSesionLog.tint(Color.RED);
@@ -152,6 +173,9 @@ public class MenuPrincipal implements Screen {
         btnStlSesionMensaje.fontColor = Color.BLACK;
         btnSesionMensaje = new TextButton("", btnStlSesionMensaje);
         if (adminPantalla.isSesion()) {
+            //Si la variable sesion de adminPantalla es true, se muestra un mensaje de bienvenida con el nombre
+            //del usuario en el idioma correspondiente. Para eso se usa el método consultarNombreUsuario de interfazDb
+            //que tiene la query correspondiente para conseguir el nombre correspondiente al id de usuario
             btnSesionMensaje.setText(strings.get("btn_sesion_log") + " " +
                     adminPantalla.getInterfazDb().consultarNombreUsuario(adminPantalla.getIdUsuario()));
             btnSesionMensaje.getLabel().setFontScale(1.5f, 1.5f);
@@ -167,6 +191,10 @@ public class MenuPrincipal implements Screen {
 
         TextureRegionDrawable trBtnRanking = new TextureRegionDrawable(new TextureRegion(txtBtnRanking));
 
+        //El botón Ranking permite consultar los 10  puntajes más altos dandole el control de la pantalla a una instancia de
+        //PantallaIntermedia que a su vez le da el control a una instancia de MenuRanking. MenuRanking consulta los puntajes
+        //más altos a través del método consultarRanking de interfazDb, que contiene una query a la tabla Ranking.
+
         btnRanking = new ImageButton(trBtnRanking);
         btnRanking.setPosition(50, 100 + btnSesion.getHeight());
         btnRanking.addListener(new ClickListener() {
@@ -177,22 +205,6 @@ public class MenuPrincipal implements Screen {
         });
         escena.addActor(btnRanking);
 
-        /*
-        btnTestEffects = new ImageTextButton("TestEffects", btnStlMenu);
-        btnTestEffects.getLabel().setFontScale(1.5f, 1.5f);
-        btnTestEffects.setTransform(true);
-        btnTestEffects.setScale(0.5f, 0.5f);
-        btnTestEffects.setWidth(btnTestEffects.getPrefWidth());
-        btnTestEffects.setHeight(btnTestEffects.getPrefHeight());
-        btnTestEffects.setPosition(anchoCamara / 2 + btnAcercaDe.getWidth() - btnTestEffects.getWidth(), altoCamara * 0.1f);
-        btnTestEffects.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                adminPantalla.setScreen(new TestEffect(adminPantalla));
-            }
-        });
-        escena.addActor(btnTestEffects);
-        */
     }
 
     public void resize(int width, int height) {
@@ -215,6 +227,7 @@ public class MenuPrincipal implements Screen {
     }
 
     @Override
+    //El método render genera las imágenes necesarias(fondo, botones, etc)
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
