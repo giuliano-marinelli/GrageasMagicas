@@ -30,16 +30,18 @@ public class ComprobadorAncho extends Comprobador {
                     combinacionTemp.add(new Point(seccion, 0));
                     int tipoAnt = matrizGrageas[seccion][0].getTipo();
                     for (int i = 1; i < matrizGrageas.length; i++) {
-                        if (tipoAnt != matrizGrageas[seccion][i].getTipo()) {
-                            if (combinacionTemp.size() < 3) {
-                                combinacionTemp.clear();
-                            } else {
-                                grageasCombinadas.addAll(combinacionTemp);
-                                combinacionTemp.clear();
+                        //if (matrizGrageas[seccion][i].getTipo() != 100 && tipoAnt != 100) {
+                            if (tipoAnt != matrizGrageas[seccion][i].getTipo()) {
+                                if (combinacionTemp.size() < 3) {
+                                    combinacionTemp.clear();
+                                } else {
+                                    grageasCombinadas.addAll(combinacionTemp);
+                                    combinacionTemp.clear();
+                                }
                             }
-                        }
-                        combinacionTemp.add(new Point(seccion, i));
+                        //}
                         tipoAnt = matrizGrageas[seccion][i].getTipo();
+                        combinacionTemp.add(new Point(seccion, i));
                     }
                     if (combinacionTemp.size() > 2) {
                         grageasCombinadas.addAll(combinacionTemp);

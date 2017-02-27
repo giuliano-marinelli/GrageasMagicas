@@ -28,9 +28,10 @@ public class NivelListener extends ClickListener {
             int cantGragea = 4 + nivel / 10;
             int movimientos = 5 + (nivel / 5) * 2;
             int puntajeGanar = movimientos * 30 + (nivel + 1) * 50 - (nivel / 10) * (500);
+            int poderMovDiagonalUsos = nivel / 10;
             AtomicBoolean finJuego = new AtomicBoolean(false);
 
-            Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, finJuego);
+            Juego juegoLogico = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, poderMovDiagonalUsos, finJuego);
 
             JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
 

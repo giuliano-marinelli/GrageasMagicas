@@ -12,16 +12,25 @@ public class GrageaVisual extends Actor {
 
     private int tipo;
     private boolean seleccionada;
+    private boolean brilla;
 
+    private Texture txtGragea;
+    private Texture txtSuperGragea;
+    private Texture txtGrageaBrillo;
     private TextureRegion grafico;
+    private TextureRegion graficoBrillo;
 
-    public GrageaVisual(int tipo, Texture texturaBtnGragea) {
+    public GrageaVisual(int tipo, Texture txtGragea, Texture txtSuperGragea, Texture txtGrageaBrillo) {
         this.tipo = tipo;
-        this.grafico = new TextureRegion(texturaBtnGragea);
+        this.txtGragea = txtGragea;
+        this.txtSuperGragea = txtSuperGragea;
+        this.txtGrageaBrillo = txtGrageaBrillo;
+        graficoBrillo = new TextureRegion(txtGrageaBrillo);
         seleccionada = false;
+        brilla = false;
         setSize(128, 96);
         setTouchable(Touchable.enabled);
-        actualizarColor();
+        actualizarGrafico();
     }
 
     @Override
@@ -30,6 +39,11 @@ public class GrageaVisual extends Actor {
         batch.setColor(color.r, color.g, color.b, color.a * alpha);
         batch.draw(grafico, getX(), getY(), getOriginX(), getOriginY(),
                 getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        if (brilla) {
+            batch.setColor(Color.WHITE);
+            batch.draw(graficoBrillo, getX(), getY(), getOriginX(), getOriginY(),
+                    getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        }
     }
 
     @Override
@@ -44,11 +58,13 @@ public class GrageaVisual extends Actor {
     public void seleccionar() {
         this.seleccionada = true;
         setSize(138, 106);
+        setPosition(getX()-5,getY()-5);
     }
 
     public void deseleccionar() {
         this.seleccionada = false;
         setSize(128, 96);
+        setPosition(getX()+5,getY()+5);
     }
 
     public int getTipo() {
@@ -57,10 +73,15 @@ public class GrageaVisual extends Actor {
 
     public void setTipo(int tipo) {
         this.tipo = tipo;
-        actualizarColor();
+        actualizarGrafico();
     }
 
-    public void actualizarColor() {
+    public void actualizarGrafico() {
+        if (tipo == 100) {
+            grafico = new TextureRegion(txtSuperGragea);
+        } else {
+            grafico = new TextureRegion(txtGragea);
+        }
         switch (tipo) {
             case 0:
                 setColor(Color.RED);
@@ -81,14 +102,23 @@ public class GrageaVisual extends Actor {
                 setColor(Color.CYAN);
                 break;
             case 6:
-                setColor(Color.LIGHT_GRAY);
+                setColor(Color.ORANGE);
                 break;
             case 7:
-                setColor(Color.BLACK);
+                setColor(Color.PINK);
+                break;
+            case 100:
+                setColor(Color.GOLD);
                 break;
             default:
                 setColor(Color.WHITE);
                 break;
+        }
+    }
+
+    public void brillar(boolean valor) {
+        if (tipo != 100) {
+            brilla = valor;
         }
     }
 

@@ -33,6 +33,10 @@ public class Juego extends Observable implements Runnable {
     private int primerGrageaY;
     private int segundaGrageaX;
     private int segundaGrageaY;
+    private int poderMovDiagonalUsos;
+    private int poderMovDiagonalUsosTotales;
+    private boolean superGrageaActivada;
+    private boolean poderMovDiagonalActivado;
     private boolean pausa;
     private boolean hayJugadas;
     private boolean huboCombo;
@@ -48,7 +52,7 @@ public class Juego extends Observable implements Runnable {
     private CyclicBarrier barrierVerificarJugada;
 
 
-    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, int nivel, AtomicBoolean finJuego) {
+    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, int nivel, int poderMovDiagonalUsos, AtomicBoolean finJuego) {
         this.ancho = ancho;
         this.alto = alto;
         this.velocidad = velocidad;
@@ -62,6 +66,10 @@ public class Juego extends Observable implements Runnable {
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
+        this.poderMovDiagonalUsos = 0;
+        this.poderMovDiagonalUsosTotales = poderMovDiagonalUsos;
+        this.superGrageaActivada = false;
+        this.poderMovDiagonalActivado = false;
         this.finJuego = finJuego;
         this.hayJugadas = true;
         this.pausa = false;
@@ -143,32 +151,50 @@ public class Juego extends Observable implements Runnable {
                     segundaGrageaX = Integer.parseInt(gf.substring(0, 1));
                     segundaGrageaY = Integer.parseInt(gf.substring(1, 2));*/
 
-                    //verificar si el movimiento de las grageas es válido.
+
+                    //verificar si el movimiento de las grageas es adyacente para el caso en que no
+                    //se utilice ningun poder
                     sonAdy = verificarAdyacentes(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
-                    if (!sonAdy && !finJuego.get()) {
+
+                    /*
+                    if (!sonAdy && !superGrageaActivada && !poderMovDiagonalActivado && !finJuego.get()) {
                         System.out.println("\033[31mMovimiento no válido\033[30m \n");
-                    }
-                    //mientras que la jugada no involucre posiciones adyacentes seguirá pidiendo los valores.
-                } while (!sonAdy && !finJuego.get());
+                    }*/
+
+                    //mientras que la jugada no involucre un movimiento valido seguira pidiendola
+                } while (!sonAdy && !superGrageaActivada && !poderMovDiagonalActivado && !finJuego.get());
                 if (!finJuego.get()) {
-                    //invertimos las grageas de lugar
-                    intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
+                    if (!superGrageaActivada) {
+                        //invertimos las grageas de lugar
+                        intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
 
-                    //despierta a los comprobadores
-                    barrierComp.await();
-                    //queda a la espera de que los comprobadores terminen
-                    barrierComp.await();
+                        //despierta a los comprobadores
+                        barrierComp.await();
+                        //queda a la espera de que los comprobadores terminen
+                        barrierComp.await();
 
-                    calcularCombos();
+                        calcularCombos();
 
-                    //Imprime el juego por consola
-                    System.out.println("\033[34mGrageas intercambiadas\033[30m");
-                    System.out.println(toStringComb(matrizGrageas));
+                        //Imprime el juego por consola
+                        System.out.println("\033[34mGrageas intercambiadas\033[30m");
+                        System.out.println(toStringComb(matrizGrageas));
 
-                    sincronizar();
-                    /*System.out.println("Presione enter...");
-                    TecladoIn.read();*/
+                        sincronizar();
+                        /*System.out.println("Presione enter...");
+                        TecladoIn.read();*/
+                    } else {
+                        comboSuperGragea();
 
+                        //Imprime el juego por consola
+                        System.out.println("\033[34mSuper gragea activada\033[30m");
+                        System.out.println(toStringComb(matrizGrageas));
+
+                        sincronizar();
+                        /*System.out.println("Presione enter...");
+                        TecladoIn.read();*/
+
+                        superGrageaActivada = false;
+                    }
                     //si las combinaciones de grageas esta vacia significa que el intercambio esta mal hecho
                     if (grageasCombinadas.isEmpty()) {
                         System.out.println("\033[31mIntercambio de grageas incorrecto\033[30m");
@@ -176,6 +202,9 @@ public class Juego extends Observable implements Runnable {
                         intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
                     } else {
                         movimientos++;
+                        if (poderMovDiagonalActivado) {
+                            poderMovDiagonalUsos++;
+                        }
                         limpiarPosGrageas();
                         //elimina las combinaciones hasta que no quede ninguna
                         eliminarCombinaciones();
@@ -255,14 +284,40 @@ public class Juego extends Observable implements Runnable {
         for (int i = 0; i < grageasDuplicadas.size(); i++) {
             for (int j = 0; j < matrizGrageas.length; j++) {
                 Point puntoAct = new Point(grageasDuplicadas.get(i).x, j);
-                if (!grageasCombinadas.contains(puntoAct)) {
+                if (!grageasCombinadas.contains(puntoAct) && matrizGrageas[grageasDuplicadas.get(i).x][j].getTipo() != 100) {
                     grageasCombinadas.add(puntoAct);
                 }
             }
             for (int j = 0; j < matrizGrageas[0].length; j++) {
                 Point puntoAct = new Point(j, grageasDuplicadas.get(i).y);
-                if (!grageasCombinadas.contains(puntoAct)) {
+                if (!grageasCombinadas.contains(puntoAct) && matrizGrageas[j][grageasDuplicadas.get(i).y].getTipo() != 100) {
                     grageasCombinadas.add(puntoAct);
+                }
+            }
+        }
+    }
+
+
+    public void comboSuperGragea() {
+        Point superGrageaAct;
+        Point puntoAct;
+        List<Point> superGrageas = new ArrayList();
+        superGrageas.add(new Point(primerGrageaX, primerGrageaY));
+        for (int i = 0; i < superGrageas.size(); i++) {
+            superGrageaAct = superGrageas.get(i);
+            for (int j = superGrageaAct.y - 2; j <= superGrageaAct.y + 2; j++) {
+                for (int k = superGrageaAct.x - 2; k <= superGrageaAct.x + 2; k++) {
+                    if (j >= 0 && j < matrizGrageas.length) {
+                        if (k >= 0 && k < matrizGrageas[0].length) {
+                            puntoAct = new Point(k, j);
+                            if (!grageasCombinadas.contains(puntoAct)) {
+                                grageasCombinadas.add(puntoAct);
+                                if (matrizGrageas[puntoAct.x][puntoAct.y].getTipo() == 100 && !superGrageas.contains(puntoAct)) {
+                                    superGrageas.add(puntoAct);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -450,17 +505,33 @@ public class Juego extends Observable implements Runnable {
             res += i + "  | ";
             for (int j = 0; j < ancho - 1; j++) {
                 if (grageasCombinadas.contains(new Point(i, j))) {
-                    res += "\033[3" + (juego[i][j].getTipo() + 1) + ";40m" + juego[i][j].getTipo() + "\033[30m";
+                    if (juego[i][j].getTipo() != 100) {
+                        res += "\033[3" + (juego[i][j].getTipo() + 1) + ";40m" + juego[i][j].getTipo() + "\033[30m";
+                    } else {
+                        res += "\033[3" + (juego[i][j].getTipo() + 1) + ";40m" + "S" + "\033[30m";
+                    }
                     res += "\033[30;40m" + "," + "\033[30m";
                 } else {
-                    res += "\033[3" + (juego[i][j].getTipo() + 1) + "m" + juego[i][j].getTipo() + "\033[30m";
+                    if (juego[i][j].getTipo() != 100) {
+                        res += "\033[3" + (juego[i][j].getTipo() + 1) + "m" + juego[i][j].getTipo() + "\033[30m";
+                    } else {
+                        res += "\033[3" + (juego[i][j].getTipo() + 1) + "m" + "S" + "\033[30m";
+                    }
                     res += ",";
                 }
             }
             if (grageasCombinadas.contains(new Point(i, (ancho - 1)))) {
-                res += "\033[3" + (juego[i][ancho - 1].getTipo() + 1) + ";40m" + juego[i][ancho - 1].getTipo() + "\033[30m";
+                if (juego[i][ancho - 1].getTipo() != 100) {
+                    res += "\033[3" + (juego[i][ancho - 1].getTipo() + 1) + ";40m" + juego[i][ancho - 1].getTipo() + "\033[30m";
+                } else {
+                    res += "\033[3" + (juego[i][ancho - 1].getTipo() + 1) + ";40m" + "S" + "\033[30m";
+                }
             } else {
-                res += "\033[3" + (juego[i][ancho - 1].getTipo() + 1) + "m" + juego[i][ancho - 1].getTipo() + "\033[30m";
+                if (juego[i][ancho - 1].getTipo() != 100) {
+                    res += "\033[3" + (juego[i][ancho - 1].getTipo() + 1) + "m" + juego[i][ancho - 1].getTipo() + "\033[30m";
+                } else {
+                    res += "\033[3" + (juego[i][ancho - 1].getTipo() + 1) + "m" + "S" + "\033[30m";
+                }
             }
             res += "\n";
         }
@@ -803,5 +874,37 @@ public class Juego extends Observable implements Runnable {
 
     public void setNivel(int nivel) {
         this.nivel = nivel;
+    }
+
+    public boolean isSuperGrageaActivada() {
+        return superGrageaActivada;
+    }
+
+    public void setSuperGrageaActivada(boolean superGrageaActivada) {
+        this.superGrageaActivada = superGrageaActivada;
+    }
+
+    public boolean isPoderMovDiagonalActivado() {
+        return poderMovDiagonalActivado;
+    }
+
+    public void setPoderMovDiagonalActivado(boolean poderMovDiagonalActivado) {
+        this.poderMovDiagonalActivado = poderMovDiagonalActivado;
+    }
+
+    public int getPoderMovDiagonalUsos() {
+        return poderMovDiagonalUsos;
+    }
+
+    public void setPoderMovDiagonalUsos(int poderMovDiagonalUsos) {
+        this.poderMovDiagonalUsos = poderMovDiagonalUsos;
+    }
+
+    public int getPoderMovDiagonalUsosTotales() {
+        return poderMovDiagonalUsosTotales;
+    }
+
+    public void setPoderMovDiagonalUsosTotales(int poderMovDiagonalUsosTotales) {
+        this.poderMovDiagonalUsosTotales = poderMovDiagonalUsosTotales;
     }
 }

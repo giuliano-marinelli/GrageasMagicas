@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
@@ -32,7 +33,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import org.lab.estructuras.Point;
 import org.lab.grageasmagicas.parte_logica.Gragea;
 import org.lab.grageasmagicas.parte_logica.Juego;
-import org.lab.grageasmagicas.parte_logica.JuegoLogico2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +53,8 @@ public class JuegoVisual implements Screen, Observer {
     private int anchoCamara;
     private int altoCamara;
     private int animacionesEjecutando;
+    private boolean superGrageaActivada;
+    private boolean poderMovDiagonalActivado;
     private boolean inputGrageas;
     private boolean inputMenus;
     private boolean tableroListo;
@@ -81,15 +83,22 @@ public class JuegoVisual implements Screen, Observer {
     private TextButton btnVolver;
     private TextButton btnSinMovimiento;
     private TextButton btnMovimientos;
+    private TextButton btnPoderMovDiagonalUsos;
     private ImageTextButton btnFinJuego;
     private ImageButton btnMusica;
+    private ImageButton btnPoderMovDiagonal;
     private Image imgFondo;
     //assets
     private Texture txtFondo;
     private Texture txtGragea;
+    private Texture txtSuperGragea;
+    private Texture txtGrageaBrillo;
     private Texture txtBtnMusicaOn;
     private Texture txtBtnMusicaOff;
     private Texture txtBtnMusicaClick;
+    private Texture txtBtnPoderMovDiagonalOn;
+    private Texture txtBtnPoderMovDiagonalOff;
+    private Texture txtBtnPoderMovDiagonalClick;
     private Texture txtFinJuegoFondo;
     private BitmapFont fntFuenteBase;
     private Music mscMusicaFondo;
@@ -113,6 +122,8 @@ public class JuegoVisual implements Screen, Observer {
         this.primerGrageaY = -1;
         this.segundaGrageaX = -1;
         this.segundaGrageaY = -1;
+        this.superGrageaActivada = false;
+        this.poderMovDiagonalActivado = false;
         this.animacionesEjecutando = 0;
         this.tableroListo = false;
         this.drawParEfcBrillante = false;
@@ -163,6 +174,26 @@ public class JuegoVisual implements Screen, Observer {
             btnMovimientos.setWidth(btnMovimientos.getPrefWidth());
             btnMovimientos.setHeight(btnMovimientos.getPrefHeight());
             btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
+
+            //actualiza el btnPoderMovDiagonal segun la cantidad que queden disponibles
+            if (juegoLogico.getPoderMovDiagonalUsos() == juegoLogico.getPoderMovDiagonalUsosTotales()) {
+                btnPoderMovDiagonal.setTouchable(Touchable.disabled);
+                btnPoderMovDiagonal.getImage().setColor(Color.GRAY);
+                btnPoderMovDiagonal.setChecked(false);
+                poderMovDiagonalActivado = false;
+                btnPoderMovDiagonalUsos.getLabel().setFontScale(2, 2);
+                btnPoderMovDiagonalUsos.getStyle().fontColor = Color.BLACK;
+            } else {
+                btnPoderMovDiagonal.setTouchable(Touchable.enabled);
+                btnPoderMovDiagonal.getImage().setColor(Color.WHITE);
+                btnPoderMovDiagonalUsos.getLabel().setFontScale(2.5f, 2.5f);
+                btnPoderMovDiagonalUsos.getStyle().fontColor = Color.WHITE;
+            }
+            btnPoderMovDiagonalUsos.setText(juegoLogico.getPoderMovDiagonalUsosTotales() - juegoLogico.getPoderMovDiagonalUsos() + "");
+            btnPoderMovDiagonalUsos.setWidth(btnPoderMovDiagonalUsos.getPrefWidth());
+            btnPoderMovDiagonalUsos.setHeight(btnPoderMovDiagonalUsos.getPrefHeight());
+            btnPoderMovDiagonalUsos.setPosition(btnPoderMovDiagonal.getX() + btnPoderMovDiagonal.getWidth() - btnPoderMovDiagonalUsos.getWidth()
+                    , btnPoderMovDiagonal.getY());
 
             if (juegoLogico.getPuntaje() >= juegoLogico.getPuntajeGanar()) {
                 parEfcBrillante.setPosition(
@@ -273,6 +304,38 @@ public class JuegoVisual implements Screen, Observer {
         });
         escena.addActor(btnMusica);
 
+        TextureRegionDrawable trBtnPoderMovDiagonalOn = new TextureRegionDrawable(new TextureRegion(txtBtnPoderMovDiagonalOn));
+        TextureRegionDrawable trBtnPoderMovDiagonalOff = new TextureRegionDrawable(new TextureRegion(txtBtnPoderMovDiagonalOff));
+        TextureRegionDrawable trBtnPoderMovDiagonalClick = new TextureRegionDrawable(new TextureRegion(txtBtnPoderMovDiagonalClick));
+        btnPoderMovDiagonal = new ImageButton(trBtnPoderMovDiagonalOff, trBtnPoderMovDiagonalClick, trBtnPoderMovDiagonalOn);
+        btnPoderMovDiagonal.setDisabled(true);
+        btnPoderMovDiagonal.setPosition(50, 75);
+        btnPoderMovDiagonal.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (isInputMenus()) {
+                    btnPoderMovDiagonal.setDisabled(false);
+                    if (poderMovDiagonalActivado) {
+                        btnPoderMovDiagonal.setChecked(false);
+                        poderMovDiagonalActivado = false;
+                        desbrillarGrageas();
+                        if (primerGrageaX != -1)
+                            brillarGrageasAdyacentes(primerGrageaX, primerGrageaY);
+                    } else {
+                        if (juegoLogico.getPoderMovDiagonalUsos() < juegoLogico.getPoderMovDiagonalUsosTotales()) {
+                            btnPoderMovDiagonal.setChecked(true);
+                            poderMovDiagonalActivado = true;
+                            desbrillarGrageas();
+                            if (primerGrageaX != -1)
+                                brillarGrageasDiagonales(primerGrageaX, primerGrageaY);
+                        }
+                    }
+                    btnPoderMovDiagonal.setDisabled(true);
+                }
+            }
+        });
+        escena.addActor(btnPoderMovDiagonal);
+
         TextButton.TextButtonStyle btnStlSinMoviminto = new TextButton.TextButtonStyle();
         btnStlSinMoviminto.font = fntFuenteBase;
         btnStlSinMoviminto.fontColor = Color.RED;
@@ -353,10 +416,21 @@ public class JuegoVisual implements Screen, Observer {
         btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
         escena.addActor(btnMovimientos);
 
+        TextButton.TextButtonStyle btnStlPoderMovDiagonalUsos = new TextButton.TextButtonStyle();
+        btnStlPoderMovDiagonalUsos.font = fntFuenteBase;
+        btnStlPoderMovDiagonalUsos.fontColor = Color.BLACK;
+        btnPoderMovDiagonalUsos = new TextButton(juegoLogico.getPoderMovDiagonalUsosTotales() - juegoLogico.getPoderMovDiagonalUsos() + "", btnStlPoderMovDiagonalUsos);
+        btnPoderMovDiagonalUsos.getLabel().setFontScale(2, 2);
+        btnPoderMovDiagonalUsos.setWidth(btnPoderMovDiagonalUsos.getPrefWidth());
+        btnPoderMovDiagonalUsos.setHeight(btnPoderMovDiagonalUsos.getPrefHeight());
+        btnPoderMovDiagonalUsos.setPosition(btnPoderMovDiagonal.getX() + btnPoderMovDiagonal.getWidth() - btnPoderMovDiagonalUsos.getWidth()
+                , btnPoderMovDiagonal.getY());
+        escena.addActor(btnPoderMovDiagonalUsos);
+
         tblTablero.row();
         for (int i = 0; i < cantFilas; i++) {
             for (int j = 0; j < cantColumnas; j++) {
-                matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), txtGragea);
+                matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), txtGragea, txtSuperGragea, txtGrageaBrillo);
                 matrizGrageasVisuales[i][j].addListener(new GrageaVisualListener(matrizGrageasVisuales[i][j], this, i, j));
                 tblTablero.add(matrizGrageasVisuales[i][j]);
             }
@@ -385,11 +459,13 @@ public class JuegoVisual implements Screen, Observer {
      */
     public void intercambiarGrageas() throws InterruptedException {
         //solo actua cuando las posiciones ingresadas de las grageas son validas
-        if (juegoLogico.getPrimerGrageaX() != -1) {
+        if (juegoLogico.getPrimerGrageaX() != -1 && juegoLogico.getSegundaGrageaX() != -1) {
             GrageaVisual priGragea = matrizGrageasVisuales[juegoLogico.getPrimerGrageaX()][juegoLogico.getPrimerGrageaY()];
             GrageaVisual segGragea = matrizGrageasVisuales[juegoLogico.getSegundaGrageaX()][juegoLogico.getSegundaGrageaY()];
             GrageaVisualListener priGrageaListener = (GrageaVisualListener) (priGragea.getListeners().get(0));
             GrageaVisualListener segGrageaListener = (GrageaVisualListener) (segGragea.getListeners().get(0));
+            priGragea.brillar(true);
+            segGragea.brillar(true);
                 /*priGragea.addAction(Actions.moveTo
                         (segGragea.getX(), segGragea.getY(), 0.5f, Interpolation.bounceOut));
                 segGragea.addAction(Actions.moveTo
@@ -408,6 +484,7 @@ public class JuegoVisual implements Screen, Observer {
                 dormir();
                 //sleep(500);
             }
+            desbrillarGrageas();
         }
     }
 
@@ -595,6 +672,37 @@ public class JuegoVisual implements Screen, Observer {
         wait();
     }
 
+    public void brillarGrageasAdyacentes(int filaGragea, int columnaGragea) {
+        if (filaGragea < cantFilas - 1)
+            matrizGrageasVisuales[filaGragea + 1][columnaGragea].brillar(true);
+        if (filaGragea > 0)
+            matrizGrageasVisuales[filaGragea - 1][columnaGragea].brillar(true);
+        if (columnaGragea < cantColumnas - 1)
+            matrizGrageasVisuales[filaGragea][columnaGragea + 1].brillar(true);
+        if (columnaGragea > 0)
+            matrizGrageasVisuales[filaGragea][columnaGragea - 1].brillar(true);
+    }
+
+    public void brillarGrageasDiagonales(int filaGragea, int columnaGragea) {
+        if (filaGragea < cantFilas - 1 &&
+                columnaGragea < cantColumnas - 1)
+            matrizGrageasVisuales[filaGragea + 1][columnaGragea + 1].brillar(true);
+        if (filaGragea > 0 && columnaGragea > 0)
+            matrizGrageasVisuales[filaGragea - 1][columnaGragea - 1].brillar(true);
+        if (columnaGragea < cantColumnas - 1 && filaGragea > 0)
+            matrizGrageasVisuales[filaGragea - 1][columnaGragea + 1].brillar(true);
+        if (columnaGragea > 0 && filaGragea < cantFilas - 1)
+            matrizGrageasVisuales[filaGragea + 1][columnaGragea - 1].brillar(true);
+    }
+
+    public void desbrillarGrageas() {
+        for (int i = 0; i < cantFilas; i++) {
+            for (int j = 0; j < cantColumnas; j++) {
+                matrizGrageasVisuales[i][j].brillar(false);
+            }
+        }
+    }
+
     /**
      * Re-dibuja el juego a 30fps (default), se altera los elementos graficos de la "escena" y luego
      * son dibujados en el render
@@ -694,9 +802,14 @@ public class JuegoVisual implements Screen, Observer {
     public void dispose() {
         txtFondo.dispose();
         txtGragea.dispose();
+        txtSuperGragea.dispose();
+        txtGrageaBrillo.dispose();
         txtBtnMusicaOn.dispose();
         txtBtnMusicaOff.dispose();
         txtBtnMusicaClick.dispose();
+        txtBtnPoderMovDiagonalOn.dispose();
+        txtBtnPoderMovDiagonalOff.dispose();
+        txtBtnPoderMovDiagonalClick.dispose();
         txtFinJuegoFondo.dispose();
         fntFuenteBase.dispose();
         mscMusicaFondo.dispose();
@@ -707,9 +820,14 @@ public class JuegoVisual implements Screen, Observer {
         //assetManager.clear();
         assetManager.unload("imagenes/fondo_juego.png");
         assetManager.unload("imagenes/gragea.png");
+        assetManager.unload("imagenes/super_gragea.png");
+        assetManager.unload("imagenes/gragea_brillo.png");
         assetManager.unload("imagenes/musica_on.png");
         assetManager.unload("imagenes/musica_off.png");
         assetManager.unload("imagenes/musica_click.png");
+        assetManager.unload("imagenes/btn_poder_mov_diagonal_on.png");
+        assetManager.unload("imagenes/btn_poder_mov_diagonal_off.png");
+        assetManager.unload("imagenes/btn_poder_mov_diagonal_click.png");
         assetManager.unload("imagenes/fin_btn_fondo.png");
         assetManager.unload("fuentes/texto_bits.fnt");
         assetManager.unload("sonidos/musica_fondo.mp3");
@@ -726,9 +844,14 @@ public class JuegoVisual implements Screen, Observer {
 
         assetManager.load("imagenes/fondo_juego.png", Texture.class);
         assetManager.load("imagenes/gragea.png", Texture.class);
+        assetManager.load("imagenes/super_gragea.png", Texture.class);
+        assetManager.load("imagenes/gragea_brillo.png", Texture.class);
         assetManager.load("imagenes/musica_on.png", Texture.class);
         assetManager.load("imagenes/musica_off.png", Texture.class);
         assetManager.load("imagenes/musica_click.png", Texture.class);
+        assetManager.load("imagenes/btn_poder_mov_diagonal_on.png", Texture.class);
+        assetManager.load("imagenes/btn_poder_mov_diagonal_off.png", Texture.class);
+        assetManager.load("imagenes/btn_poder_mov_diagonal_click.png", Texture.class);
         assetManager.load("imagenes/fin_btn_fondo.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
         assetManager.load("sonidos/musica_fondo.mp3", Music.class);
@@ -739,9 +862,14 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.finishLoading();
         txtFondo = assetManager.get("imagenes/fondo_juego.png");
         txtGragea = assetManager.get("imagenes/gragea.png");
+        txtSuperGragea = assetManager.get("imagenes/super_gragea.png");
+        txtGrageaBrillo = assetManager.get("imagenes/gragea_brillo.png");
         txtBtnMusicaOn = assetManager.get("imagenes/musica_on.png");
         txtBtnMusicaOff = assetManager.get("imagenes/musica_off.png");
         txtBtnMusicaClick = assetManager.get("imagenes/musica_click.png");
+        txtBtnPoderMovDiagonalOn = assetManager.get("imagenes/btn_poder_mov_diagonal_on.png");
+        txtBtnPoderMovDiagonalOff = assetManager.get("imagenes/btn_poder_mov_diagonal_off.png");
+        txtBtnPoderMovDiagonalClick = assetManager.get("imagenes/btn_poder_mov_diagonal_click.png");
         txtFinJuegoFondo = assetManager.get("imagenes/fin_btn_fondo.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
         mscMusicaFondo = assetManager.get("sonidos/musica_fondo.mp3");
@@ -761,6 +889,11 @@ public class JuegoVisual implements Screen, Observer {
     public boolean verificarAdyacentes() {
         return (segundaGrageaX == primerGrageaX && ((segundaGrageaY == primerGrageaY - 1) || (segundaGrageaY == primerGrageaY + 1)))
                 || (segundaGrageaY == primerGrageaY && ((segundaGrageaX == primerGrageaX - 1) || (segundaGrageaX == primerGrageaX + 1)));
+    }
+
+    public boolean verificarDiagonales() {
+        return ((segundaGrageaX == primerGrageaX - 1 || segundaGrageaX == primerGrageaX + 1) &&
+                (segundaGrageaY == primerGrageaY - 1 || segundaGrageaY == primerGrageaY + 1));
     }
 
     public boolean isHayGrageaSeleccionada() {
@@ -837,5 +970,21 @@ public class JuegoVisual implements Screen, Observer {
 
     public void setAnimacionesEjecutando(int animacionesEjecutando) {
         this.animacionesEjecutando = animacionesEjecutando;
+    }
+
+    public boolean isSuperGrageaActivada() {
+        return superGrageaActivada;
+    }
+
+    public void setSuperGrageaActivada(boolean superGrageaActivada) {
+        this.superGrageaActivada = superGrageaActivada;
+    }
+
+    public boolean isPoderMovDiagonalActivado() {
+        return poderMovDiagonalActivado;
+    }
+
+    public void setPoderMovDiagonalActivado(boolean poderMovDiagonalActivado) {
+        this.poderMovDiagonalActivado = poderMovDiagonalActivado;
     }
 }

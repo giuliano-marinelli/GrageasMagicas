@@ -31,6 +31,7 @@ public class PatronControlador implements Runnable {
     private Patron j2;
     private Patron k2;
     private Patron l2;
+    private Patron sg;
     private AtomicBoolean finJuego;
     private CyclicBarrier barrierFinPatrones;
     private AtomicBoolean hayJugada;
@@ -40,7 +41,7 @@ public class PatronControlador implements Runnable {
         this.finJuego = finJuego;
         int limAlto = (matrizGrageas.length);
         int limAncho = (matrizGrageas[0].length);
-        barrierFinPatrones = new CyclicBarrier(17);
+        barrierFinPatrones = new CyclicBarrier(18);
         hayJugada = new AtomicBoolean(false);
         a = new A(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         b = new B(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
@@ -58,6 +59,7 @@ public class PatronControlador implements Runnable {
         j2 = new J2(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         k2 = new K2(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
         l2 = new L2(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
+        sg = new SG(hayJugada, matrizGrageas, limAlto, limAncho, barrierFinPatrones);
     }
 
     @Override
@@ -99,6 +101,8 @@ public class PatronControlador implements Runnable {
                     tK2.start();
                     Thread tL2 = new Thread(l2);
                     tL2.start();
+                    Thread tSG = new Thread(sg);
+                    tSG.start();
                     barrierFinPatrones.await();
                     barrierVerificarJugada.await();
                 }

@@ -9,10 +9,6 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Created by Bermu on 22/01/2017.
- */
-
 public abstract class Patron implements Runnable {
 
     protected AtomicBoolean hayJugada;

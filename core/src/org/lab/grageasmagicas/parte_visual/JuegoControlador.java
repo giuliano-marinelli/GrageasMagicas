@@ -43,23 +43,32 @@ public class JuegoControlador implements Runnable {
                     }
                     juegoVisual.setInputMenus(true);
                 }
-               // System.out.println("1 juegoControlador");
+                // System.out.println("1 juegoControlador");
                 barrierRespuestaVisual.await();
-               // System.out.println("2 juegoControlador");
+                // System.out.println("2 juegoControlador");
                 if (!finJuego.get()) {
                     if (juegoLogico.isHayJugadas()) {
                         juegoVisual.setInputGrageas(false);
                         juegoVisual.setInputMenus(false);
-                        juegoLogico.setIntercambioGrageas(juegoVisual.getPrimerGrageaX(), juegoVisual.getPrimerGrageaY(),
-                                juegoVisual.getSegundaGrageaX(), juegoVisual.getSegundaGrageaY());
-                        juegoVisual.getMatrizGrageasVisuales()[juegoVisual.getPrimerGrageaX()][juegoVisual.getPrimerGrageaY()].deseleccionar();
-                        juegoVisual.limpiarPosGrageas();
+                        if (juegoVisual.isSuperGrageaActivada()) {
+                            juegoLogico.setSuperGrageaActivada(true);
+                            juegoLogico.setPrimerGrageaX(juegoVisual.getPrimerGrageaX());
+                            juegoLogico.setPrimerGrageaY(juegoVisual.getPrimerGrageaY());
+                            juegoVisual.setSuperGrageaActivada(false);
+                            juegoVisual.limpiarPosGrageas();
+                        } else {
+                            juegoLogico.setPoderMovDiagonalActivado(juegoVisual.isPoderMovDiagonalActivado());
+                            juegoLogico.setIntercambioGrageas(juegoVisual.getPrimerGrageaX(), juegoVisual.getPrimerGrageaY(),
+                                    juegoVisual.getSegundaGrageaX(), juegoVisual.getSegundaGrageaY());
+                            juegoVisual.getMatrizGrageasVisuales()[juegoVisual.getPrimerGrageaX()][juegoVisual.getPrimerGrageaY()].deseleccionar();
+                            juegoVisual.limpiarPosGrageas();
+                        }
                         juegoVisual.setHayGrageaSeleccionada(false);
                     }
                 }
-               // System.out.println("3 juegoControlador");
+                // System.out.println("3 juegoControlador");
                 barrierEntradaLogico.await();
-               // System.out.println("4 juegoControlador");
+                // System.out.println("4 juegoControlador");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (BrokenBarrierException e) {

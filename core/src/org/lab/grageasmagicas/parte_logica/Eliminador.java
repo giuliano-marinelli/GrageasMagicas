@@ -44,7 +44,7 @@ public class Eliminador implements Runnable {
                     int i = 0;
                     boolean debeEliminar = false;
                     do {
-                        //si existe una grajea en una posicion que le corresponda a este eliminador entonces debeEliminar se pone en true
+                        //si existe una gragea en una posicion que le corresponda a este eliminador entonces debeEliminar se pone en true
                         debeEliminar = (grageasCombinadas.get(i).y == columna);
                         if (debeEliminar) {
                             eliminarCombinaciones();
@@ -64,29 +64,25 @@ public class Eliminador implements Runnable {
     public void eliminarCombinaciones() {
         System.out.print(" <" + columna + "> ");
         List<Integer> combinacionTemp = new ArrayList();
+        List<Integer> grageasDuplicadas = new ArrayList();
         for (int i = 0; i < grageasCombinadas.size(); i++) {
             if (grageasCombinadas.get(i).y == columna) {
+                if (combinacionTemp.contains(grageasCombinadas.get(i).x)) {
+                    grageasDuplicadas.add(grageasCombinadas.get(i).x);
+                }
                 combinacionTemp.add(grageasCombinadas.get(i).x);
             }
         }
         Random random = new Random();
-        /*Collections.sort(combinacionTemp);
-        HashSet hs = new HashSet();
-        hs.addAll(combinacionTemp);
-        combinacionTemp.clear();
-        combinacionTemp.addAll(hs);
-        while (!combinacionTemp.isEmpty()) {
-            for (int i = combinacionTemp.get(0); i > 0; i--) {
-                matrizGrageas[i][columna] = matrizGrageas[i - 1][columna];
-            }
-            matrizGrageas[0][columna] = new Gragea(random.nextInt(cantGragea));
-            combinacionTemp.remove(0);
-        }*/
         int bajar = 0;
         for (int i = matrizGrageas.length - 1; i >= 0; i--) {
             if (combinacionTemp.contains(i)) {
                 bajar++;
-                matrizGrageas[i][columna] = new Gragea(random.nextInt(cantGragea));
+                if (grageasDuplicadas.contains(i)) {
+                    matrizGrageas[i][columna] = new Gragea(100);
+                } else {
+                    matrizGrageas[i][columna] = new Gragea(random.nextInt(cantGragea));
+                }
             } else {
                 if (bajar != 0) {
                     Gragea aux = matrizGrageas[i+bajar][columna];

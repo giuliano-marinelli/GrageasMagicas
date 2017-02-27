@@ -22,11 +22,14 @@ public class Principal {
         //System.out.println("Cantidad de movimientos: ");
         int movimientos = 5 + (nivel / 5) * 2;//TecladoIn.readInt();
         //System.out.println("Puntaje para ganar: ");
-        int puntajeGanar =  movimientos * 30 + (nivel + 1) * 50 - (nivel / 10) * (500);//TecladoIn.readInt();
+        int puntajeGanar = movimientos * 30 + (nivel + 1) * 50 - (nivel / 10) * (500);//TecladoIn.readInt();
+
+        int poderMovDiagonalUsos = nivel / 10;
+
         AtomicBoolean finJuego = new AtomicBoolean(false);
 
         //crea y lanza el juego
-        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, finJuego);
+        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, poderMovDiagonalUsos, finJuego);
         Thread juegoThread = new Thread(juego);
         juegoThread.start();
     }
