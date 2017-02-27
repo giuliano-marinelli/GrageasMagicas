@@ -202,7 +202,7 @@ public class Juego extends Observable implements Runnable {
                         intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
                     } else {
                         movimientos++;
-                        if (poderMovDiagonalActivado) {
+                        if (poderMovDiagonalActivado && !superGrageaActivada) {
                             poderMovDiagonalUsos++;
                         }
                         limpiarPosGrageas();
@@ -681,6 +681,10 @@ public class Juego extends Observable implements Runnable {
      */
     public void intercambiarGrageas(int gix, int giy, int gfx, int gfy) {
         Gragea grageaAux = matrizGrageas[gix][giy];
+        System.out.println("gix: "+gix);
+        System.out.println("giy: "+giy);
+        System.out.println("gfx: "+gfx);
+        System.out.println("gfy: "+gfy);
         matrizGrageas[gix][giy] = matrizGrageas[gfx][gfy];
         matrizGrageas[gfx][gfy] = grageaAux;
     }

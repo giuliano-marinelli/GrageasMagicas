@@ -887,12 +887,14 @@ public class JuegoVisual implements Screen, Observer {
     }
 
     public boolean verificarAdyacentes() {
-        return (segundaGrageaX == primerGrageaX && ((segundaGrageaY == primerGrageaY - 1) || (segundaGrageaY == primerGrageaY + 1)))
+        return  (primerGrageaX != -1 && primerGrageaY != -1 && segundaGrageaX != -1 && segundaGrageaY != -1) &&
+                (segundaGrageaX == primerGrageaX && ((segundaGrageaY == primerGrageaY - 1) || (segundaGrageaY == primerGrageaY + 1)))
                 || (segundaGrageaY == primerGrageaY && ((segundaGrageaX == primerGrageaX - 1) || (segundaGrageaX == primerGrageaX + 1)));
     }
 
     public boolean verificarDiagonales() {
-        return ((segundaGrageaX == primerGrageaX - 1 || segundaGrageaX == primerGrageaX + 1) &&
+        return ((primerGrageaX != -1 && primerGrageaY != -1 && segundaGrageaX != -1 && segundaGrageaY != -1) &&
+                (segundaGrageaX == primerGrageaX - 1 || segundaGrageaX == primerGrageaX + 1) &&
                 (segundaGrageaY == primerGrageaY - 1 || segundaGrageaY == primerGrageaY + 1));
     }
 
