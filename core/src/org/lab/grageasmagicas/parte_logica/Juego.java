@@ -192,8 +192,6 @@ public class Juego extends Observable implements Runnable {
                         sincronizar();
                         /*System.out.println("Presione enter...");
                         TecladoIn.read();*/
-
-                        superGrageaActivada = false;
                     }
                     //si las combinaciones de grageas esta vacia significa que el intercambio esta mal hecho
                     if (grageasCombinadas.isEmpty()) {
@@ -205,6 +203,9 @@ public class Juego extends Observable implements Runnable {
                         if (poderMovDiagonalActivado && !superGrageaActivada) {
                             poderMovDiagonalUsos++;
                         }
+                        //desactiva el flag de super gragea en caso de que haya sido activada una
+                        superGrageaActivada = false;
+                        //limpia las posiciones para intercambiar o para la super gragea
                         limpiarPosGrageas();
                         //elimina las combinaciones hasta que no quede ninguna
                         eliminarCombinaciones();

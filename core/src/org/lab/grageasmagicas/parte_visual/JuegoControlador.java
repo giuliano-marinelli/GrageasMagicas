@@ -50,19 +50,18 @@ public class JuegoControlador implements Runnable {
                     if (juegoLogico.isHayJugadas()) {
                         juegoVisual.setInputGrageas(false);
                         juegoVisual.setInputMenus(false);
+                        juegoLogico.setPoderMovDiagonalActivado(juegoVisual.isPoderMovDiagonalActivado());
                         if (juegoVisual.isSuperGrageaActivada()) {
                             juegoLogico.setSuperGrageaActivada(true);
-                            juegoLogico.setPrimerGrageaX(juegoVisual.getPrimerGrageaX());
-                            juegoLogico.setPrimerGrageaY(juegoVisual.getPrimerGrageaY());
+                            juegoLogico.setIntercambioGrageas(juegoVisual.getPrimerGrageaX(), juegoVisual.getPrimerGrageaY(), -1, -1);
                             juegoVisual.setSuperGrageaActivada(false);
-                            juegoVisual.limpiarPosGrageas();
                         } else {
-                            juegoLogico.setPoderMovDiagonalActivado(juegoVisual.isPoderMovDiagonalActivado());
                             juegoLogico.setIntercambioGrageas(juegoVisual.getPrimerGrageaX(), juegoVisual.getPrimerGrageaY(),
                                     juegoVisual.getSegundaGrageaX(), juegoVisual.getSegundaGrageaY());
                             juegoVisual.getMatrizGrageasVisuales()[juegoVisual.getPrimerGrageaX()][juegoVisual.getPrimerGrageaY()].deseleccionar();
-                            juegoVisual.limpiarPosGrageas();
+
                         }
+                        juegoVisual.limpiarPosGrageas();
                         juegoVisual.setHayGrageaSeleccionada(false);
                     }
                 }
