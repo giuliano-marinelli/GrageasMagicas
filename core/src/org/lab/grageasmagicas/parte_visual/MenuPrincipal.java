@@ -103,7 +103,7 @@ public class MenuPrincipal implements Screen {
         btnJugar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuModoJuego()));
             }
         });
         escena.addActor(btnJugar);

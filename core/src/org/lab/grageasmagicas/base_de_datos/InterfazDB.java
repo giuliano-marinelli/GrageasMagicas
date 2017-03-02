@@ -29,7 +29,8 @@ public class InterfazDB {
                 "CREATE TABLE IF NOT EXISTS puntaje (" +
                         "id_puntaje INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "valor INTEGER NOT NULL, " +
-                        "id_usuario INTEGER REFERENCES usuario(id_usuario)" +
+                        "id_usuario INTEGER REFERENCES usuario(id_usuario), " +
+                        "dificultad INTEGER NOT NULL " +
                         ");";
 
         String crearSesion =
@@ -62,10 +63,10 @@ public class InterfazDB {
         crearOpcionesDefault();
     }
 
-    public void insertarPuntaje(int idUsuario, int puntaje) {
+    public void insertarPuntaje(int idUsuario, int puntaje, int dificultad) {
         try {
             dbAdministrador.openOrCreateDatabase();
-            String query = "INSERT INTO puntaje(id_usuario, valor) VALUES (" + idUsuario + "," + puntaje + ")";
+            String query = "INSERT INTO puntaje(id_usuario, valor, dificultad) VALUES (" + idUsuario + "," + puntaje + "," + dificultad + ")";
             dbAdministrador.execSQL(query);
             dbAdministrador.closeDatabase();
         } catch (SQLiteGdxException e) {
@@ -314,10 +315,12 @@ public class InterfazDB {
             int i = 0;
             String nombre;
             String puntaje;
+            String dificultad;
             while (respuesta.next() && i < 10) {
-                nombre = respuesta.getString(3);
+                nombre = respuesta.getString(4);
                 puntaje = respuesta.getString(1);
-                String[] fila = {nombre, puntaje};
+                dificultad = respuesta.getString(3);
+                String[] fila = {nombre, puntaje, dificultad};
                 ranking.add(fila);
                 i++;
             }

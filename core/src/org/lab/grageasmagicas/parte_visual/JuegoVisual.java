@@ -59,6 +59,7 @@ public class JuegoVisual implements Screen, Observer {
     private boolean inputMenus;
     private boolean tableroListo;
     private boolean drawParEfcBrillante;
+    private boolean desbloqueo;
     private GrageaVisual[][] matrizGrageasVisuales;
     private CyclicBarrier barrierRespuestaVisual;
     private float[][] matrizPosGrageaX;
@@ -84,6 +85,7 @@ public class JuegoVisual implements Screen, Observer {
     private TextButton btnSinMovimiento;
     private TextButton btnMovimientos;
     private TextButton btnPoderMovDiagonalUsos;
+    private TextButton btnTiempoJuego;
     private ImageTextButton btnFinJuego;
     private ImageButton btnMusica;
     private ImageButton btnPoderMovDiagonal;
@@ -102,7 +104,16 @@ public class JuegoVisual implements Screen, Observer {
     private Texture txtFinJuegoFondo;
     private BitmapFont fntFuenteBase;
     private Music mscMusicaFondo;
+    private Music mscMusicaFondoDif1;
+    private Music mscMusicaFondoDif2;
+    private Music mscMusicaFondoDif3;
+    private Music mscMusicaFondoNiveles1;
+    private Music mscMusicaFondoNiveles2;
+    private Music mscMusicaFondoNiveles3;
+    private Music mscMusicaFondoNiveles4;
+    private Music mscMusicaFondoNiveles5;
     private Sound sndExplosion;
+    private Sound sndSuperExplosion;
     private ParticleEffect parEfcExplosion;
     private ParticleEffect parEfcBrillante;
     //efectos
@@ -127,14 +138,9 @@ public class JuegoVisual implements Screen, Observer {
         this.animacionesEjecutando = 0;
         this.tableroListo = false;
         this.drawParEfcBrillante = false;
+        this.desbloqueo = false;
 
         cargarAssets();
-
-        mscMusicaFondo.setLooping(true);
-        mscMusicaFondo.setVolume(0.25f);
-        if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
-            mscMusicaFondo.play();
-        }
 
         escena = new Stage(vista);
         Gdx.input.setInputProcessor(escena);
@@ -170,10 +176,12 @@ public class JuegoVisual implements Screen, Observer {
             btnPuntaje.setPosition(50, altoCamara - btnPuntaje.getHeight() - 25);
 
             //actualiza el btnMovimientos segun el obtenido del juego logico
-            btnMovimientos.setText(juegoLogico.getMovimientos() + " / " + juegoLogico.getMovimientosTotales());
-            btnMovimientos.setWidth(btnMovimientos.getPrefWidth());
-            btnMovimientos.setHeight(btnMovimientos.getPrefHeight());
-            btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
+            if (juegoLogico.getModoJuego() == 0) {
+                btnMovimientos.setText(juegoLogico.getMovimientos() + " / " + juegoLogico.getMovimientosTotales());
+                btnMovimientos.setWidth(btnMovimientos.getPrefWidth());
+                btnMovimientos.setHeight(btnMovimientos.getPrefHeight());
+                btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
+            }
 
             //actualiza el btnPoderMovDiagonal segun la cantidad que queden disponibles
             if (juegoLogico.getPoderMovDiagonalUsos() == juegoLogico.getPoderMovDiagonalUsosTotales()) {
@@ -195,7 +203,7 @@ public class JuegoVisual implements Screen, Observer {
             btnPoderMovDiagonalUsos.setPosition(btnPoderMovDiagonal.getX() + btnPoderMovDiagonal.getWidth() - btnPoderMovDiagonalUsos.getWidth()
                     , btnPoderMovDiagonal.getY());
 
-            if (juegoLogico.getPuntaje() >= juegoLogico.getPuntajeGanar()) {
+            if (juegoLogico.getModoJuego() == 0 && juegoLogico.getPuntaje() >= juegoLogico.getPuntajeGanar()) {
                 parEfcBrillante.setPosition(
                         btnPuntajeGanar.getX() + btnPuntajeGanar.getWidth() / 2,
                         btnPuntajeGanar.getY() + btnPuntajeGanar.getHeight() / 2);
@@ -242,6 +250,40 @@ public class JuegoVisual implements Screen, Observer {
         imgFondo.setScale(anchoCamara / imgFondo.getWidth(), altoCamara / imgFondo.getHeight());
         escena.addActor(imgFondo);
 
+        if (juegoLogico.getModoJuego() == 0) {
+            int nivelAux = juegoLogico.getNivel();
+            if (nivelAux < 10) {
+                mscMusicaFondo = mscMusicaFondoNiveles1;
+            } else if (nivelAux < 20) {
+                mscMusicaFondo = mscMusicaFondoNiveles2;
+            } else if (nivelAux < 30) {
+                mscMusicaFondo = mscMusicaFondoNiveles3;
+            } else if (nivelAux < 40) {
+                mscMusicaFondo = mscMusicaFondoNiveles4;
+            } else {
+                mscMusicaFondo = mscMusicaFondoNiveles5;
+            }
+        } else if (juegoLogico.getModoJuego() == 1) {
+            switch (juegoLogico.getDificultad()) {
+                case 0:
+                    mscMusicaFondo = mscMusicaFondoDif1;
+                    break;
+                case 1:
+                    mscMusicaFondo = mscMusicaFondoDif2;
+                    break;
+                case 2:
+                    mscMusicaFondo = mscMusicaFondoDif3;
+                    break;
+            }
+        } else {
+            mscMusicaFondo = mscMusicaFondoDif1;
+        }
+        mscMusicaFondo.setLooping(true);
+        mscMusicaFondo.setVolume(1f);
+        if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
+            mscMusicaFondo.play();
+        }
+
         tblTablero = new Table();
         escena.addActor(tblTablero);
 
@@ -257,12 +299,20 @@ public class JuegoVisual implements Screen, Observer {
             public void clicked(InputEvent event, float x, float y) {
                 try {
                     if (isInputMenus()) {
+                        if (animacionesEjecutando == 0) {
+                            juegoLogico.terminar();
 
-                        juegoLogico.terminar();
+                            barrierRespuestaVisual.await();
 
-                        barrierRespuestaVisual.await();
-
-                        adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                            switch (juegoLogico.getModoJuego()) {
+                                case 0:
+                                    adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                                    break;
+                                case 1:
+                                    adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNivelesTiempo()));
+                                    break;
+                            }
+                        }
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -372,11 +422,20 @@ public class JuegoVisual implements Screen, Observer {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 try {
-                    juegoLogico.terminar();
+                    if (animacionesEjecutando == 0) {
+                        juegoLogico.terminar();
 
-                    barrierRespuestaVisual.await();
+                        barrierRespuestaVisual.await();
 
-                    adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                        switch (juegoLogico.getModoJuego()) {
+                            case 0:
+                                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                                break;
+                            case 1:
+                                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNivelesTiempo()));
+                                break;
+                        }
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (BrokenBarrierException e) {
@@ -396,25 +455,41 @@ public class JuegoVisual implements Screen, Observer {
         btnPuntaje.setPosition(50, altoCamara - btnPuntaje.getHeight() - 25);
         escena.addActor(btnPuntaje);
 
-        TextButton.TextButtonStyle btnStlPuntajeGanar = new TextButton.TextButtonStyle();
-        btnStlPuntajeGanar.font = fntFuenteBase;
-        btnStlPuntajeGanar.fontColor = Color.GOLD;
-        btnPuntajeGanar = new TextButton(juegoLogico.getPuntajeGanar() + "", btnStlPuntajeGanar);
-        btnPuntajeGanar.getLabel().setFontScale(2, 2);
-        btnPuntajeGanar.setWidth(btnPuntajeGanar.getPrefWidth());
-        btnPuntajeGanar.setHeight(btnPuntajeGanar.getPrefHeight());
-        btnPuntajeGanar.setPosition(anchoCamara / 2 - btnPuntajeGanar.getWidth() / 2, 25);
-        escena.addActor(btnPuntajeGanar);
+        if (juegoLogico.getModoJuego() == 0) {
+            TextButton.TextButtonStyle btnStlPuntajeGanar = new TextButton.TextButtonStyle();
+            btnStlPuntajeGanar.font = fntFuenteBase;
+            btnStlPuntajeGanar.fontColor = Color.GOLD;
+            btnPuntajeGanar = new TextButton(juegoLogico.getPuntajeGanar() + "", btnStlPuntajeGanar);
+            btnPuntajeGanar.getLabel().setFontScale(2, 2);
+            btnPuntajeGanar.setWidth(btnPuntajeGanar.getPrefWidth());
+            btnPuntajeGanar.setHeight(btnPuntajeGanar.getPrefHeight());
+            btnPuntajeGanar.setPosition(anchoCamara / 2 - btnPuntajeGanar.getWidth() / 2, 25);
+            escena.addActor(btnPuntajeGanar);
+        }
 
-        TextButton.TextButtonStyle btnStlMovimientos = new TextButton.TextButtonStyle();
-        btnStlMovimientos.font = fntFuenteBase;
-        btnStlMovimientos.fontColor = Color.BLUE;
-        btnMovimientos = new TextButton(juegoLogico.getMovimientos() + " / " + juegoLogico.getMovimientosTotales(), btnStlMovimientos);
-        btnMovimientos.getLabel().setFontScale(2, 2);
-        btnMovimientos.setWidth(btnMovimientos.getPrefWidth());
-        btnMovimientos.setHeight(btnMovimientos.getPrefHeight());
-        btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
-        escena.addActor(btnMovimientos);
+        if (juegoLogico.getModoJuego() == 0) {
+            TextButton.TextButtonStyle btnStlMovimientos = new TextButton.TextButtonStyle();
+            btnStlMovimientos.font = fntFuenteBase;
+            btnStlMovimientos.fontColor = Color.BLUE;
+            btnMovimientos = new TextButton(juegoLogico.getMovimientos() + " / " + juegoLogico.getMovimientosTotales(), btnStlMovimientos);
+            btnMovimientos.getLabel().setFontScale(2, 2);
+            btnMovimientos.setWidth(btnMovimientos.getPrefWidth());
+            btnMovimientos.setHeight(btnMovimientos.getPrefHeight());
+            btnMovimientos.setPosition(50, altoCamara - btnMovimientos.getHeight() - btnPuntaje.getHeight() - 25);
+            escena.addActor(btnMovimientos);
+        }
+
+        if (juegoLogico.getModoJuego() == 1) {
+            TextButton.TextButtonStyle btnStlTiempoJuego = new TextButton.TextButtonStyle();
+            btnStlTiempoJuego.font = fntFuenteBase;
+            btnStlTiempoJuego.fontColor = Color.BLACK;
+            btnTiempoJuego = new TextButton(juegoLogico.getTiempoJuego() / 60 + ":" + juegoLogico.getTiempoJuego() % 60, btnStlTiempoJuego);
+            btnTiempoJuego.getLabel().setFontScale(2, 2);
+            btnTiempoJuego.setWidth(btnTiempoJuego.getPrefWidth());
+            btnTiempoJuego.setHeight(btnTiempoJuego.getPrefHeight());
+            btnTiempoJuego.setPosition(50, altoCamara - btnTiempoJuego.getHeight() - btnPuntaje.getHeight() - 25);
+            escena.addActor(btnTiempoJuego);
+        }
 
         TextButton.TextButtonStyle btnStlPoderMovDiagonalUsos = new TextButton.TextButtonStyle();
         btnStlPoderMovDiagonalUsos.font = fntFuenteBase;
@@ -588,10 +663,11 @@ public class JuegoVisual implements Screen, Observer {
                         }
                     }
                 }
-                if (juegoLogico.getHuboCombo()) {
+                if (juegoLogico.getHuboCombo() || juegoLogico.isSuperGrageaActivada()) {
                     if (adminPantalla.getInterfazDb().consultarOpcionVibracion(adminPantalla.getIdUsuario())) {
                         Gdx.input.vibrate(200);
                     }
+                    sndSuperExplosion.play();
                     juegoLogico.setHuboCombo(false);
                 }
             }
@@ -633,24 +709,42 @@ public class JuegoVisual implements Screen, Observer {
     /**
      *
      */
-    public void mostrarResultado() {
-        if (juegoLogico.getPuntaje() < juegoLogico.getPuntajeGanar()) {
-            btnFinJuego.setText(strings.get("btn_fin_derrota"));
-            btnFinJuego.getLabel().setColor(Color.RED);
-        } else {
-            btnFinJuego.setText(strings.get("btn_fin_victoria"));
-            btnFinJuego.getLabel().setColor(Color.GREEN);
-            if (adminPantalla.isSesion()) {
-                adminPantalla.getInterfazDb().insertarPuntaje(adminPantalla.getIdUsuario(), juegoLogico.getPuntaje());
-                adminPantalla.getInterfazDb().desbloquearNivel(adminPantalla.getIdUsuario(), juegoLogico.getNivel());
-            }
-        }
-        btnFinJuego.setVisible(true);
+    public void mostrarResultado() throws InterruptedException {
         btnPuntaje.getLabel().setFontScale(4, 4);
         btnPuntaje.setWidth(btnPuntaje.getPrefWidth());
         btnPuntaje.setHeight(btnPuntaje.getPrefHeight());
         btnPuntaje.addAction(new AnimacionMover(anchoCamara / 2 - btnPuntaje.getWidth() / 2,
                 altoCamara - btnPuntaje.getHeight() - 50, 0.5f, Interpolation.bounceOut, this));
+        animacionesEjecutando++;
+        switch (juegoLogico.getModoJuego()) {
+            case 0:
+                if (juegoLogico.getPuntaje() < juegoLogico.getPuntajeGanar()) {
+                    btnFinJuego.setText(strings.get("btn_fin_derrota"));
+                    btnFinJuego.getLabel().setColor(Color.RED);
+                } else {
+                    btnFinJuego.setText(strings.get("btn_fin_victoria"));
+                    btnFinJuego.getLabel().setColor(Color.GREEN);
+                    if (adminPantalla.isSesion()) {
+                        adminPantalla.getInterfazDb().desbloquearNivel(adminPantalla.getIdUsuario(), juegoLogico.getNivel());
+                    }
+                }
+                btnMovimientos.addAction(new AnimacionMover(50, altoCamara - btnMovimientos.getHeight() - 25, 0.5f, Interpolation.bounceOut, this));
+                animacionesEjecutando++;
+                break;
+            case 1:
+                btnFinJuego.setText(strings.get("btn_fin_juego"));
+                btnFinJuego.getLabel().setColor(Color.GRAY);
+                if (adminPantalla.isSesion()) {
+                    adminPantalla.getInterfazDb().insertarPuntaje(adminPantalla.getIdUsuario(), juegoLogico.getPuntaje(), juegoLogico.getDificultad());
+                }
+                btnTiempoJuego.addAction(new AnimacionMover(50, altoCamara - btnTiempoJuego.getHeight() - 25, 0.5f, Interpolation.bounceOut, this));
+                animacionesEjecutando++;
+                break;
+        }
+        btnFinJuego.setVisible(true);
+        if (animacionesEjecutando > 0) {
+            dormir();
+        }
     }
 
     /**
@@ -714,6 +808,37 @@ public class JuegoVisual implements Screen, Observer {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if (tableroListo) {
+            if (juegoLogico.getModoJuego() == 1) {
+                if (!juegoLogico.isFinJuego()) {
+                    String segundos = juegoLogico.getTiempoJuego() % 60 + "";
+                    if (Integer.parseInt(segundos) < 10) {
+                        segundos = "0" + segundos;
+                    }
+                    if (juegoLogico.getTiempoJuego() <= 10) {
+                        btnTiempoJuego.getStyle().fontColor = Color.RED;
+                    } else {
+                        btnTiempoJuego.getStyle().fontColor = Color.BLACK;
+                    }
+                    btnTiempoJuego.setText(juegoLogico.getTiempoJuego() / 60 + ":" + segundos);
+                    btnTiempoJuego.setWidth(btnTiempoJuego.getPrefWidth());
+                    btnTiempoJuego.setHeight(btnTiempoJuego.getPrefHeight());
+                    btnTiempoJuego.setPosition(50, altoCamara - btnTiempoJuego.getHeight() - btnPuntaje.getHeight() - 25);
+                }
+
+                if (!juegoLogico.isFinJuego() && juegoLogico.getTiempoJuego() <= 0 && barrierRespuestaVisual.getNumberWaiting() == 1) {
+                    try {
+                        if (!desbloqueo) {
+                            desbloqueo = true;
+                            barrierRespuestaVisual.await();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (BrokenBarrierException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
             escena.act(delta);
             escena.setViewport(vista);
             escena.draw();
@@ -747,7 +872,14 @@ public class JuegoVisual implements Screen, Observer {
 
                         barrierRespuestaVisual.await();
 
-                        adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                        switch (juegoLogico.getModoJuego()) {
+                            case 0:
+                                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNiveles()));
+                                break;
+                            case 1:
+                                adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuNivelesTiempo()));
+                                break;
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (BrokenBarrierException e) {
@@ -758,6 +890,7 @@ public class JuegoVisual implements Screen, Observer {
 
             batch.end();
         }
+
     }
 
     /**
@@ -813,8 +946,16 @@ public class JuegoVisual implements Screen, Observer {
         txtBtnPoderMovDiagonalClick.dispose();
         txtFinJuegoFondo.dispose();
         fntFuenteBase.dispose();
-        mscMusicaFondo.dispose();
+        mscMusicaFondoDif1.dispose();
+        mscMusicaFondoDif2.dispose();
+        mscMusicaFondoDif3.dispose();
+        mscMusicaFondoNiveles1.dispose();
+        mscMusicaFondoNiveles2.dispose();
+        mscMusicaFondoNiveles3.dispose();
+        mscMusicaFondoNiveles4.dispose();
+        mscMusicaFondoNiveles5.dispose();
         sndExplosion.dispose();
+        sndSuperExplosion.dispose();
         parEfcExplosion.dispose();
         parEfcBrillante.dispose();
         escena.dispose();
@@ -831,8 +972,16 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.unload("imagenes/btn_poder_mov_diagonal_click.png");
         assetManager.unload("imagenes/fin_btn_fondo.png");
         assetManager.unload("fuentes/texto_bits.fnt");
-        assetManager.unload("sonidos/musica_fondo.mp3");
+        assetManager.unload("sonidos/musica_fondo_dif1.mp3");
+        assetManager.unload("sonidos/musica_fondo_dif2.mp3");
+        assetManager.unload("sonidos/musica_fondo_dif3.mp3");
+        assetManager.unload("sonidos/musica_fondo_lvl_1_10.mp3");
+        assetManager.unload("sonidos/musica_fondo_lvl_10_20.mp3");
+        assetManager.unload("sonidos/musica_fondo_lvl_20_30.mp3");
+        assetManager.unload("sonidos/musica_fondo_lvl_30_40.mp3");
+        assetManager.unload("sonidos/musica_fondo_lvl_40_50.mp3");
         assetManager.unload("sonidos/explosion.mp3");
+        assetManager.unload("sonidos/super_explosion.mp3");
         assetManager.unload("efectos/explosion.effect");
         assetManager.unload("efectos/brillante.effect");
         assetManager.unload("strings/strings");
@@ -855,8 +1004,16 @@ public class JuegoVisual implements Screen, Observer {
         assetManager.load("imagenes/btn_poder_mov_diagonal_click.png", Texture.class);
         assetManager.load("imagenes/fin_btn_fondo.png", Texture.class);
         assetManager.load("fuentes/texto_bits.fnt", BitmapFont.class);
-        assetManager.load("sonidos/musica_fondo.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_dif1.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_dif2.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_dif3.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_lvl_1_10.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_lvl_10_20.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_lvl_20_30.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_lvl_30_40.mp3", Music.class);
+        assetManager.load("sonidos/musica_fondo_lvl_40_50.mp3", Music.class);
         assetManager.load("sonidos/explosion.mp3", Sound.class);
+        assetManager.load("sonidos/super_explosion.mp3", Sound.class);
         assetManager.load("efectos/explosion.effect", ParticleEffect.class, effectParameter);
         assetManager.load("efectos/brillante.effect", ParticleEffect.class, effectParameter);
         assetManager.load("strings/strings", I18NBundle.class);
@@ -873,8 +1030,16 @@ public class JuegoVisual implements Screen, Observer {
         txtBtnPoderMovDiagonalClick = assetManager.get("imagenes/btn_poder_mov_diagonal_click.png");
         txtFinJuegoFondo = assetManager.get("imagenes/fin_btn_fondo.png");
         fntFuenteBase = assetManager.get("fuentes/texto_bits.fnt");
-        mscMusicaFondo = assetManager.get("sonidos/musica_fondo.mp3");
+        mscMusicaFondoDif1 = assetManager.get("sonidos/musica_fondo_dif1.mp3");
+        mscMusicaFondoDif2 = assetManager.get("sonidos/musica_fondo_dif2.mp3");
+        mscMusicaFondoDif3 = assetManager.get("sonidos/musica_fondo_dif3.mp3");
+        mscMusicaFondoNiveles1 = assetManager.get("sonidos/musica_fondo_lvl_1_10.mp3");
+        mscMusicaFondoNiveles2 = assetManager.get("sonidos/musica_fondo_lvl_10_20.mp3");
+        mscMusicaFondoNiveles3 = assetManager.get("sonidos/musica_fondo_lvl_20_30.mp3");
+        mscMusicaFondoNiveles4 = assetManager.get("sonidos/musica_fondo_lvl_30_40.mp3");
+        mscMusicaFondoNiveles5 = assetManager.get("sonidos/musica_fondo_lvl_40_50.mp3");
         sndExplosion = assetManager.get("sonidos/explosion.mp3");
+        sndSuperExplosion = assetManager.get("sonidos/super_explosion.mp3");
         parEfcExplosion = assetManager.get("efectos/explosion.effect");
         parEfcBrillante = assetManager.get("efectos/brillante.effect");
         strings = assetManager.get("strings/strings");

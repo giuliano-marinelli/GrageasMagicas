@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CyclicBarrier;
@@ -35,6 +37,9 @@ public class Juego extends Observable implements Runnable {
     private int segundaGrageaY;
     private int poderMovDiagonalUsos;
     private int poderMovDiagonalUsosTotales;
+    private int modoJuego;
+    private int tiempoJuego;
+    private int dificultad;
     private boolean superGrageaActivada;
     private boolean poderMovDiagonalActivado;
     private boolean pausa;
@@ -52,7 +57,7 @@ public class Juego extends Observable implements Runnable {
     private CyclicBarrier barrierVerificarJugada;
 
 
-    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, int nivel, int poderMovDiagonalUsos, AtomicBoolean finJuego) {
+    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, int nivel, int poderMovDiagonalUsos, int modoJuego, int tiempoJuego, int dificultad, AtomicBoolean finJuego) {
         this.ancho = ancho;
         this.alto = alto;
         this.velocidad = velocidad;
@@ -68,6 +73,9 @@ public class Juego extends Observable implements Runnable {
         this.segundaGrageaY = -1;
         this.poderMovDiagonalUsos = 0;
         this.poderMovDiagonalUsosTotales = poderMovDiagonalUsos;
+        this.tiempoJuego = tiempoJuego;
+        this.modoJuego = modoJuego;
+        this.dificultad = dificultad;
         this.superGrageaActivada = false;
         this.poderMovDiagonalActivado = false;
         this.finJuego = finJuego;
@@ -123,10 +131,24 @@ public class Juego extends Observable implements Runnable {
     @Override
     public void run() {
         try {
+            if (modoJuego == 1) {
+                final Timer temporizador = new Timer();
+                temporizador.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (tiempoJuego > 0) {
+                            tiempoJuego--;
+                        } else {
+                            temporizador.cancel();
+                        }
+                    }
+                }, 1000, 1000);
+            }
+
             //incialmente se realizan las combinaciones que hallan salido de forma aleatoria
             combinacionInicial();
 
-            while (!finJuego.get() && movimientos < movimientosTotales) {
+            while (!finJuego.get() && !condicionFinJuego()) {
                 System.out.println("\033[32mJuega\033[30m");
                 System.out.println("\033[32mPuntaje: \033[30m" + puntaje + "\n");
                 //Imprime el juego por consola
@@ -162,8 +184,9 @@ public class Juego extends Observable implements Runnable {
                     }*/
 
                     //mientras que la jugada no involucre un movimiento valido seguira pidiendola
-                } while (!sonAdy && !superGrageaActivada && !poderMovDiagonalActivado && !finJuego.get());
-                if (!finJuego.get()) {
+                }
+                while (!sonAdy && !superGrageaActivada && !poderMovDiagonalActivado && !finJuego.get() && !condicionFinJuego());
+                if (!finJuego.get() && !condicionFinJuego()) {
                     if (!superGrageaActivada) {
                         //invertimos las grageas de lugar
                         intercambiarGrageas(primerGrageaX, primerGrageaY, segundaGrageaX, segundaGrageaY);
@@ -220,14 +243,8 @@ public class Juego extends Observable implements Runnable {
                 }
             }
             if (!finJuego.get()) {
-                System.out.println("Ya no te quedan movimientos!");
-                if (puntaje < puntajeGanar) {
-                    System.out.println("Perdiste!");
-                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
-                } else {
-                    System.out.println("Ganaste!");
-                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
-                }
+                resultadoJuego();
+
                 finJuego.set(true);
 
                 sincronizar();
@@ -252,6 +269,51 @@ public class Juego extends Observable implements Runnable {
     public void sincronizar() {
         setChanged();
         notifyObservers();
+    }
+
+    /**
+     * Agrega el puntaje ganado segun las grageas que se combinaron.
+     */
+    public void calcularPuntaje() {
+        puntaje += grageasCombinadas.size() * 10;
+    }
+
+    public boolean condicionFinJuego() {
+        boolean condicion = false;
+        switch (modoJuego) {
+            case 0:
+                condicion = (movimientos >= movimientosTotales) || (puntaje >= puntajeGanar);
+                break;
+            case 1:
+                condicion = (tiempoJuego <= 0);
+                break;
+        }
+        return condicion;
+    }
+
+    public void resultadoJuego() {
+        switch (modoJuego) {
+            case 0:
+                System.out.println("Ya no te quedan movimientos!");
+                if (puntaje < puntajeGanar) {
+                    System.out.println("Perdiste!");
+                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
+                } else {
+                    System.out.println("Ganaste!");
+                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
+                }
+                break;
+            case 1:
+                System.out.println("Se acabo el tiempo!");
+                if (puntaje < puntajeGanar) {
+                    System.out.println("Perdiste!");
+                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
+                } else {
+                    System.out.println("Ganaste!");
+                    System.out.println("Puntaje logrado: \033[32m" + puntaje + "\033[30m");
+                }
+                break;
+        }
     }
 
     /**
@@ -322,13 +384,6 @@ public class Juego extends Observable implements Runnable {
                 }
             }
         }
-    }
-
-    /**
-     * Agrega el puntaje ganado segun las grageas que se combinaron.
-     */
-    public void calcularPuntaje() {
-        puntaje += grageasCombinadas.size() * 10;
     }
 
     public void combinacionInicial() {
@@ -682,10 +737,10 @@ public class Juego extends Observable implements Runnable {
      */
     public void intercambiarGrageas(int gix, int giy, int gfx, int gfy) {
         Gragea grageaAux = matrizGrageas[gix][giy];
-        System.out.println("gix: "+gix);
-        System.out.println("giy: "+giy);
-        System.out.println("gfx: "+gfx);
-        System.out.println("gfy: "+gfy);
+        System.out.println("gix: " + gix);
+        System.out.println("giy: " + giy);
+        System.out.println("gfx: " + gfx);
+        System.out.println("gfy: " + gfy);
         matrizGrageas[gix][giy] = matrizGrageas[gfx][gfy];
         matrizGrageas[gfx][gfy] = grageaAux;
     }
@@ -911,5 +966,21 @@ public class Juego extends Observable implements Runnable {
 
     public void setPoderMovDiagonalUsosTotales(int poderMovDiagonalUsosTotales) {
         this.poderMovDiagonalUsosTotales = poderMovDiagonalUsosTotales;
+    }
+
+    public int getModoJuego() {
+        return modoJuego;
+    }
+
+    public int getTiempoJuego() {
+        return tiempoJuego;
+    }
+
+    public int getDificultad() {
+        return dificultad;
+    }
+
+    public void setDificultad(int dificultad) {
+        this.dificultad = dificultad;
     }
 }

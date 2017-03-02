@@ -58,8 +58,8 @@ public class JuegoControlador implements Runnable {
                         } else {
                             juegoLogico.setIntercambioGrageas(juegoVisual.getPrimerGrageaX(), juegoVisual.getPrimerGrageaY(),
                                     juegoVisual.getSegundaGrageaX(), juegoVisual.getSegundaGrageaY());
-                            juegoVisual.getMatrizGrageasVisuales()[juegoVisual.getPrimerGrageaX()][juegoVisual.getPrimerGrageaY()].deseleccionar();
-
+                            if (juegoVisual.isHayGrageaSeleccionada())
+                                juegoVisual.getMatrizGrageasVisuales()[juegoVisual.getPrimerGrageaX()][juegoVisual.getPrimerGrageaY()].deseleccionar();
                         }
                         juegoVisual.limpiarPosGrageas();
                         juegoVisual.setHayGrageaSeleccionada(false);

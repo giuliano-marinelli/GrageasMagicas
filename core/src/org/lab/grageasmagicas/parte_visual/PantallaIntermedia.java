@@ -41,6 +41,12 @@ public class PantallaIntermedia implements Screen {
             case 9:
                 adminPantalla.setScreen(new MenuNiveles(adminPantalla));
                 break;
+            case 10:
+                adminPantalla.setScreen(new MenuModoJuego(adminPantalla));
+                break;
+            case 11:
+                adminPantalla.setScreen(new MenuNivelesTiempo(adminPantalla));
+                break;
             default:
                 adminPantalla.setScreen(new MenuPrincipal(adminPantalla));
         }

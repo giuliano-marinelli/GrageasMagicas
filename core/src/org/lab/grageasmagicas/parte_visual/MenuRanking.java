@@ -73,25 +73,38 @@ public class MenuRanking implements Screen {
 
         tblRanking = new Table();
         tblRanking.row();
-        tblRanking.add(lblRanking).colspan(3);
+        tblRanking.add(lblRanking).colspan(4);
 
         for (int i = 0; i < ranking.size(); i++) {
             tblRanking.row();
             Label lblPuesto = new Label("(" + (i + 1) + ")", lblStlRanking);
-            lblPuesto.setFontScale(1.5f, 1.5f);
-            String nombre;
-            if (ranking.get(i)[0].length() > 9) {
-                nombre = ranking.get(i)[0].substring(9) + "...";
-            } else {
-                nombre = ranking.get(i)[0];
-            }
-            Label lblNombre = new Label(nombre, lblStlRanking);
-            lblNombre.setFontScale(1.5f, 1.5f);
+            //lblPuesto.setFontScale(1.5f, 1.5f);
+            Label lblNombre = new Label(ranking.get(i)[0], lblStlRanking);
+            lblNombre.setEllipsis(true);
+            //lblNombre.setFontScale(1.5f, 1.5f);
             Label lblPuntaje = new Label(ranking.get(i)[1], lblStlRanking);
-            lblPuntaje.setFontScale(1.5f, 1.5f);
+            lblPuntaje.setEllipsis(true);
+            //lblPuntaje.setFontScale(1.5f, 1.5f);
+            Label lblDificultad = new Label("N", lblStlRanking);
+            //lblDificultad.setFontScale(1.5f, 1.5f);
+            switch (Integer.parseInt(ranking.get(i)[2])) {
+                case 0:
+                    lblDificultad.setText("F");
+                    lblDificultad.setColor(Color.GREEN);
+                    break;
+                case 1:
+                    lblDificultad.setText("M");
+                    lblDificultad.setColor(Color.YELLOW);
+                    break;
+                case 2:
+                    lblDificultad.setText("H");
+                    lblDificultad.setColor(Color.RED);
+                    break;
+            }
             tblRanking.add(lblPuesto).space(50);
-            tblRanking.add(lblNombre).space(50);
-            tblRanking.add(lblPuntaje).space(50);
+            tblRanking.add(lblNombre).space(50).width(250);
+            tblRanking.add(lblDificultad).space(50);
+            tblRanking.add(lblPuntaje).space(50).width(175);
         }
         tblRanking.pad(50f);
         tblRanking.top();

@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -22,15 +21,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.util.Random;
+import org.lab.grageasmagicas.parte_logica.Juego;
 
-public class MenuNiveles implements Screen {
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class MenuNivelesTiempo implements Screen {
 
     //visual
     private int anchoCamara;
     private int altoCamara;
-    private int cantNiveles;
-    private int nivelLogrado;
     //administradores
     private AssetManager assetManager;
     private AdministradorPantalla adminPantalla;
@@ -39,30 +38,21 @@ public class MenuNiveles implements Screen {
     private I18NBundle strings;
     //actors
     private TextButton btnVolver;
-    private Table tblNiveles;
-    private ScrollPane scrPaneNiveles;
-    private ImageTextButton[] nivel;
+    private ImageTextButton[] btnDificultad;
     private Image imgFondo;
-    private Label lblNiveles;
+    private Label lblDificultad;
+    private Table tblContenido;
     //assets
     private Texture txtFondo;
     private Texture txtBtnNivel;
     private BitmapFont fntFuenteBase;
 
-    public MenuNiveles(AdministradorPantalla adminPantalla) {
+    public MenuNivelesTiempo(AdministradorPantalla adminPantalla) {
         this.adminPantalla = adminPantalla;
         this.anchoCamara = adminPantalla.getAnchoCamara();
         this.altoCamara = adminPantalla.getAltoCamara();
         this.vista = adminPantalla.getVista();
         this.assetManager = adminPantalla.getAssetManager();
-
-        cantNiveles = 50;
-
-        if (adminPantalla.isSesion()) {
-            nivelLogrado = adminPantalla.getInterfazDb().consultarNivelLogrado(adminPantalla.getIdUsuario());
-        } else {
-            nivelLogrado = 0;
-        }
 
         cargarAssets();
 
@@ -79,49 +69,91 @@ public class MenuNiveles implements Screen {
 
         Label.LabelStyle lblStlModoJuego = new Label.LabelStyle(fntFuenteBase, Color.GOLD);
 
-        lblNiveles = new Label(strings.get("btn_niveles"), lblStlModoJuego);
-        lblNiveles.setFontScale(2f, 2f);
-        lblNiveles.setWidth(50);
-        lblNiveles.setWrap(true);
-        lblNiveles.setAlignment(1);
+        lblDificultad = new Label(strings.get("btn_dificultad"), lblStlModoJuego);
+        lblDificultad.setFontScale(2f, 2f);
+        lblDificultad.setWidth(50);
+        lblDificultad.setWrap(true);
+        lblDificultad.setAlignment(1);
 
-        nivel = new ImageTextButton[cantNiveles];
+        btnDificultad = new ImageTextButton[3];
 
-        TextureRegionDrawable trBtnNivel = new TextureRegionDrawable(new TextureRegion(txtBtnNivel));
-        ImageTextButton.ImageTextButtonStyle btnStlNivel = new ImageTextButton.ImageTextButtonStyle(
-                trBtnNivel, trBtnNivel, trBtnNivel, fntFuenteBase);
+        TextureRegionDrawable trBtnDificultad = new TextureRegionDrawable(new TextureRegion(txtBtnNivel));
+        ImageTextButton.ImageTextButtonStyle btnStlDificultad = new ImageTextButton.ImageTextButtonStyle(
+                trBtnDificultad, trBtnDificultad, trBtnDificultad, fntFuenteBase);
 
-        Random random = new Random();
+        btnDificultad[0] = new ImageTextButton(strings.get("btn_dificultad_facil"), btnStlDificultad);
+        btnDificultad[0].setColor(Color.GREEN);
+        btnDificultad[0].getLabel().setColor(Color.GREEN);
+        btnDificultad[0].addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                AtomicBoolean finJuego = new AtomicBoolean(false);
+                Juego juegoLogico = new Juego(5, 5, 0, 4, 0, 0, 0, 5, 1, 60, 0, finJuego);
 
-        tblNiveles = new Table();
-        tblNiveles.row();
-        tblNiveles.add(lblNiveles).width(600).colspan(3);
-        tblNiveles.row();
-        for (int i = 1; i < cantNiveles + 1; i++) {
-            nivel[i - 1] = new ImageTextButton((i) + "", btnStlNivel);
-            nivel[i - 1].addListener(new NivelListener((i - 1), nivelLogrado, adminPantalla));
-            if ((i - 1) <= nivelLogrado) {
-                nivel[i - 1].setColor(
-                        new Color(random.nextFloat() / 2f + 0.4f,
-                                random.nextFloat() / 2f + 0.4f,
-                                random.nextFloat() / 2f + 0.4f, 1));
-            } else {
-                nivel[i - 1].setColor(Color.BLACK);
+                JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
+
+                JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual, finJuego);
+                Thread juegoControladorThread = new Thread(juegoControlador);
+                juegoControladorThread.start();
+
+                adminPantalla.setScreen(juegoVisual);
             }
-            tblNiveles.add(nivel[i - 1]).space(50);
-            if (i % 3 == 0) {
-                tblNiveles.row();
-            }
-        }
-        tblNiveles.pad(50f);
-        tblNiveles.pack();
+        });
 
-        scrPaneNiveles = new ScrollPane(tblNiveles);
-        scrPaneNiveles.setWidth(anchoCamara / 2);
-        scrPaneNiveles.setHeight(altoCamara);
-        scrPaneNiveles.setPosition(anchoCamara / 2 - scrPaneNiveles.getWidth() / 2, 0);
-        scrPaneNiveles.setScrollingDisabled(true, false);
-        escena.addActor(scrPaneNiveles);
+        btnDificultad[1] = new ImageTextButton(strings.get("btn_dificultad_media"), btnStlDificultad);
+        btnDificultad[1].setColor(Color.YELLOW);
+        btnDificultad[1].getLabel().setColor(Color.YELLOW);
+        btnDificultad[1].addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                AtomicBoolean finJuego = new AtomicBoolean(false);
+                Juego juegoLogico = new Juego(6, 6, 0, 5, 0, 0, 0, 5, 1, 80, 1, finJuego);
+
+                JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
+
+                JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual, finJuego);
+                Thread juegoControladorThread = new Thread(juegoControlador);
+                juegoControladorThread.start();
+
+                adminPantalla.setScreen(juegoVisual);
+            }
+        });
+
+        btnDificultad[2] = new ImageTextButton(strings.get("btn_dificultad_dificil"), btnStlDificultad);
+        btnDificultad[2].setColor(Color.RED);
+        btnDificultad[2].getLabel().setColor(Color.RED);
+        btnDificultad[2].addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                AtomicBoolean finJuego = new AtomicBoolean(false);
+                Juego juegoLogico = new Juego(7, 7, 0, 6, 0, 0, 0, 5, 1, 95, 2, finJuego);
+
+                JuegoVisual juegoVisual = new JuegoVisual(adminPantalla);
+
+                JuegoControlador juegoControlador = new JuegoControlador(juegoLogico, juegoVisual, finJuego);
+                Thread juegoControladorThread = new Thread(juegoControlador);
+                juegoControladorThread.start();
+
+                adminPantalla.setScreen(juegoVisual);
+            }
+        });
+
+        tblContenido = new Table();
+        tblContenido.row();
+        tblContenido.add(lblDificultad).width(600);
+        tblContenido.row();
+        tblContenido.add(btnDificultad[0]).pad(15f).size(192, 144);
+        tblContenido.row();
+        tblContenido.add(btnDificultad[1]).pad(15f).size(192, 144);
+        tblContenido.row();
+        tblContenido.add(btnDificultad[2]).pad(15f).size(192, 144);
+
+        tblContenido.pad(50f);
+        tblContenido.top();
+        //tblContenido.debug();
+        tblContenido.pack();
+        tblContenido.setPosition(anchoCamara / 2 - tblContenido.getWidth() / 2, altoCamara - tblContenido.getHeight());
+        escena.addActor(tblContenido);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
         btnStlVolver.font = fntFuenteBase;
@@ -167,7 +199,7 @@ public class MenuNiveles implements Screen {
         escena.act(delta);
         escena.setViewport(vista);
         escena.draw();
-        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)) {
             adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuModoJuego()));
         }
     }

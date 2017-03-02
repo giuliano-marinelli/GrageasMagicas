@@ -34,6 +34,8 @@ public class AdministradorPantalla extends Game {
     private final int menuComoJugar = 7;
     private final int menuRanking = 8;
     private final int menuNiveles = 9;
+    private final int menuModoJuego = 10;
+    private final int menuNivelesTiempo = 11;
 
 
     @Override
@@ -165,5 +167,13 @@ public class AdministradorPantalla extends Game {
 
     public int getMenuNiveles() {
         return menuNiveles;
+    }
+
+    public int getMenuModoJuego() {
+        return menuModoJuego;
+    }
+
+    public int getMenuNivelesTiempo() {
+        return menuNivelesTiempo;
     }
 }
