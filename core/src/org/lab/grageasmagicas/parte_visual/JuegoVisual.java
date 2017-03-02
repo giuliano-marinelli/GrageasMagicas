@@ -432,6 +432,7 @@ public class JuegoVisual implements Screen, Observer {
             for (int j = 0; j < cantColumnas; j++) {
                 matrizGrageasVisuales[i][j] = new GrageaVisual(matrizGrageasLogica[i][j].getTipo(), txtGragea, txtSuperGragea, txtGrageaBrillo);
                 matrizGrageasVisuales[i][j].addListener(new GrageaVisualListener(matrizGrageasVisuales[i][j], this, i, j));
+                matrizGrageasVisuales[i][j].setTamano(640 / cantFilas, 480 / cantColumnas);
                 tblTablero.add(matrizGrageasVisuales[i][j]);
             }
             tblTablero.row();
@@ -887,7 +888,7 @@ public class JuegoVisual implements Screen, Observer {
     }
 
     public boolean verificarAdyacentes() {
-        return  (primerGrageaX != -1 && primerGrageaY != -1 && segundaGrageaX != -1 && segundaGrageaY != -1) &&
+        return (primerGrageaX != -1 && primerGrageaY != -1 && segundaGrageaX != -1 && segundaGrageaY != -1) &&
                 (segundaGrageaX == primerGrageaX && ((segundaGrageaY == primerGrageaY - 1) || (segundaGrageaY == primerGrageaY + 1)))
                 || (segundaGrageaY == primerGrageaY && ((segundaGrageaX == primerGrageaX - 1) || (segundaGrageaX == primerGrageaX + 1)));
     }

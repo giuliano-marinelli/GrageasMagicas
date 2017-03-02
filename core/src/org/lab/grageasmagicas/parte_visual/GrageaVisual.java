@@ -13,6 +13,8 @@ public class GrageaVisual extends Actor {
     private int tipo;
     private boolean seleccionada;
     private boolean brilla;
+    private float ancho;
+    private float alto;
 
     private Texture txtGragea;
     private Texture txtSuperGragea;
@@ -57,14 +59,14 @@ public class GrageaVisual extends Actor {
 
     public void seleccionar() {
         this.seleccionada = true;
-        setSize(138, 106);
-        setPosition(getX()-5,getY()-5);
+        setSize(ancho + 10, alto + 10);
+        setPosition(getX() - 5, getY() - 5);
     }
 
     public void deseleccionar() {
         this.seleccionada = false;
-        setSize(128, 96);
-        setPosition(getX()+5,getY()+5);
+        setSize(ancho, alto);
+        setPosition(getX() + 5, getY() + 5);
     }
 
     public int getTipo() {
@@ -120,6 +122,12 @@ public class GrageaVisual extends Actor {
         if (tipo != 100) {
             brilla = valor;
         }
+    }
+
+    public void setTamano(float ancho, float alto) {
+        this.ancho = ancho;
+        this.alto = alto;
+        setSize(ancho, alto);
     }
 
     public void setSeleccionada(boolean seleccionada) {

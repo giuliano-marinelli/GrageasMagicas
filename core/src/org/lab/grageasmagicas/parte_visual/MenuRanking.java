@@ -79,7 +79,13 @@ public class MenuRanking implements Screen {
             tblRanking.row();
             Label lblPuesto = new Label("(" + (i + 1) + ")", lblStlRanking);
             lblPuesto.setFontScale(1.5f, 1.5f);
-            Label lblNombre = new Label(ranking.get(i)[0], lblStlRanking);
+            String nombre;
+            if (ranking.get(i)[0].length() > 9) {
+                nombre = ranking.get(i)[0].substring(9) + "...";
+            } else {
+                nombre = ranking.get(i)[0];
+            }
+            Label lblNombre = new Label(nombre, lblStlRanking);
             lblNombre.setFontScale(1.5f, 1.5f);
             Label lblPuntaje = new Label(ranking.get(i)[1], lblStlRanking);
             lblPuntaje.setFontScale(1.5f, 1.5f);
@@ -96,6 +102,7 @@ public class MenuRanking implements Screen {
         scrPaneRanking.setWidth(anchoCamara / 2);
         scrPaneRanking.setHeight(altoCamara);
         scrPaneRanking.setPosition(anchoCamara / 2 - scrPaneRanking.getWidth() / 2, 0);
+        scrPaneRanking.setScrollingDisabled(true, false);
         escena.addActor(scrPaneRanking);
 
         TextButton.TextButtonStyle btnStlVolver = new TextButton.TextButtonStyle();
@@ -142,7 +149,7 @@ public class MenuRanking implements Screen {
         escena.act(delta);
         escena.setViewport(vista);
         escena.draw();
-        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)) {
             adminPantalla.setScreen(new PantallaIntermedia(adminPantalla, adminPantalla.getMenuPrincipal()));
         }
     }

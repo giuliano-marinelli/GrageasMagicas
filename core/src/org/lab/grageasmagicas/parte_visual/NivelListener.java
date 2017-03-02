@@ -22,12 +22,12 @@ public class NivelListener extends ClickListener {
     @Override
     public void clicked(InputEvent event, float x, float y) {
         if (nivel <= nivelLogrado) {
-            int ancho = 5;
-            int alto = 5;
+            int ancho = 5 + (nivel / 15);
+            int alto = 5 + (nivel / 15);
             int velocidad = 10;
             int cantGragea = 4 + nivel / 10;
             int movimientos = 5 + (nivel / 5) * 2;
-            int puntajeGanar = movimientos * 30 + (nivel + 1) * 50 - (nivel / 10) * (500);
+            int puntajeGanar = movimientos * 30 + (nivel + 1) * 75 - (nivel / 10) * (750);
             int poderMovDiagonalUsos = nivel / 10;
             AtomicBoolean finJuego = new AtomicBoolean(false);
 
