@@ -11,16 +11,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Patron implements Runnable {
 
-    protected AtomicBoolean hayJugada;
+    protected AtomicBoolean hayJugadaRec;
+    protected AtomicBoolean hayJugadaDiag;
     protected List<Point> posicion;
     protected Gragea[][] matrizGragea;
     protected CyclicBarrier barrierFinPatron;
+    protected Movimiento bMovimiento;
 
-    public Patron(AtomicBoolean hayJugada, Gragea[][] matrizGragea, CyclicBarrier barrierFinPatrones) {
-        this.hayJugada = hayJugada;
+    public Patron(AtomicBoolean hayJugadaRec, AtomicBoolean hayJugadaDiag, Gragea[][] matrizGragea,
+                  CyclicBarrier barrierFinPatrones, Movimiento bMovimiento) {
+        this.hayJugadaRec = hayJugadaRec;
+        this.hayJugadaDiag = hayJugadaDiag;
         this.barrierFinPatron = barrierFinPatrones;
         posicion = new LinkedList<Point>();
         this.matrizGragea = matrizGragea;
+        this.bMovimiento = bMovimiento;
         //cada Patron implementado debe calcular que posiciones necesita verificar.
         //debe setear en la lista posicion el inicio de la submatriz donde se encuentran las posiciones
         //que va a verificar.
@@ -33,8 +38,8 @@ public abstract class Patron implements Runnable {
         posicion.add(pos);
     }
 
-    public boolean hayJugada() {
-        return hayJugada.get();
+    public boolean hayJugadaRecta() {
+        return hayJugadaRec.get();
     }
 
     @Override
@@ -44,10 +49,10 @@ public abstract class Patron implements Runnable {
             int i = 0;
             int x;
             int y;
-            while (i < tam && !hayJugada.get()) {
+            while (i < tam && !hayJugadaRec.get() && !hayJugadaDiag.get()) {
                 x = posicion.get(i).x;
                 y = posicion.get(i).y;
-                hayJugada.set(verificarPatron(x, y) || hayJugada.get());
+                hayJugadaRec.set(verificarPatron(x, y) || hayJugadaRec.get() || hayJugadaDiag.get());
                 i++;
             }
             i = 0;

@@ -176,6 +176,8 @@ public class GrageaVisualListener extends DragListener {
         juegoVisual.setHayGrageaSeleccionada(true);
         juegoVisual.setPrimerGrageaX(filaGragea);
         juegoVisual.setPrimerGrageaY(columnaGragea);
+        //modifica el valor de ultimaJugada para hacer desbrillar el movimiento que recomendó el juego
+        juegoVisual.actualizarUltimaJugada(System.currentTimeMillis());
         //hace brillar a las grageas con las que puede intercambiarse
         if (!juegoVisual.isPoderMovDiagonalActivado()) {
             juegoVisual.brillarGrageasAdyacentes(filaGragea, columnaGragea);

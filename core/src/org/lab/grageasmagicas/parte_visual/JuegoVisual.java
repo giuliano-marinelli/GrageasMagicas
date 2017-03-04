@@ -64,6 +64,7 @@ public class JuegoVisual implements Screen, Observer {
     private CyclicBarrier barrierRespuestaVisual;
     private float[][] matrizPosGrageaX;
     private float[][] matrizPosGrageaY;
+    private long ultimaJugada;
     //juego logico
     private Juego juegoLogico;
     private Gragea[][] matrizGrageasLogica;
@@ -139,6 +140,7 @@ public class JuegoVisual implements Screen, Observer {
         this.tableroListo = false;
         this.drawParEfcBrillante = false;
         this.desbloqueo = false;
+
 
         cargarAssets();
 
@@ -397,6 +399,7 @@ public class JuegoVisual implements Screen, Observer {
             public void clicked(InputEvent event, float x, float y) {
                 try {
                     btnSinMovimiento.setVisible(false);
+                    desbrillarGrageas();
                     barrierRespuestaVisual.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -889,6 +892,27 @@ public class JuegoVisual implements Screen, Observer {
             }
 
             batch.end();
+
+
+
+            /*mostrar jugada posible luego de 5000 milisegundos (5 segundos)*/
+            if (System.currentTimeMillis() - ultimaJugada > 5000) {
+                //obtener la jugada
+                Point auxIni;
+                Point auxFin;
+                //primero intenta mostrar una jugada en linea recta, si no existe entonces muestra una jugada en diagonal
+                if (juegoLogico.hayJugadaRecta()) {
+                    auxIni = juegoLogico.getJugadaRecta().getMovimientoIni();
+                    auxFin = juegoLogico.getJugadaRecta().getMovimientoFin();
+                    matrizGrageasVisuales[auxIni.x][auxIni.y].brillar(true);
+                    matrizGrageasVisuales[auxFin.x][auxFin.y].brillar(true);
+                } else if (juegoLogico.puedeUsarJugadaDiagonal() && juegoLogico.hayJugadaDiagonal()) {
+                    auxIni = juegoLogico.getJugadaDiagonal().getMovimientoIni();
+                    auxFin = juegoLogico.getJugadaDiagonal().getMovimientoFin();
+                    matrizGrageasVisuales[auxIni.x][auxIni.y].brillar(true);
+                    matrizGrageasVisuales[auxFin.x][auxFin.y].brillar(true);
+                }
+            }
         }
 
     }
@@ -910,7 +934,7 @@ public class JuegoVisual implements Screen, Observer {
                 grageasCombinadas = juegoLogico.getGrageasCombinadas();
                 cantColumnas = matrizGrageasLogica[0].length;
                 cantFilas = matrizGrageasLogica.length;
-
+                ultimaJugada = System.currentTimeMillis();
                 //realizamos los cambios en el juego a partir de lo obtenido
                 gameLoop();
             }
@@ -1154,5 +1178,9 @@ public class JuegoVisual implements Screen, Observer {
 
     public void setPoderMovDiagonalActivado(boolean poderMovDiagonalActivado) {
         this.poderMovDiagonalActivado = poderMovDiagonalActivado;
+    }
+
+    public void actualizarUltimaJugada(Long valor) {
+        ultimaJugada = valor;
     }
 }

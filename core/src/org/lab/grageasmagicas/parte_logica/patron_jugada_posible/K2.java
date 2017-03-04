@@ -13,8 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * |0x|
  */
 public class K2 extends Patron {
-    public K2(AtomicBoolean hayJugada, Gragea[][] matrizGragea, int alto, int ancho, CyclicBarrier barrierFinPatrones) {
-        super(hayJugada, matrizGragea, barrierFinPatrones);
+    public K2(AtomicBoolean hayJugadaRec, AtomicBoolean hayJugadaDiag, Gragea[][] matrizGragea, int alto,
+              int ancho, CyclicBarrier barrierFinPatrones, Movimiento bMovimiento) {
+        super(hayJugadaRec, hayJugadaDiag, matrizGragea, barrierFinPatrones, bMovimiento);
         //cada Patron calcula que posiciones debe verificar
         Point pos;
         for (int i = 0; i < alto; i++) {
@@ -31,8 +32,9 @@ public class K2 extends Patron {
     protected boolean verificarPatron(int x, int y) {
         boolean res = false;
         res = ((matrizGragea[x][y + 1].getTipo() == matrizGragea[x + 1][y].getTipo()) &&
-                (matrizGragea[x][y+1].getTipo() == matrizGragea[x + 2][y].getTipo()));
+                (matrizGragea[x][y + 1].getTipo() == matrizGragea[x + 2][y].getTipo()));
         if (res) {
+            bMovimiento.setMovimiento(new Point(x, y + 1), new Point(x, y));
             System.out.println("K2 detecto movimiento en " + x + "," + y);
         }
         return res;

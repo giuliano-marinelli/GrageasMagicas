@@ -12,8 +12,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class A extends Patron {
 
-    public A(AtomicBoolean hayJugada, Gragea[][] matrizGragea, int alto, int ancho, CyclicBarrier barrierFinPatrones) {
-        super(hayJugada, matrizGragea, barrierFinPatrones);
+    public A(AtomicBoolean hayJugadaRec, AtomicBoolean hayJugadaDiag, Gragea[][] matrizGragea, int alto,
+             int ancho, CyclicBarrier barrierFinPatrones, Movimiento bMovimiento) {
+        super(hayJugadaRec, hayJugadaDiag, matrizGragea, barrierFinPatrones, bMovimiento);
         Point pos;
         //cada Patron calcula que posiciones debe verificar
         for (int i = 0; i < alto; i++) {
@@ -31,8 +32,9 @@ public class A extends Patron {
         boolean res;
         res = (((matrizGragea[x][y].getTipo() == matrizGragea[x][y + 2].getTipo()) &&
                 (matrizGragea[x][y].getTipo() == matrizGragea[x][y + 3].getTipo())));
-        if(res){
-            System.out.println("A detecto movimiento en "+x+","+y);
+        if (res) {
+            bMovimiento.setMovimiento(new Point(x, y), new Point(x, y + 1));
+            System.out.println("A detecto movimiento en " + x + "," + y);
         }
         return res;
     }

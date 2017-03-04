@@ -1,6 +1,7 @@
 package org.lab.grageasmagicas.parte_logica;
 
 import org.lab.estructuras.Point;
+import org.lab.grageasmagicas.parte_logica.patron_jugada_posible.Movimiento;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -460,7 +461,7 @@ public class Juego extends Observable implements Runnable {
             barrierVerificarJugada.await();
             //espera que el verificador termine
             barrierVerificarJugada.await();
-            while (!controladorJugada.existeJugada()) {
+            while (!hayJugadaRecta() && !hayJugadaDiagonal() || (hayJugadaDiagonal() && !puedeUsarJugadaDiagonal())) {
                 //cuando el verificador termina revisa si existe jugada
                 System.out.println("No queda ningún movimiento posible!");
                 hayJugadas = false;
@@ -501,6 +502,7 @@ public class Juego extends Observable implements Runnable {
                 //espera que el verificador termine
                 barrierVerificarJugada.await();
             }
+            System.out.println("el while : " + !controladorJugada.existeJugadaRecta() + ", " + (controladorJugada.existeJugadaDiagonal() && !(poderMovDiagonalUsosTotales - poderMovDiagonalUsos > 0)));
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
@@ -982,5 +984,25 @@ public class Juego extends Observable implements Runnable {
 
     public void setDificultad(int dificultad) {
         this.dificultad = dificultad;
+    }
+
+    public Movimiento getJugadaRecta() {
+        return controladorJugada.getJugadaRecta();
+    }
+
+    public Movimiento getJugadaDiagonal() {
+        return controladorJugada.getJugadaDiagonal();
+    }
+
+    public boolean hayJugadaRecta() {
+        return controladorJugada.existeJugadaRecta();
+    }
+
+    public boolean hayJugadaDiagonal() {
+        return controladorJugada.existeJugadaDiagonal();
+    }
+
+    public boolean puedeUsarJugadaDiagonal() {
+        return (poderMovDiagonalUsosTotales - poderMovDiagonalUsos != 0);
     }
 }

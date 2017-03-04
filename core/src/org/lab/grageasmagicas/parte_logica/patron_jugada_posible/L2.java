@@ -13,8 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * |x0|
  */
 public class L2 extends Patron {
-    public L2(AtomicBoolean hayJugada, Gragea[][] matrizGragea, int alto, int ancho, CyclicBarrier barrierFinPatrones) {
-        super(hayJugada, matrizGragea, barrierFinPatrones);
+    public L2(AtomicBoolean hayJugadaRec, AtomicBoolean hayJugadaDiag, Gragea[][] matrizGragea, int alto,
+              int ancho, CyclicBarrier barrierFinPatrones, Movimiento bMovimiento) {
+        super(hayJugadaRec, hayJugadaDiag, matrizGragea, barrierFinPatrones, bMovimiento);
         //cada Patron calcula que posiciones debe verificar
         Point pos;
         for (int i = 0; i < alto; i++) {
@@ -33,6 +34,7 @@ public class L2 extends Patron {
         res = ((matrizGragea[x][y].getTipo() == matrizGragea[x + 1][y + 1].getTipo()) &&
                 (matrizGragea[x][y].getTipo() == matrizGragea[x + 2][y + 1].getTipo()));
         if (res) {
+            bMovimiento.setMovimiento(new Point(x, y), new Point(x, y + 1));
             System.out.println("L2 detecto movimiento en " + x + "," + y);
         }
         return res;
