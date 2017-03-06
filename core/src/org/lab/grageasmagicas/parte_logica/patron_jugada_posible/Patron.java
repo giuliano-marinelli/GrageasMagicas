@@ -12,16 +12,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class Patron implements Runnable {
 
     protected AtomicBoolean hayJugadaRec;
-    protected AtomicBoolean hayJugadaDiag;
     protected List<Point> posicion;
     protected Gragea[][] matrizGragea;
     protected CyclicBarrier barrierFinPatron;
     protected Movimiento bMovimiento;
 
-    public Patron(AtomicBoolean hayJugadaRec, AtomicBoolean hayJugadaDiag, Gragea[][] matrizGragea,
+    public Patron(AtomicBoolean hayJugadaRec, Gragea[][] matrizGragea,
                   CyclicBarrier barrierFinPatrones, Movimiento bMovimiento) {
         this.hayJugadaRec = hayJugadaRec;
-        this.hayJugadaDiag = hayJugadaDiag;
         this.barrierFinPatron = barrierFinPatrones;
         posicion = new LinkedList<Point>();
         this.matrizGragea = matrizGragea;
@@ -49,10 +47,10 @@ public abstract class Patron implements Runnable {
             int i = 0;
             int x;
             int y;
-            while (i < tam && !hayJugadaRec.get() && !hayJugadaDiag.get()) {
+            while (i < tam && !hayJugadaRec.get()) {
                 x = posicion.get(i).x;
                 y = posicion.get(i).y;
-                hayJugadaRec.set(verificarPatron(x, y) || hayJugadaRec.get() || hayJugadaDiag.get());
+                hayJugadaRec.set(verificarPatron(x, y) || hayJugadaRec.get());
                 i++;
             }
             i = 0;

@@ -18,9 +18,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class G extends Patron {
 
-    public G(AtomicBoolean hayJugadaRec, AtomicBoolean hayJugadaDiag, Gragea[][] matrizGragea, int alto,
+    public G(AtomicBoolean hayJugadaRec, Gragea[][] matrizGragea, int alto,
              int ancho, CyclicBarrier barrierFinPatrones, Movimiento bMovimiento) {
-        super(hayJugadaRec, hayJugadaDiag, matrizGragea, barrierFinPatrones, bMovimiento);
+        super(hayJugadaRec, matrizGragea, barrierFinPatrones, bMovimiento);
         Point pos;
         //cada Patron calcula que posiciones debe verificar
         for (int i = 0; i < alto; i++) {

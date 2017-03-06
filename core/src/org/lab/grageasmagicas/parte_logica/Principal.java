@@ -29,9 +29,10 @@ public class Principal {
         AtomicBoolean finJuego = new AtomicBoolean(false);
 
         //crea y lanza el juego
-        Juego juego = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, poderMovDiagonalUsos, 0, 60, 0, finJuego);
+       /* Juego juego = new Juego(ancho, alto, velocidad, cantGragea, movimientos, puntajeGanar, nivel, poderMovDiagonalUsos, 0, 60, 0, finJuego);
         Thread juegoThread = new Thread(juego);
         juegoThread.start();
+        */
     }
 
 }

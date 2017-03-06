@@ -57,8 +57,9 @@ public class Juego extends Observable implements Runnable {
     private PatronControlador controladorJugada;
     private CyclicBarrier barrierVerificarJugada;
 
-
-    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar, int nivel, int poderMovDiagonalUsos, int modoJuego, int tiempoJuego, int dificultad, AtomicBoolean finJuego) {
+    public Juego(int ancho, int alto, int velocidad, int cantGragea, int movimientos, int puntajeGanar,
+                 int nivel, int poderMovDiagonalUsos, int modoJuego, int tiempoJuego, int dificultad,
+                 AtomicBoolean finJuego) {
         this.ancho = ancho;
         this.alto = alto;
         this.velocidad = velocidad;
@@ -161,9 +162,11 @@ public class Juego extends Observable implements Runnable {
 
                 boolean sonAdy = false;
                 do {
-                    //Permite que usuario pueda interactuar con la interfaz
+                    //Permite que el usuario pueda interactuar con la interfaz
                     barrierEntrada.await();
+                    //espera a que se produzca algun evento de la interfaz grafica
                     barrierEntrada.await();
+
                     /*System.out.print("Gragea inicial XY: ");
                     String gi = TecladoIn.readLine();
                     System.out.print("Gragea final XY: ");
@@ -461,7 +464,7 @@ public class Juego extends Observable implements Runnable {
             barrierVerificarJugada.await();
             //espera que el verificador termine
             barrierVerificarJugada.await();
-            while (!hayJugadaRecta() && !hayJugadaDiagonal() || (hayJugadaDiagonal() && !puedeUsarJugadaDiagonal())) {
+            while (!hayJugadaRecta()) {
                 //cuando el verificador termina revisa si existe jugada
                 System.out.println("No queda ningún movimiento posible!");
                 hayJugadas = false;
@@ -502,7 +505,6 @@ public class Juego extends Observable implements Runnable {
                 //espera que el verificador termine
                 barrierVerificarJugada.await();
             }
-            System.out.println("el while : " + !controladorJugada.existeJugadaRecta() + ", " + (controladorJugada.existeJugadaDiagonal() && !(poderMovDiagonalUsosTotales - poderMovDiagonalUsos > 0)));
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
@@ -990,16 +992,8 @@ public class Juego extends Observable implements Runnable {
         return controladorJugada.getJugadaRecta();
     }
 
-    public Movimiento getJugadaDiagonal() {
-        return controladorJugada.getJugadaDiagonal();
-    }
-
     public boolean hayJugadaRecta() {
         return controladorJugada.existeJugadaRecta();
-    }
-
-    public boolean hayJugadaDiagonal() {
-        return controladorJugada.existeJugadaDiagonal();
     }
 
     public boolean puedeUsarJugadaDiagonal() {

@@ -900,15 +900,10 @@ public class JuegoVisual implements Screen, Observer {
                 //obtener la jugada
                 Point auxIni;
                 Point auxFin;
-                //primero intenta mostrar una jugada en linea recta, si no existe entonces muestra una jugada en diagonal
+                //si existe recomienda una jugada en linea recta
                 if (juegoLogico.hayJugadaRecta()) {
                     auxIni = juegoLogico.getJugadaRecta().getMovimientoIni();
                     auxFin = juegoLogico.getJugadaRecta().getMovimientoFin();
-                    matrizGrageasVisuales[auxIni.x][auxIni.y].brillar(true);
-                    matrizGrageasVisuales[auxFin.x][auxFin.y].brillar(true);
-                } else if (juegoLogico.puedeUsarJugadaDiagonal() && juegoLogico.hayJugadaDiagonal()) {
-                    auxIni = juegoLogico.getJugadaDiagonal().getMovimientoIni();
-                    auxFin = juegoLogico.getJugadaDiagonal().getMovimientoFin();
                     matrizGrageasVisuales[auxIni.x][auxIni.y].brillar(true);
                     matrizGrageasVisuales[auxFin.x][auxFin.y].brillar(true);
                 }

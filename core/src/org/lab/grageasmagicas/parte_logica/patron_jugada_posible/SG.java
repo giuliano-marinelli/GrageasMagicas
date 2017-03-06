@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Busca si hay una super gragea
  */
 public class SG extends Patron {
-    public SG(AtomicBoolean hayJugadaRec, AtomicBoolean hayJugadaDiag, Gragea[][] matrizGragea, int alto,
+    public SG(AtomicBoolean hayJugadaRec, Gragea[][] matrizGragea, int alto,
               int ancho, CyclicBarrier barrierFinPatrones, Movimiento bMovimiento) {
-        super(hayJugadaRec, hayJugadaDiag, matrizGragea, barrierFinPatrones, bMovimiento);
+        super(hayJugadaRec, matrizGragea, barrierFinPatrones, bMovimiento);
         //cada Patron calcula que posiciones debe verificar
         Point pos;
         for (int i = 0; i < alto; i++) {

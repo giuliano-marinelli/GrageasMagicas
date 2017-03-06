@@ -19,7 +19,6 @@ public class PatronControlador implements Runnable {
     //barrera que se rompe cuando los patrones terminan de buscar jugadas posibles
     private CyclicBarrier barrierFinPatrones;
     private AtomicBoolean hayJugadaRecta;
-    private AtomicBoolean hayJugadaDiagonal;
 
     //patrones jugadas rectas
     private Patron a;
@@ -40,15 +39,8 @@ public class PatronControlador implements Runnable {
     private Patron l2;
     private Patron sg;
 
-    //patrones jugadas en diagonal
-    private BuscadorMovimientoDiagonal _2x3;
-    private BuscadorMovimientoDiagonal _3x2;
-    private BuscadorMovimientoDiagonal _4x2;
-    private BuscadorMovimientoDiagonal _2x4;
-
     //movimiento encontrado
     private Movimiento movimientoRecto;
-    private Movimiento movimientoDiagonal;
 
 
     public PatronControlador(Gragea[][] matrizGrageas, CyclicBarrier verificarJugada, AtomicBoolean finJuego) {
@@ -56,37 +48,29 @@ public class PatronControlador implements Runnable {
         this.finJuego = finJuego;
         int limAlto = (matrizGrageas.length);
         int limAncho = (matrizGrageas[0].length);
-        barrierFinPatrones = new CyclicBarrier(22);
+        barrierFinPatrones = new CyclicBarrier(18);
         hayJugadaRecta = new AtomicBoolean(false);
-        hayJugadaDiagonal = new AtomicBoolean(false);
         movimientoRecto = new Movimiento();
-        movimientoDiagonal = new Movimiento();
         //patrones de jugadas rectas
-        a = new A(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        b = new B(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        c = new C(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        d = new D(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        e = new E(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        f = new F(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        g = new G(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        h = new H(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        i = new I(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        j = new J(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        k = new K(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        l = new L(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        i2 = new I2(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        j2 = new J2(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        k2 = new K2(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
-        l2 = new L2(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        a = new A(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        b = new B(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        c = new C(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        d = new D(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        e = new E(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        f = new F(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        g = new G(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        h = new H(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        i = new I(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        j = new J(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        k = new K(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        l = new L(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        i2 = new I2(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        j2 = new J2(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        k2 = new K2(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        l2 = new L2(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
         //buscador de superGragea
-        sg = new SG(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
+        sg = new SG(hayJugadaRecta, matrizGrageas, limAlto, limAncho, barrierFinPatrones, movimientoRecto);
 
-        SubMatriz subMatriz = new SubMatriz(matrizGrageas);
-        //patrones de jugadas en diagonal
-        _2x3 = new BuscadorMovimientoDiagonal(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, barrierFinPatrones, subMatriz, 0, movimientoDiagonal);
-        _3x2 = new BuscadorMovimientoDiagonal(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, barrierFinPatrones, subMatriz, 1, movimientoDiagonal);
-        _2x4 = new BuscadorMovimientoDiagonal(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, barrierFinPatrones, subMatriz, 2, movimientoDiagonal);
-        _4x2 = new BuscadorMovimientoDiagonal(hayJugadaRecta, hayJugadaDiagonal, matrizGrageas, barrierFinPatrones, subMatriz, 3, movimientoDiagonal);
     }
 
     @Override
@@ -96,9 +80,7 @@ public class PatronControlador implements Runnable {
                 barrierVerificarJugada.await();
                 if (!finJuego.get()) {
                     movimientoRecto.clear();
-                    movimientoDiagonal.clear();
                     hayJugadaRecta.set(false);
-                    hayJugadaDiagonal.set(false);
                     //patrones de jugadas rectas
                     Thread tA = new Thread(a);
                     tA.start();
@@ -135,16 +117,6 @@ public class PatronControlador implements Runnable {
                     Thread tSG = new Thread(sg);
                     tSG.start();
 
-                    //patrones de jugadas en diagonal
-                    Thread th2x3 = new Thread(_2x3);
-                    th2x3.start();
-                    Thread th3x2 = new Thread(_3x2);
-                    th3x2.start();
-                    Thread th2x4 = new Thread(_2x4);
-                    th2x4.start();
-                    Thread th4x2 = new Thread(_4x2);
-                    th4x2.start();
-
                     barrierFinPatrones.await();
                     barrierVerificarJugada.await();
                 }
@@ -166,15 +138,6 @@ public class PatronControlador implements Runnable {
         return a.hayJugadaRecta();
     }
 
-    /**
-     * devuelve true si existe una jugada en diagonal posible . false en caso contrario.
-     *
-     * @return
-     */
-    public boolean existeJugadaDiagonal() {
-        //cualquier objeto patron va a tener el mismo valor en la variable hayJugada
-        return _2x3.hayJugadaDiagonal();
-    }
 
     /**
      * devuelve un movimiento en linea recta si es que existe
@@ -182,14 +145,6 @@ public class PatronControlador implements Runnable {
      */
     public Movimiento getJugadaRecta() {
         return movimientoRecto;
-    }
-
-    /**
-     * devuelve un movimiento en diagonal si es que existe
-     * @return
-     */
-    public Movimiento getJugadaDiagonal() {
-        return movimientoDiagonal;
     }
 
 }
