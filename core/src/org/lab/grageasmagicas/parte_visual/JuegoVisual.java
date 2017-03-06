@@ -670,7 +670,9 @@ public class JuegoVisual implements Screen, Observer {
                     if (adminPantalla.getInterfazDb().consultarOpcionVibracion(adminPantalla.getIdUsuario())) {
                         Gdx.input.vibrate(200);
                     }
-                    sndSuperExplosion.play();
+                    if (adminPantalla.getInterfazDb().consultarOpcionSonido(adminPantalla.getIdUsuario())) {
+                        sndSuperExplosion.play();
+                    }
                     juegoLogico.setHuboCombo(false);
                 }
             }
